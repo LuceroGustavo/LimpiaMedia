@@ -18,10 +18,12 @@ Software 100% local: Spring Boot + Thymeleaf + H2, corre en el navegador sin ser
 - [x] Crear `documentacion/` (PLAN, AVANCES, HISTORIAL).
 - [ ] Generar proyecto Spring Boot en Initializr e importar al proyecto.
 
-### Fase 2 — Esqueleto de la aplicación
-- [ ] Configurar `application.properties` (H2, thymeleaf, puerto).
-- [ ] `HomeController` + `index.html` con las 4 tarjetas.
-- [ ] Entidades JPA: `ScanSession`, `ScannedFile`, `DuplicateGroup`.
+### Fase 2 — Esqueleto de la aplicación ✅
+- [x] Configurar `application.properties` (H2, thymeleaf, puerto).
+- [x] `HomeController` + `index.html` con las 4 tarjetas.
+- [x] Entidades JPA: `ScanSession`, `ScannedFile`, `DuplicateGroup`.
+- [x] Repositorios JPA y controladores base.
+- [x] Verificado: app levanta en `localhost:8080`, H2 crea las tablas.
 
 ### Fase 3 — Navegación de carpetas
 - [ ] `FileSystemService`: listar unidades y carpetas.

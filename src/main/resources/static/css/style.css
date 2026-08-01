@@ -1,0 +1,144 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: "Segoe UI", Roboto, Arial, sans-serif;
+	background: #f4f6fa;
+	color: #1f2937;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.hero {
+	background: linear-gradient(135deg, #4f46e5, #7c3aed);
+	color: #fff;
+	text-align: center;
+	padding: 3rem 1rem 2.5rem;
+}
+
+.hero h1 {
+	font-size: 2.2rem;
+	margin-bottom: .4rem;
+	letter-spacing: .5px;
+}
+
+.hero p {
+	opacity: .9;
+	font-size: 1.05rem;
+}
+
+.hero-chico {
+	padding: 1.6rem 1rem;
+}
+
+.hero-chico h1 {
+	font-size: 1.4rem;
+}
+
+.contenedor {
+	flex: 1;
+	max-width: 1000px;
+	margin: 0 auto;
+	width: 100%;
+	padding: 2rem 1rem;
+}
+
+.grid-tarjetas {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+	gap: 1.2rem;
+}
+
+.tarjeta {
+	display: flex;
+	flex-direction: column;
+	gap: .6rem;
+	background: #fff;
+	border-radius: 14px;
+	padding: 1.4rem;
+	text-decoration: none;
+	color: inherit;
+	border: 2px solid transparent;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+	transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.tarjeta:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
+}
+
+.tarjeta .icono {
+	width: 48px;
+	height: 48px;
+	border-radius: 12px;
+}
+
+.tarjeta-fotos .icono { background: #0ea5e9; }
+.tarjeta-videos .icono { background: #f43f5e; }
+.tarjeta-documentos .icono { background: #f59e0b; }
+.tarjeta-sonido .icono { background: #10b981; }
+
+.tarjeta h2 {
+	font-size: 1.05rem;
+	line-height: 1.3;
+}
+
+.tarjeta p {
+	color: #6b7280;
+	font-size: .9rem;
+	flex: 1;
+}
+
+.tarjeta .accion {
+	align-self: flex-start;
+	background: #4f46e5;
+	color: #fff;
+	padding: .45rem 1rem;
+	border-radius: 8px;
+	font-size: .9rem;
+	font-weight: 600;
+}
+
+.tarjeta:hover .accion {
+	background: #4338ca;
+}
+
+.aviso {
+	background: #fff;
+	border-left: 6px solid #4f46e5;
+	border-radius: 10px;
+	padding: 1.6rem;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+}
+
+.aviso h2 {
+	margin-bottom: .5rem;
+	font-size: 1.15rem;
+}
+
+.aviso p {
+	color: #6b7280;
+}
+
+.volver {
+	color: #e0e7ff;
+	text-decoration: none;
+	font-size: .95rem;
+}
+
+.volver:hover {
+	text-decoration: underline;
+}
+
+.pie {
+	text-align: center;
+	padding: 1.2rem;
+	color: #6b7280;
+	font-size: .85rem;
+	background: #eef1f6;
+}

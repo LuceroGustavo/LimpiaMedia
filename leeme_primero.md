@@ -90,8 +90,9 @@ LimpiaMedia/
 
 ## Estado actual
 
-> **Fase 1 — En curso.** Se creó la estructura de documentación. Falta generar/importar el
-> proyecto Spring Boot y construir la aplicación. Ver `documentacion/AVANCES.md`.
+> **Fase 2 — Completada.** Esqueleto funcional: 4 tarjetas, controladores, entidades JPA y
+> repositorios. La app levanta en `localhost:8080` y H2 crea las tablas.
+> **Siguiente:** Fase 3 (navegación de carpetas). Ver `documentacion/AVANCES.md`.
 
 ## Reglas del proyecto
 

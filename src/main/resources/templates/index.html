@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>LimpiaMedia</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+	<header class="hero">
+		<h1>LimpiaMedia</h1>
+		<p>Detectá archivos duplicados en tu PC. Elegí una categoría para empezar.</p>
+	</header>
+
+	<main class="contenedor">
+		<div class="grid-tarjetas">
+			<a class="tarjeta tarjeta-fotos" th:href="@{/scan/FOTOS}">
+				<div class="icono"></div>
+				<h2>Detectar duplicados de fotos</h2>
+				<p>JPG, PNG, WEBP, HEIC, RAW y más.</p>
+				<span class="accion">Comenzar</span>
+			</a>
+
+			<a class="tarjeta tarjeta-videos" th:href="@{/scan/VIDEOS}">
+				<div class="icono"></div>
+				<h2>Detectar duplicados de videos</h2>
+				<p>MP4, MKV, MOV, AVI, WEBM y más.</p>
+				<span class="accion">Comenzar</span>
+			</a>
+
+			<a class="tarjeta tarjeta-documentos" th:href="@{/scan/DOCUMENTOS}">
+				<div class="icono"></div>
+				<h2>Detectar duplicados de documentos</h2>
+				<p>PDF, DOCX, XLSX, TXT, CSV y más.</p>
+				<span class="accion">Comenzar</span>
+			</a>
+
+			<a class="tarjeta tarjeta-sonido" th:href="@{/scan/SONIDO}">
+				<div class="icono"></div>
+				<h2>Detectar duplicados de sonido</h2>
+				<p>MP3, WAV, FLAC, OGG, M4A y más.</p>
+				<span class="accion">Comenzar</span>
+			</a>
+		</div>
+	</main>
+
+	<footer class="pie">
+		<p>LimpiaMedia nunca elimina archivos: solo detecta y, si querés, los mueve.</p>
+	</footer>
+</body>
+</html>

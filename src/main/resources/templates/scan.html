@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Escaneo — LimpiaMedia</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+	<header class="hero hero-chico">
+		<h1>Detectar duplicados de <span th:text="${tipo}"></span></h1>
+		<a class="volver" th:href="@{/}">&larr; Volver al inicio</a>
+	</header>
+
+	<main class="contenedor">
+		<div class="aviso">
+			<h2>Selección de carpeta (próximamente)</h2>
+			<p>
+				En la siguiente fase vas a poder elegir la carpeta o disco a escanear
+				usando un navegador de unidades y un árbol de carpetas.
+			</p>
+		</div>
+	</main>
+
+	<footer class="pie">
+		<p>LimpiaMedia nunca elimina archivos: solo detecta y, si querés, los mueve.</p>
+	</footer>
+</body>
+</html>
