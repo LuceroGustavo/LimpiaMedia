@@ -25,10 +25,11 @@ Software 100% local: Spring Boot + Thymeleaf + H2, corre en el navegador sin ser
 - [x] Repositorios JPA y controladores base.
 - [x] Verificado: app levanta en `localhost:8080`, H2 crea las tablas.
 
-### Fase 3 — Navegación de carpetas
-- [ ] `FileSystemService`: listar unidades y carpetas.
-- [ ] `FolderController` (JSON) para el árbol navegable.
-- [ ] Pantalla `scan.html`: navegador de carpetas + campo de ruta.
+### Fase 3 — Navegación de carpetas ✅
+- [x] `FileSystemService`: listar unidades y carpetas.
+- [x] `FolderController` (JSON) para el árbol navegable.
+- [x] Pantalla `scan.html`: navegador de carpetas + campo de ruta.
+- [x] Pruebas: unidades (C:, D:, E:), rutas con espacios, breadcrumb y POST iniciar.
 
 ### Fase 4 — Escaneo y detección
 - [ ] `ScanService`: escaneo asíncrono con progreso.

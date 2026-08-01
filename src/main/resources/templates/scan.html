@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Escaneo — LimpiaMedia</title>
+	<title>Elegir carpeta — LimpiaMedia</title>
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
@@ -13,17 +13,45 @@
 	</header>
 
 	<main class="contenedor">
-		<div class="aviso">
-			<h2>Selección de carpeta (próximamente)</h2>
-			<p>
-				En la siguiente fase vas a poder elegir la carpeta o disco a escanear
-				usando un navegador de unidades y un árbol de carpetas.
+		<section class="panel">
+			<h2>Paso 1: elegí la carpeta o disco</h2>
+			<p class="ayuda">
+				Hacé clic en una unidad, navegá por las carpetas o pegá la ruta directa.
 			</p>
-		</div>
+
+			<div class="unidades">
+				<h3>Unidades</h3>
+				<div id="unidades" class="fila-unidades">
+					<p class="cargando">Cargando unidades…</p>
+				</div>
+			</div>
+
+			<div class="ruta-actual">
+				<h3>Ruta seleccionada</h3>
+				<form th:action="@{/scan/{tipo}/iniciar(tipo=${tipo})}" method="post" id="form-escanear">
+					<div class="campo-ruta">
+						<input type="text" id="ruta" name="ruta" placeholder="C:\Mis Fotos"
+							   value="C:\" autocomplete="off">
+						<button type="button" class="btn-secundario" onclick="ir(document.getElementById('ruta').value)">Ir</button>
+						<button type="submit" class="btn-primario">Escanear esta carpeta</button>
+					</div>
+				</form>
+			</div>
+
+			<div class="navegacion">
+				<h3>Contenido</h3>
+				<div id="breadcrumb" class="breadcrumb"></div>
+				<div id="carpetas" class="grid-carpetas">
+					<p class="cargando">Seleccioná una unidad para ver sus carpetas.</p>
+				</div>
+			</div>
+		</section>
 	</main>
 
 	<footer class="pie">
 		<p>LimpiaMedia nunca elimina archivos: solo detecta y, si querés, los mueve.</p>
 	</footer>
+
+	<script th:src="@{/js/scan.js}"></script>
 </body>
 </html>

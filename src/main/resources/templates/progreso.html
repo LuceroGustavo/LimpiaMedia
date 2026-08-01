@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Escaneando — LimpiaMedia</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+	<header class="hero hero-chico">
+		<h1>Escaneo de <span th:text="${tipo}"></span></h1>
+		<a class="volver" th:href="@{/}">&larr; Volver al inicio</a>
+	</header>
+
+	<main class="contenedor">
+		<section class="panel">
+			<h2>Carpeta seleccionada</h2>
+			<p class="ruta-elegida" th:text="${ruta}"></p>
+			<div class="aviso">
+				<p>
+					El escaneo real (con progreso y detección de duplicados) se implementa
+					en la siguiente fase.
+				</p>
+			</div>
+			<a class="btn-primario enlace-boton" th:href="@{/scan/{tipo}(tipo=${tipo})}">Elegir otra carpeta</a>
+		</section>
+	</main>
+
+	<footer class="pie">
+		<p>LimpiaMedia nunca elimina archivos: solo detecta y, si querés, los mueve.</p>
+	</footer>
+</body>
+</html>

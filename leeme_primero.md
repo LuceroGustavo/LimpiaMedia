@@ -90,9 +90,10 @@ LimpiaMedia/
 
 ## Estado actual
 
-> **Fase 2 — Completada.** Esqueleto funcional: 4 tarjetas, controladores, entidades JPA y
-> repositorios. La app levanta en `localhost:8080` y H2 crea las tablas.
-> **Siguiente:** Fase 3 (navegación de carpetas). Ver `documentacion/AVANCES.md`.
+> **Fase 3 — Completada.** Navegación de carpetas funcional: unidades de disco, breadcrumb,
+> grilla de subcarpetas y campo de ruta. `GET /api/unidades`, `GET /api/carpetas`.
+> **Siguiente:** Fase 4 (escaneo asíncrono con progreso + detección de duplicados).
+> Ver `documentacion/AVANCES.md`.
 
 ## Reglas del proyecto
 

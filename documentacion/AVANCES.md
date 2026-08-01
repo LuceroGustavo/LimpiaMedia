@@ -37,3 +37,25 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
   - `/` → 200 con 4 tarjetas · `/scan/FOTOS` → 200 · `/h2-console` → 200.
   - H2 creó las tablas `SCAN_SESSION`, `SCANNED_FILE`, `DUPLICATE_GROUP` (verificado por SQL).
 - Pendiente: Fase 3 (navegación de carpetas: unidades + árbol + campo de ruta).
+
+## 2026-08-01 — Fase 3 completada: navegación de carpetas
+- `FileSystemService`: `listarUnidades()` (discos C:, D:, E:…) y `listarSubcarpetas(ruta)` con manejo de errores (carpetas sin permisos devuelven lista vacía, no rompen).
+- `FolderController` (REST):
+  - `GET /api/unidades` → unidades de disco.
+  - `GET /api/carpetas?ruta=...` → subcarpetas de una ruta (JSON).
+- `dto/CarpetaDTO` (ruta + nombre).
+- `scan.html` rediseñado: panel "Paso 1: elegí la carpeta o disco" con:
+  - Chips de unidades.
+  - Campo de ruta editable + botón "Ir".
+  - Breadcrumb navegable (clic en cada nivel).
+  - Grilla de subcarpetas (clic para entrar).
+  - Botón "Escanear esta carpeta" (form POST).
+- `static/js/scan.js`: lógica de navegación (fetch, breadcrumb, grid).
+- `progreso.html`: placeholder de escaneo (la detección real es Fase 4).
+- `ScanController` + `POST /scan/{tipo}/iniciar` (recibe ruta, muestra progreso).
+- **Pruebas**: `mvnw compile` OK. App levantada:
+  - `/api/unidades` → C:\, D:\, E:\.
+  - `/api/carpetas` funciona con rutas con espacios (`C:\Archivos de programa`) y navega `C:\ejercicios`, `C:\Users`.
+  - `/scan/VIDEOS` → 200 · `POST /scan/VIDEOS/iniciar` → 200.
+  - Carpeta sin permisos → lista vacía sin errores.
+- Pendiente: Fase 4 (escaneo asíncrono con progreso + detección de duplicados).

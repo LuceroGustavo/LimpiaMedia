@@ -142,3 +142,217 @@ body {
 	font-size: .85rem;
 	background: #eef1f6;
 }
+
+.panel {
+	background: #fff;
+	border-radius: 14px;
+	padding: 1.6rem;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+	margin-bottom: 1.2rem;
+}
+
+.panel h2 {
+	margin-bottom: .4rem;
+	font-size: 1.25rem;
+}
+
+.panel h3 {
+	margin-bottom: .5rem;
+	font-size: 1rem;
+	color: #4b5563;
+}
+
+.ayuda {
+	color: #6b7280;
+	margin-bottom: 1.2rem;
+	font-size: .95rem;
+}
+
+.unidades {
+	margin-bottom: 1.2rem;
+}
+
+.fila-unidades {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .5rem;
+}
+
+.chip-unidad {
+	background: #eef2ff;
+	color: #4338ca;
+	border: 1px solid #c7d2fe;
+	border-radius: 8px;
+	padding: .5rem 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	font-size: .95rem;
+}
+
+.chip-unidad:hover {
+	background: #c7d2fe;
+}
+
+.ruta-actual {
+	margin-bottom: 1.2rem;
+}
+
+.campo-ruta {
+	display: flex;
+	gap: .5rem;
+	flex-wrap: wrap;
+}
+
+.campo-ruta input {
+	flex: 1;
+	min-width: 220px;
+	padding: .6rem .8rem;
+	border: 1px solid #d1d5db;
+	border-radius: 8px;
+	font-size: .95rem;
+}
+
+.campo-ruta input:focus {
+	outline: none;
+	border-color: #4f46e5;
+}
+
+.btn-primario {
+	background: #4f46e5;
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	padding: .6rem 1.2rem;
+	font-weight: 600;
+	font-size: .95rem;
+	cursor: pointer;
+}
+
+.btn-primario:hover {
+	background: #4338ca;
+}
+
+.btn-secundario {
+	background: #fff;
+	color: #4b5563;
+	border: 1px solid #d1d5db;
+	border-radius: 8px;
+	padding: .6rem 1rem;
+	font-weight: 600;
+	font-size: .95rem;
+	cursor: pointer;
+}
+
+.btn-secundario:hover {
+	background: #f3f4f6;
+}
+
+.enlace-boton {
+	display: inline-block;
+	text-decoration: none;
+	margin-top: 1rem;
+}
+
+.breadcrumb {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: .3rem;
+	margin-bottom: .8rem;
+	padding: .5rem .7rem;
+	background: #f9fafb;
+	border-radius: 8px;
+}
+
+.crumb {
+	color: #4f46e5;
+	cursor: pointer;
+	font-weight: 600;
+	font-size: .9rem;
+	padding: .2rem .3rem;
+	border-radius: 4px;
+}
+
+.crumb:hover {
+	background: #eef2ff;
+}
+
+.sep {
+	color: #9ca3af;
+	font-size: .8rem;
+}
+
+.grid-carpetas {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+	gap: .6rem;
+	max-height: 380px;
+	overflow-y: auto;
+	padding: .2rem;
+}
+
+.item-carpeta {
+	display: flex;
+	align-items: center;
+	gap: .5rem;
+	padding: .55rem .7rem;
+	background: #f9fafb;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	cursor: pointer;
+	overflow: hidden;
+}
+
+.item-carpeta:hover {
+	background: #eef2ff;
+	border-color: #c7d2fe;
+}
+
+.nombre-carpeta {
+	font-size: .9rem;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.icono-carpeta {
+	width: 20px;
+	height: 16px;
+	background: #f59e0b;
+	border-radius: 3px;
+	position: relative;
+	flex-shrink: 0;
+}
+
+.icono-carpeta::before {
+	content: "";
+	position: absolute;
+	top: -4px;
+	left: 2px;
+	width: 8px;
+	height: 5px;
+	background: #f59e0b;
+	border-radius: 3px 3px 0 0;
+}
+
+.cargando,
+.vacio {
+	color: #9ca3af;
+	font-size: .9rem;
+	padding: .5rem 0;
+}
+
+.error {
+	color: #dc2626;
+	font-size: .9rem;
+	padding: .5rem 0;
+}
+
+.ruta-elegida {
+	font-weight: 600;
+	background: #f3f4f6;
+	padding: .6rem .8rem;
+	border-radius: 8px;
+	margin: .6rem 0 1rem;
+	word-break: break-all;
+}
