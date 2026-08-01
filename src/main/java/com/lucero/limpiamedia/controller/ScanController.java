@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.lucero.limpiamedia.model.DuplicateGroup;
 import com.lucero.limpiamedia.model.ScanSession;
+import com.lucero.limpiamedia.model.ScanStatus;
 import com.lucero.limpiamedia.model.ScanType;
 import com.lucero.limpiamedia.model.ScannedFile;
 import com.lucero.limpiamedia.repository.DuplicateGroupRepository;
@@ -47,6 +48,12 @@ public class ScanController {
 	@PostMapping("/scan/{tipo}/iniciar")
 	public String iniciar(@PathVariable ScanType tipo, @RequestParam String ruta, RedirectAttributes ra) {
 		try {
+			List<ScanSession> enCurso = sessionRepo.findByEstadoOrderByInicioDesc(ScanStatus.EN_PROGRESO);
+			if (!enCurso.isEmpty()) {
+				ra.addFlashAttribute("error", "Ya hay un escaneo en curso (sesión " + enCurso.get(0).getId()
+						+ "). Esperá a que termine antes de iniciar otro.");
+				return "redirect:/scan/" + tipo;
+			}
 			ScanSession sesion = scanService.iniciarEscaneo(tipo, ruta);
 			return "redirect:/escaneo/" + sesion.getId();
 		} catch (IllegalArgumentException e) {
@@ -62,8 +69,15 @@ public class ScanController {
 	}
 
 	@GetMapping("/escaneo/{id}/resultado")
-	public String resultado(@PathVariable Long id, Model model) {
+	public String resultado(@PathVariable Long id, Model model, RedirectAttributes ra) {
 		ScanSession sesion = sessionRepo.findById(id).orElseThrow();
+		if (sesion.getEstado() == ScanStatus.EN_PROGRESO) {
+			return "redirect:/escaneo/" + id;
+		}
+		if (sesion.getEstado() == ScanStatus.ERROR) {
+			ra.addFlashAttribute("error", "El escaneo terminó con un error. Probá de nuevo.");
+			return "redirect:/scan/" + sesion.getTipo();
+		}
 		List<DuplicateGroup> grupos = groupRepo.findBySesion_IdOrderById(id);
 
 		long totalDuplicados = 0;

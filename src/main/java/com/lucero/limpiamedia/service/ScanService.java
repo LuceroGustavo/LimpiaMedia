@@ -37,7 +37,8 @@ import com.lucero.limpiamedia.repository.ScanSessionRepository;
 public class ScanService {
 
 	private static final Logger log = LoggerFactory.getLogger(ScanService.class);
-	private static final int GUARDAR_CADA = 100;
+	private static final int GUARDAR_CADA = 500;
+	private static final int GUARDAR_HASH_CADA = 100;
 
 	private final ScanSessionRepository sessionRepo;
 	private final DuplicateGroupRepository groupRepo;
@@ -221,7 +222,7 @@ public class ScanService {
 				hashPorRuta.put(a.ruta(), hash);
 				porHash.computeIfAbsent(hash, k -> new ArrayList<>()).add(a);
 				sesion.setProcesados(sesion.getProcesados() + 1);
-				if (++hasheados % 25 == 0) {
+				if (++hasheados % GUARDAR_HASH_CADA == 0) {
 					sessionRepo.save(sesion);
 				}
 			}

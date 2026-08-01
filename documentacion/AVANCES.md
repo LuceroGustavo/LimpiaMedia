@@ -169,3 +169,17 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
 - Tests unitarios nuevos: `src/test/.../ScanServiceNombreTest.java` (7 casos). `mvnw test` OK.
 - **Prueba end-to-end** (VIDEOS): `VID_...mp4` + `VID_..._1.mp4` + `VID_..._2.mp4` + un `VID_..._1.mp4` con contenido distinto (trampa) → `duplicados=2`, la trampa descartada por hash, mover mueve `_1` y `_2` y deja el original. ✓ (FOTOS): `copia de foto.jpg` + `foto.jpg` → 1 duplicado. ✓
 - `.jar` regenerado con `mvnw clean package`.
+
+## 2026-08-01 — Escaneo de disco completo: diagnóstico + arreglos de UX
+- El usuario reportó que al escanear **todo `D:\`** la app decía "1.357 archivos" y en otro escaneo "no había duplicados".
+- **Diagnóstico con la base real** (H2 Shell sobre `data/limpiamedia`):
+  - Sesión FOTOS `D:\`: COMPLETADO con **7.879 archivos y 2.500 duplicados** (el escaneo de fotos SÍ funcionaba; coincide con un conteo externo de 7.881 imágenes).
+  - La cifra "1.357/1.332" era un escaneo de **VIDEOS** de `D:\` (1.332 videos) todavía en curso, no fotos.
+  - El "no había duplicados" era un **bug de UI**: la página de resultado se podía abrir con el escaneo EN_PROGRESO y mostraba "No se encontraron duplicados" en falso.
+- **Arreglos**:
+  - `ScanController.resultado`: si el escaneo está EN_PROGRESO redirige al progreso; si está ERROR avisa y vuelve al escaneo. Ya no muestra resultados falsos.
+  - `ScanController.iniciar`: si ya hay un escaneo EN_PROGRESO, rechaza el nuevo con el mensaje "Ya hay un escaneo en curso" (antes se encolaba en silencio detrás del único hilo del executor).
+  - `config/LimpiezaSesionesListener`: al iniciar la app, las sesiones EN_PROGRESO huérfanas (de un reinicio previo) se marcan ERROR para no bloquear escaneos nuevos.
+  - Rendimiento: guardado en BD cada 500 archivos (antes 100) y cada 100 hashes (antes 25).
+- **Pruebas** (instancia aislada en :8081 con base temporal): guard rechaza con flash ✓, resultado de sesión en curso redirige a progreso ✓, al reiniciar la sesión huérfana pasa a ERROR ✓, detección end-to-end sigue OK ✓. `mvnw clean package` OK y `.jar` regenerado.
+- **Aclaración**: no hay límite de capacidad; el escaneo recorre todo el disco. Escanear `D:\` completo lleva varios minutos (caminata + hash de cada candidato), es normal. Faltan por mejorar: tiempo del escaneo en discos grandes y límites de memoria con millones de archivos.
