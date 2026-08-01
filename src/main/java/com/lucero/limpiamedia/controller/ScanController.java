@@ -99,6 +99,23 @@ public class ScanController {
 		return "redirect:/escaneo/" + id + "/resultado";
 	}
 
+	@GetMapping("/escaneo/{id}/abrir-carpeta")
+	public String abrirCarpeta(@PathVariable Long id, RedirectAttributes ra) {
+		try {
+			ScanSession sesion = sessionRepo.findById(id).orElseThrow(
+					() -> new IllegalArgumentException("Sesión de escaneo no encontrada"));
+			if (sesion.getCarpetaDestino() == null) {
+				ra.addFlashAttribute("error", "Todavía no se movieron archivos en esta sesión");
+				return "redirect:/escaneo/" + id + "/resultado";
+			}
+			new ProcessBuilder("explorer.exe", sesion.getCarpetaDestino()).start();
+			ra.addFlashAttribute("ok", "Se abrió la carpeta destino en el Explorador");
+		} catch (Exception e) {
+			ra.addFlashAttribute("error", "No se pudo abrir la carpeta: " + e.getMessage());
+		}
+		return "redirect:/escaneo/" + id + "/resultado";
+	}
+
 	private String sugerirDestino(ScanSession sesion) {
 		return Path.of(System.getProperty("user.home"), "Desktop",
 				"LimpiaMedia_Duplicados_" + sesion.getTipo()).toString();

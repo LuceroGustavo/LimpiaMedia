@@ -149,3 +149,9 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
 - Prueba end-to-end (carpeta con 3 fotos idénticas + 1 única): `total=4`, `duplicados=2`. ✓
 - Mover: los 2 duplicados van a la carpeta destino y el segundo se renombra `foto_1.jpg` (no pisa al primero). ✓
 - Restaurar: ambos vuelven a sus rutas originales (`b\foto.jpg`, `c\foto.jpg`). ✓
+
+## 2026-08-01 — Botón "Abrir carpeta destino" después de mover
+- En `resultado.html`, el panel "Duplicados ya movidos" (que aparece cuando `carpetaDestino != null`, o sea después de mover) ahora tiene el botón **"Abrir carpeta destino"**.
+- El botón llama a `GET /escaneo/{id}/abrir-carpeta`, que lanza `explorer.exe` con la ruta destino de esa sesión (solo permite abrir carpetas guardadas en la base, no rutas arbitrarias) y vuelve al resultado con un flash.
+- Como `resultado.html` es genérico, el botón funciona para **FOTOS, VIDEOS, DOCUMENTOS y SONIDO**.
+- **Pruebas**: después de mover 1 duplicado, el botón aparece; al clickear, Explorer abrió la carpeta (flash "Se abrió la carpeta destino en el Explorador" ✓, procesos `explorer.exe` nuevos ✓). `mvnw clean package` OK y `.jar` regenerado.

@@ -18,6 +18,7 @@
 			<strong th:text="${destino}"></strong>.
 		</div>
 		<div class="flash error" th:if="${error}" th:text="${error}"></div>
+		<div class="flash ok" th:if="${ok}" th:text="${ok}"></div>
 
 		<section class="panel resumen">
 			<h2>Resumen del escaneo</h2>
@@ -72,6 +73,10 @@
 				Podés restaurarlos desde el
 				<a th:href="@{/movimientos}">historial de movimientos</a>.
 			</p>
+			<div class="acciones-finales">
+				<a class="btn-primario enlace-boton"
+				   th:href="@{/escaneo/{id}/abrir-carpeta(id=${sesion.id})}">Abrir carpeta destino</a>
+			</div>
 		</section>
 
 		<section class="panel grupo" th:each="g, st : ${grupos}">

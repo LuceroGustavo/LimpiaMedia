@@ -81,6 +81,7 @@ LimpiaMedia/
    - La carpeta destino queda **excluida automáticamente** de escaneos futuros (no se re-detectan los movidos).
 7. `/movimientos`: **historial de movimientos** con botón **Restaurar** por archivo (devuelve el archivo a su ubicación original).
    - Todo movimiento se registra en el journal `registro/movimientos.jsonl` (eventos `mover`/`restaurar`).
+8. Después de mover, el panel "Duplicados ya movidos" ofrece el botón **"Abrir carpeta destino"** que abre la carpeta en el Explorador (`explorer.exe`).
 
 ## Extensiones soportadas por categoría (config en clase `config/FileExtensionsConfig`)
 
