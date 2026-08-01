@@ -34,6 +34,60 @@
 			var relleno = document.getElementById('relleno');
 			var texto = document.getElementById('texto');
 
+			var ultimaMuestra = null;
+			var etaSuavizado = -1;
+
+			function fmtDur(ms) {
+				var s = Math.floor(ms / 1000);
+				if (s < 60) { return s + ' s'; }
+				var m = Math.floor(s / 60);
+				if (m < 60) { return m + ' min'; }
+				return Math.floor(m / 60) + ' h ' + (m % 60) + ' min';
+			}
+
+			function fmtEta(t) {
+				if (t < 0) { return 'calculando…'; }
+				return 'aprox. ' + fmtDur(t * 1000);
+			}
+
+			function actualizarEta(clave, conteo, restante) {
+				var ahora = Date.now();
+				if (ultimaMuestra && ultimaMuestra.clave === clave && ahora - ultimaMuestra.tiempo >= 900) {
+					var dt = (ahora - ultimaMuestra.tiempo) / 1000;
+					var tasa = (conteo - ultimaMuestra.conteo) / dt;
+					if (tasa > 0) {
+						var eta = restante / tasa;
+						etaSuavizado = etaSuavizado < 0 ? eta : etaSuavizado * 0.7 + eta * 0.3;
+					}
+				}
+				ultimaMuestra = { clave: clave, conteo: conteo, tiempo: ahora };
+				return etaSuavizado;
+			}
+
+			function pintar(d) {
+				var transcurrido = d.inicioEpoch > 0 ? ' · transcurrido ' + fmtDur(Date.now() - d.inicioEpoch) : '';
+				if (d.fase === 'CONTANDO') {
+					estado.textContent = 'Contando archivos…';
+					texto.textContent = 'Buscando archivos en la carpeta…';
+				} else if (d.fase === 'RECOLECTANDO' && d.total > 0) {
+					estado.textContent = 'Recolectando archivos…';
+					var pct = Math.min(100, Math.round(d.procesados * 100 / d.total));
+					relleno.style.width = pct + '%';
+					var eta = actualizarEta('r', d.procesados, d.total - d.procesados);
+					texto.textContent = d.procesados + ' / ' + d.total + ' archivos (' + pct + '%) · quedan ' + fmtEta(eta) + transcurrido;
+				} else if (d.fase === 'VERIFICANDO') {
+					estado.textContent = 'Verificando contenido…';
+					if (d.totalVerificar > 0) {
+						var pctV = Math.min(100, Math.round(d.procesadosVerificar * 100 / d.totalVerificar));
+						relleno.style.width = pctV + '%';
+						var etaV = actualizarEta('v', d.procesadosVerificar, d.totalVerificar - d.procesadosVerificar);
+						texto.textContent = 'Comparando contenido (hash) ' + d.procesadosVerificar + ' / ' + d.totalVerificar + ' (' + pctV + '%) · quedan ' + fmtEta(etaV) + transcurrido;
+					} else {
+						texto.textContent = 'Comparando contenido (hash)…';
+					}
+				}
+			}
+
 			var intervalo = setInterval(function () {
 				fetch('/api/escaneo/' + id)
 					.then(function (r) { return r.json(); })
@@ -46,15 +100,7 @@
 							estado.textContent = 'Ocurrió un error durante el escaneo.';
 							texto.textContent = 'Revisá que la carpeta exista y tengas permisos.';
 						} else {
-							estado.textContent = 'Escaneando…';
-							if (d.total > 0) {
-								var pct = Math.round(d.procesados * 100 / d.total);
-								if (pct > 100) { pct = 100; }
-								relleno.style.width = pct + '%';
-								texto.textContent = d.procesados + ' / ' + d.total + ' archivos procesados (' + pct + '%)';
-							} else {
-								texto.textContent = 'Buscando archivos…';
-							}
+							pintar(d);
 						}
 					})
 					.catch(function () {

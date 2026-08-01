@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import com.lucero.limpiamedia.config.FileExtensionsConfig;
 import com.lucero.limpiamedia.model.CarpetaExcluida;
 import com.lucero.limpiamedia.model.DuplicateGroup;
+import com.lucero.limpiamedia.model.ScanPhase;
 import com.lucero.limpiamedia.model.ScanSession;
 import com.lucero.limpiamedia.model.ScanStatus;
 import com.lucero.limpiamedia.model.ScanType;
@@ -83,12 +84,16 @@ public class ScanService {
 		try {
 			List<Path> excluidas = cargarExcluidas(raiz);
 
+			sesion.setFase(ScanPhase.CONTANDO);
 			long total = contarArchivos(tipo, raiz, excluidas);
 			sesion.setTotalArchivos(total);
+			sesion.setFase(ScanPhase.RECOLECTANDO);
 			sesion = sessionRepo.save(sesion);
 
 			List<InfoArchivo> archivos = new ArrayList<>();
 			recolectarArchivos(tipo, raiz, archivos, sesion, excluidas);
+			sesion.setFase(ScanPhase.VERIFICANDO);
+			sesion = sessionRepo.save(sesion);
 
 			List<DuplicateGroup> grupos = detectarDuplicados(archivos, sesion);
 
@@ -97,6 +102,7 @@ public class ScanService {
 					.filter(ScannedFile::isEsDuplicado)
 					.count();
 			sesion.setProcesados(sesion.getTotalArchivos());
+			sesion.setProcesadosVerificar(sesion.getTotalVerificar());
 			sesion.setDuplicados(duplicados);
 			sesion.setEstado(ScanStatus.COMPLETADO);
 			sesion.setFin(LocalDateTime.now());
@@ -206,6 +212,14 @@ public class ScanService {
 		}
 
 		List<DuplicateGroup> grupos = new ArrayList<>();
+		long totalVerificar = porNombreTamanio.values().stream()
+				.filter(c -> c.size() >= 2)
+				.mapToLong(List::size)
+				.sum();
+		sesion.setTotalVerificar(totalVerificar);
+		sesion.setProcesadosVerificar(0L);
+		sessionRepo.save(sesion);
+
 		int hasheados = 0;
 
 		for (List<InfoArchivo> candidatos : porNombreTamanio.values()) {
@@ -221,7 +235,7 @@ public class ScanService {
 				}
 				hashPorRuta.put(a.ruta(), hash);
 				porHash.computeIfAbsent(hash, k -> new ArrayList<>()).add(a);
-				sesion.setProcesados(sesion.getProcesados() + 1);
+				sesion.setProcesadosVerificar(sesion.getProcesadosVerificar() + 1);
 				if (++hasheados % GUARDAR_HASH_CADA == 0) {
 					sessionRepo.save(sesion);
 				}

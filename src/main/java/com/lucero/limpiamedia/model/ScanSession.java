@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -28,12 +29,18 @@ public class ScanSession {
 	@Enumerated(EnumType.STRING)
 	private ScanStatus estado = ScanStatus.EN_PROGRESO;
 
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = true)
+	private ScanPhase fase = ScanPhase.CONTANDO;
+
 	private LocalDateTime inicio;
 	private LocalDateTime fin;
 
 	private long totalArchivos;
 	private long procesados;
 	private long duplicados;
+	private Long totalVerificar;
+	private Long procesadosVerificar;
 
 	private String carpetaDestino;
 
@@ -70,6 +77,14 @@ public class ScanSession {
 
 	public void setEstado(ScanStatus estado) {
 		this.estado = estado;
+	}
+
+	public ScanPhase getFase() {
+		return fase;
+	}
+
+	public void setFase(ScanPhase fase) {
+		this.fase = fase;
 	}
 
 	public LocalDateTime getInicio() {
@@ -110,6 +125,22 @@ public class ScanSession {
 
 	public void setDuplicados(long duplicados) {
 		this.duplicados = duplicados;
+	}
+
+	public Long getTotalVerificar() {
+		return totalVerificar;
+	}
+
+	public void setTotalVerificar(Long totalVerificar) {
+		this.totalVerificar = totalVerificar;
+	}
+
+	public Long getProcesadosVerificar() {
+		return procesadosVerificar;
+	}
+
+	public void setProcesadosVerificar(Long procesadosVerificar) {
+		this.procesadosVerificar = procesadosVerificar;
 	}
 
 	public String getCarpetaDestino() {

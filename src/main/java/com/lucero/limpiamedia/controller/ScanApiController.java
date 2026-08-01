@@ -1,5 +1,6 @@
 package com.lucero.limpiamedia.controller;
 
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -27,9 +28,14 @@ public class ScanApiController {
 		Map<String, Object> respuesta = new LinkedHashMap<>();
 		respuesta.put("id", s.getId());
 		respuesta.put("estado", s.getEstado().name());
+		respuesta.put("fase", s.getFase() == null ? "" : s.getFase().name());
 		respuesta.put("total", s.getTotalArchivos());
 		respuesta.put("procesados", s.getProcesados());
 		respuesta.put("duplicados", s.getDuplicados());
+		respuesta.put("totalVerificar", s.getTotalVerificar() == null ? 0 : s.getTotalVerificar());
+		respuesta.put("procesadosVerificar", s.getProcesadosVerificar() == null ? 0 : s.getProcesadosVerificar());
+		respuesta.put("inicioEpoch",
+				s.getInicio() == null ? 0 : s.getInicio().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
 		return respuesta;
 	}
 }

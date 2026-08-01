@@ -183,3 +183,17 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
   - Rendimiento: guardado en BD cada 500 archivos (antes 100) y cada 100 hashes (antes 25).
 - **Pruebas** (instancia aislada en :8081 con base temporal): guard rechaza con flash ✓, resultado de sesión en curso redirige a progreso ✓, al reiniciar la sesión huérfana pasa a ERROR ✓, detección end-to-end sigue OK ✓. `mvnw clean package` OK y `.jar` regenerado.
 - **Aclaración**: no hay límite de capacidad; el escaneo recorre todo el disco. Escanear `D:\` completo lleva varios minutos (caminata + hash de cada candidato), es normal. Faltan por mejorar: tiempo del escaneo en discos grandes y límites de memoria con millones de archivos.
+
+## 2026-08-01 — Progreso con fases y tiempo restante estimado (ETA)
+- **Bug corregido**: la barra llegaba a 100% antes de terminar porque durante el hash `procesados` seguía creciendo por encima de `total` (los archivos a verificar son más que los totales: 7.879 fotos → se hasheaban miles). Ahora:
+  - La sesión tiene **fases** (`ScanPhase`): `CONTANDO` → `RECOLECTANDO` → `VERIFICANDO`.
+  - El hash usa contadores propios (`totalVerificar` / `procesadosVerificar`): se calcula de antemano cuántos candidatos hay y la barra de verificación se basa en eso. Nunca más pasa del 100%.
+- **Nuevo**: la página de progreso muestra por fase:
+  - `Contando archivos…` (sin barra, hasta conocer el total).
+  - Recolectando: `X / total (pct%) · quedan aprox. N min · transcurrido M`.
+  - Verificando: `Comparando contenido (hash) X / Y · quedan aprox. …`.
+  - El ETA se calcula en el navegador a partir de la velocidad de los últimos polls (suavizado), y el tiempo transcurrido desde el inicio real de la sesión (viene en la API como `inicioEpoch`).
+- **API `/api/escaneo/{id}`** ahora devuelve además: `fase`, `totalVerificar`, `procesadosVerificar`, `inicioEpoch`.
+- **Infraestructura**: los tests (`LimpiaMediaApplicationTests`) usan una **BD H2 en memoria** (nueva `src/test/resources/application.properties`) y ya no tocan la BD real del usuario (antes cada build marcaba como ERROR sus sesiones en curso por el listener de limpieza).
+- **Migración BD real**: las columnas nuevas (`fase`, `total_verificar`, `procesados_verificar`) se crean **nullable** para que `ddl-auto=update` funcione sobre la BD existente con filas (un `long` primitivo genera `NOT NULL` y H2 rechaza el `alter` con filas previas). Al reiniciar la app con el código nuevo, Hibernate agrega las columnas solo.
+- **Pruebas** (instancia aislada :8081): con 121 archivos → `total=121, totalVerificar=80, procesadosVerificar=80, duplicados=40` exacto; con 2.250 archivos → `totalVerificar=1500, duplicados=750` ✓. `mvnw clean package` verde (6 tests) y `.jar` regenerado.
