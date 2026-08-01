@@ -9,9 +9,11 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -189,8 +191,18 @@ public class ScanService {
 	}
 
 	private List<DuplicateGroup> detectarDuplicados(List<InfoArchivo> archivos, ScanSession sesion) {
-		Map<String, List<InfoArchivo>> porNombreTamanio = archivos.stream()
-				.collect(Collectors.groupingBy(a -> a.nombre() + "|" + a.tamanio()));
+		Set<String> nombresPresentes = archivos.stream().map(InfoArchivo::nombre).collect(Collectors.toSet());
+		Map<InfoArchivo, String> normalizados = new HashMap<>();
+		for (InfoArchivo a : archivos) {
+			normalizados.put(a, normalizarNombre(a.nombre(), nombresPresentes));
+		}
+
+		Map<String, List<InfoArchivo>> porNombreTamanio = new HashMap<>();
+		for (InfoArchivo a : archivos) {
+			porNombreTamanio
+					.computeIfAbsent(normalizados.get(a) + "|" + a.tamanio(), k -> new ArrayList<>())
+					.add(a);
+		}
 
 		List<DuplicateGroup> grupos = new ArrayList<>();
 		int hasheados = 0;
@@ -218,10 +230,13 @@ public class ScanService {
 				if (iguales.size() < 2) {
 					continue;
 				}
+				iguales.sort(Comparator
+						.comparingInt((InfoArchivo a) -> a.nombre().equals(normalizados.get(a)) ? 0 : 1)
+						.thenComparing(a -> a.nombre()));
 				InfoArchivo primero = iguales.get(0);
 				DuplicateGroup grupo = new DuplicateGroup();
 				grupo.setSesion(sesion);
-				grupo.setClave(primero.nombre() + "|" + primero.tamanio());
+				grupo.setClave(normalizados.get(primero) + "|" + primero.tamanio());
 				grupo.setHash(hashPorRuta.get(primero.ruta()));
 				grupo.setTamanio(primero.tamanio());
 				for (int i = 0; i < iguales.size(); i++) {
@@ -246,5 +261,37 @@ public class ScanService {
 	}
 
 	private record InfoArchivo(String nombre, String ruta, String carpetaPadre, String extension, long tamanio) {
+	}
+
+	/**
+	 * Normaliza el nombre para agrupar copias de Windows como duplicados.
+	 * Los marcadores de texto inequívocos ("copia de ", " - copia", " (2)")
+	 * se quitan siempre; el sufijo numérico "_1"/"_2" solo se quita si el
+	 * nombre base resultante existe entre los archivos presentes (el copiado
+	 * convive con el original), así no se tocan timestamps como
+	 * "VID_20260105_161551289.mp4". El hash SHA-256 confirma el contenido.
+	 */
+	static String normalizarNombre(String nombre, Set<String> nombresPresentes) {
+		int dot = nombre.lastIndexOf('.');
+		String base = dot < 0 ? nombre : nombre.substring(0, dot);
+		String ext = dot < 0 ? "" : nombre.substring(dot);
+
+		String s = base;
+		String anterior;
+		do {
+			anterior = s;
+			s = s.replaceFirst("(?i)^(copia de |copy of |copia_|copy_)", "");
+			s = s.replaceFirst("(?i)( - (copia|copy))( \\(\\d+\\))?$", "");
+			s = s.replaceFirst("(?i) \\(\\d+\\)$", "");
+		} while (!s.equals(anterior));
+
+		while (true) {
+			String sinNumero = s.replaceFirst("_\\d+$", "");
+			if (sinNumero.equals(s) || !nombresPresentes.contains(sinNumero + ext)) {
+				break;
+			}
+			s = sinNumero;
+		}
+		return s + ext;
 	}
 }

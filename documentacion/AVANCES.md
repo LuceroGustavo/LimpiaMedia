@@ -155,3 +155,17 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
 - El botón llama a `GET /escaneo/{id}/abrir-carpeta`, que lanza `explorer.exe` con la ruta destino de esa sesión (solo permite abrir carpetas guardadas en la base, no rutas arbitrarias) y vuelve al resultado con un flash.
 - Como `resultado.html` es genérico, el botón funciona para **FOTOS, VIDEOS, DOCUMENTOS y SONIDO**.
 - **Pruebas**: después de mover 1 duplicado, el botón aparece; al clickear, Explorer abrió la carpeta (flash "Se abrió la carpeta destino en el Explorador" ✓, procesos `explorer.exe` nuevos ✓). `mvnw clean package` OK y `.jar` regenerado.
+
+## 2026-08-01 — Detección mejorada: copias de Windows con nombre distinto
+- Antes solo se agrupaba por **nombre + tamaño** exactos. Ahora también se detectan las **copias de Windows** cuyo nombre difiere solo por el marcador de copiado:
+  - Sufijo numérico: `VID_20260105_161551289_1.mp4`, `_2`, `_3`, … (ejemplo de teléfono/DJI).
+  - Prefijos: `copia de foto.jpg`, `Copy of foto.jpg`, `copia_foto.jpg`.
+  - Sufijos de Windows: `foto - copia.jpg`, `foto - Copy.jpg`, `foto - Copy (2).jpg`, `foto (2).jpg`.
+- Implementación en `ScanService.normalizarNombre(nombre, nombresPresentes)`:
+  - Los marcadores de texto inequívocos se quitan siempre.
+  - El sufijo numérico `_N` solo se quita **si el nombre base existe entre los archivos escaneados** (el copiado convive con el original). Así **no se rompen timestamps** como `VID_20260105_161551289.mp4` ni nombres reales como `reporte_2025.pdf`.
+  - El **hash SHA-256 sigue confirmando el contenido**: dos nombres iguales-norm con contenido distinto quedan fuera (sin falsos positivos).
+- En cada grupo, el **ORIGINAL** es el archivo con nombre base (sin marcador), y las copias quedan como DUPLICADO y se **proponen para mover** (todo automático en la UI existente).
+- Tests unitarios nuevos: `src/test/.../ScanServiceNombreTest.java` (7 casos). `mvnw test` OK.
+- **Prueba end-to-end** (VIDEOS): `VID_...mp4` + `VID_..._1.mp4` + `VID_..._2.mp4` + un `VID_..._1.mp4` con contenido distinto (trampa) → `duplicados=2`, la trampa descartada por hash, mover mueve `_1` y `_2` y deja el original. ✓ (FOTOS): `copia de foto.jpg` + `foto.jpg` → 1 duplicado. ✓
+- `.jar` regenerado con `mvnw clean package`.

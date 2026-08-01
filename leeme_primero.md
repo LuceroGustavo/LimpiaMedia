@@ -73,8 +73,8 @@ LimpiaMedia/
 3. Escaneo **asíncrono** con barra de progreso (no congela la pantalla en discos grandes).
    - `POST /scan/{tipo}/iniciar` → `/escaneo/{id}` (progreso, polling a `/api/escaneo/{id}`).
 4. Detección de duplicados:
-   - **1er filtro**: agrupar por `nombre + tamaño` (rápido).
-   - **Confirmación**: a los candidatos se les calcula hash **SHA-256** → solo duplicados reales.
+   - **1er filtro**: agrupar por `nombre + tamaño` (rápido), con **normalización de nombres** que reconoce copias de Windows (`_1`, `copia de `, ` - Copy`, ` (2)`).
+   - **Confirmación**: a los candidatos se les calcula hash **SHA-256** → solo duplicados reales (sin falsos positivos).
 5. Resultado en `/escaneo/{id}/resultado`: resumen + grupos con etiquetas ORIGINAL/DUPLICADO y rutas completas (incluye subcarpetas).
 6. Panel **"Mover duplicados"**: campo precargado con sugerencia `Desktop\LimpiaMedia_Duplicados_{TIPO}` (editable, con modal "Cambiar carpeta").
    - Nunca pisa archivos: si existe el nombre en destino, renombra con sufijo `_1`, `_2`.
