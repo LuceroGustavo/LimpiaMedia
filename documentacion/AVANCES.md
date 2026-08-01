@@ -143,3 +143,9 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
 - **Smoke test**: el `.jar` corre standalone con `java -jar` (se probó en el puerto 8099 → 200). ✓
 - Se limpiaron `data/` y `registro/` otra vez para dejar la app con historial vacío.
 - Los 4 tipos (FOTOS, VIDEOS, DOCUMENTOS, SONIDO) quedan cubiertos por pruebas end-to-end.
+
+## 2026-08-01 — Verificados los triplicados (3+ copias)
+- Confirmado que la detección maneja **3 o más copias**: grupo de 3 archivos idénticos → 1 ORIGINAL + 2 DUPLICADO (`i > 0` en `ScanService.detectarDuplicados`).
+- Prueba end-to-end (carpeta con 3 fotos idénticas + 1 única): `total=4`, `duplicados=2`. ✓
+- Mover: los 2 duplicados van a la carpeta destino y el segundo se renombra `foto_1.jpg` (no pisa al primero). ✓
+- Restaurar: ambos vuelven a sus rutas originales (`b\foto.jpg`, `c\foto.jpg`). ✓
