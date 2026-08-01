@@ -48,7 +48,8 @@ Software 100% local: Spring Boot + Thymeleaf + H2, corre en el navegador sin ser
 - [x] Historial de movimientos (`/movimientos`) con restauración por archivo.
 - [x] Journal de cambios en `registro/movimientos.jsonl`.
 - [x] Probar mover + restaurar + re-escaneo end-to-end con FOTOS.
-- [ ] Probar la Fase 5 con VIDEOS, DOCUMENTOS y SONIDO.
+- [x] Probar la Fase 5 con VIDEOS, DOCUMENTOS y SONIDO (ciclo completo).
+- [x] Generar el `.jar` de distribución (`mvnw clean package`) y smoke test con `java -jar`.
 
 ### Fase 6 — Pulido
 - [ ] Pruebas de punta a punta con archivos reales.

@@ -30,6 +30,12 @@ mvn spring-boot:run
 # abrir http://localhost:8080
 ```
 
+Para correr sin Maven (distribución):
+
+```bash
+java -jar target/limpiamedia-0.0.1-SNAPSHOT.jar
+```
+
 Consola H2 (solo dev): `http://localhost:8080/h2-console`
 URL JDBC: `jdbc:h2:file:./data/limpiamedia` · user: `sa` · password: (vacía, ver config)
 
@@ -98,7 +104,7 @@ LimpiaMedia/
 > automática de escaneos futuros y **historial con restauración** (`/movimientos`).
 > Journal de cambios en `registro/movimientos.jsonl`. Probado end-to-end con fotos
 > (mover + restaurar + re-escaneo sin re-detección).
-> **Siguiente:** probar VIDEOS/DOCUMENTOS/SONIDO y generar el `.jar`. Ver `documentacion/AVANCES.md`.
+> **Siguiente:** pulir la UI y armar la distribución final (`.jar` ya generado en `target/`). Ver `documentacion/AVANCES.md`.
 
 ## Reglas del proyecto
 

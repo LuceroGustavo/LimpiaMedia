@@ -132,3 +132,14 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
 ## 2026-08-01 — Limpieza de datos de prueba
 - Se borraron `data/` (H2) y `registro/` (journal) para que la app arranque con el historial vacío.
 - El registro "RESTAURADO" que se veía en `/movimientos` era residuo del test end-to-end de la Fase 5 (se movieron y restauraron archivos de prueba), no una acción del usuario.
+
+## 2026-08-01 — Fase 5 probada con VIDEOS, DOCUMENTOS y SONIDO + `.jar` de distribución
+- Se probó el ciclo completo (detectar → mover → restaurar) con los 3 tipos restantes:
+  - **VIDEOS** (`mp4`, `avi`): 3 archivos → 1 duplicado → movido → restaurado. ✓
+  - **DOCUMENTOS** (`pdf`, `xlsx`): 3 archivos → 1 duplicado → movido → restaurado. ✓
+  - **SONIDO** (`mp3`, `wav`): 3 archivos → 1 duplicado → movido → restaurado. ✓
+- El journal `registro/movimientos.jsonl` registró cada evento `mover`/`restaurar` correctamente (con escape de `\`).
+- Se generó el `.jar` ejecutable: `target/limpiamedia-0.0.1-SNAPSHOT.jar` (52 MB) con `mvnw clean package` (tests incluidos, OK).
+- **Smoke test**: el `.jar` corre standalone con `java -jar` (se probó en el puerto 8099 → 200). ✓
+- Se limpiaron `data/` y `registro/` otra vez para dejar la app con historial vacío.
+- Los 4 tipos (FOTOS, VIDEOS, DOCUMENTOS, SONIDO) quedan cubiertos por pruebas end-to-end.
