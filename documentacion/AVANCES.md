@@ -59,3 +59,11 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
   - `/scan/VIDEOS` → 200 · `POST /scan/VIDEOS/iniciar` → 200.
   - Carpeta sin permisos → lista vacía sin errores.
 - Pendiente: Fase 4 (escaneo asíncrono con progreso + detección de duplicados).
+
+## 2026-08-01 — Ajuste UX: selección de carpeta con botón + modal
+- Cambio según feedback del usuario: el navegador a la vista ya no muestra todas las carpetas del disco de una.
+- Ahora la pantalla de escaneo tiene un botón **"Seleccionar carpeta"** que abre un **modal** con el buscador (unidades, campo de ruta, breadcrumb y grilla de subcarpetas).
+- El modal tiene botón **"Seleccionar esta carpeta"** y **"Cancelar"**.
+- Al seleccionar: el modal se cierra y queda visible **solo la carpeta elegida** (resaltada), con el botón "Escanear esta carpeta" habilitado.
+- Extras: cierre con `Escape`, clic fuera del modal y `Enter` en el campo de ruta.
+- **Pruebas**: `mvnw compile` OK. `/scan/FOTOS` → 200 con botón y modal. `POST /scan/FOTOS/iniciar` → 200. JS validado con `node --check`.

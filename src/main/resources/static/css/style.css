@@ -356,3 +356,107 @@ body {
 	margin: .6rem 0 1rem;
 	word-break: break-all;
 }
+
+.selector-carpeta {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: .8rem;
+}
+
+.carpeta-seleccionada {
+	width: 100%;
+}
+
+.carpeta-seleccionada .ruta-elegida {
+	margin: 0;
+	display: block;
+}
+
+.sin-seleccion {
+	color: #9ca3af;
+	font-size: .95rem;
+}
+
+.form-escanear {
+	margin-top: 1.4rem;
+}
+
+.btn-primario:disabled {
+	opacity: .5;
+	cursor: not-allowed;
+}
+
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, .5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 50;
+	padding: 1rem;
+}
+
+.modal {
+	background: #fff;
+	border-radius: 14px;
+	width: min(720px, 94vw);
+	max-height: 86vh;
+	display: flex;
+	flex-direction: column;
+	padding: 1.4rem;
+	box-shadow: 0 20px 50px rgba(0, 0, 0, .3);
+}
+
+.modal-cabecera {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+.modal-cabecera h3 {
+	margin: 0;
+}
+
+.modal-cerrar {
+	background: none;
+	border: none;
+	font-size: 1.7rem;
+	line-height: 1;
+	cursor: pointer;
+	color: #6b7280;
+}
+
+.modal-cerrar:hover {
+	color: #111827;
+}
+
+.modal .grid-carpetas {
+	flex: 1;
+	min-height: 180px;
+}
+
+.modal-pie {
+	display: flex;
+	align-items: center;
+	gap: .6rem;
+	justify-content: flex-end;
+	margin-top: 1rem;
+	flex-wrap: wrap;
+}
+
+.ruta-actual-texto {
+	flex: 1;
+	font-weight: 600;
+	color: #4b5563;
+	word-break: break-all;
+	font-size: .9rem;
+	background: #f9fafb;
+	padding: .5rem .7rem;
+	border-radius: 6px;
+}

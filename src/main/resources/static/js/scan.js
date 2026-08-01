@@ -1,7 +1,48 @@
 document.addEventListener('DOMContentLoaded', function () {
 	cargarUnidades();
 	ir('C:\\');
+
+	document.getElementById('modal').addEventListener('click', function (e) {
+		if (e.target === this) {
+			cerrarModal();
+		}
+	});
+
+	document.getElementById('rutaModal').addEventListener('keydown', function (e) {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			ir(this.value);
+		}
+	});
+
+	document.addEventListener('keydown', function (e) {
+		if (e.key === 'Escape') {
+			cerrarModal();
+		}
+	});
 });
+
+function abrirModal() {
+	document.getElementById('modal').style.display = 'flex';
+	ir(document.getElementById('rutaModal').value);
+}
+
+function cerrarModal() {
+	document.getElementById('modal').style.display = 'none';
+}
+
+function seleccionarActual() {
+	var ruta = document.getElementById('rutaModal').value;
+	document.getElementById('ruta').value = ruta;
+	var cont = document.getElementById('carpetaSeleccionada');
+	cont.innerHTML = '';
+	var span = document.createElement('span');
+	span.className = 'ruta-elegida';
+	span.textContent = ruta;
+	cont.appendChild(span);
+	document.getElementById('btnEscanear').disabled = false;
+	cerrarModal();
+}
 
 function cargarUnidades() {
 	var cont = document.getElementById('unidades');
@@ -27,7 +68,8 @@ function ir(ruta) {
 	if (!ruta) {
 		return;
 	}
-	document.getElementById('ruta').value = ruta;
+	document.getElementById('rutaModal').value = ruta;
+	document.getElementById('rutaActual').textContent = ruta;
 	cargarBreadcrumb(ruta);
 	cargarCarpetas(ruta);
 }

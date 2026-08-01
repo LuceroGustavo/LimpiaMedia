@@ -14,10 +14,32 @@
 
 	<main class="contenedor">
 		<section class="panel">
-			<h2>Paso 1: elegí la carpeta o disco</h2>
+			<h2>Elegí la carpeta a escanear</h2>
 			<p class="ayuda">
-				Hacé clic en una unidad, navegá por las carpetas o pegá la ruta directa.
+				Hacé clic en <strong>Seleccionar carpeta</strong> y navegá hasta la carpeta o
+				disco donde quieras buscar duplicados.
 			</p>
+
+			<div class="selector-carpeta">
+				<button type="button" class="btn-primario" id="btnAbrir" onclick="abrirModal()">Seleccionar carpeta</button>
+				<div class="carpeta-seleccionada" id="carpetaSeleccionada">
+					<span class="sin-seleccion">Ninguna carpeta seleccionada todavía.</span>
+				</div>
+			</div>
+
+			<form th:action="@{/scan/{tipo}/iniciar(tipo=${tipo})}" method="post" class="form-escanear">
+				<input type="hidden" name="ruta" id="ruta" value="">
+				<button type="submit" class="btn-primario" id="btnEscanear" disabled>Escanear esta carpeta</button>
+			</form>
+		</section>
+	</main>
+
+	<div class="modal-overlay" id="modal" style="display:none">
+		<div class="modal">
+			<div class="modal-cabecera">
+				<h3>Seleccionar carpeta</h3>
+				<button type="button" class="modal-cerrar" onclick="cerrarModal()">&times;</button>
+			</div>
 
 			<div class="unidades">
 				<h3>Unidades</h3>
@@ -26,27 +48,23 @@
 				</div>
 			</div>
 
-			<div class="ruta-actual">
-				<h3>Ruta seleccionada</h3>
-				<form th:action="@{/scan/{tipo}/iniciar(tipo=${tipo})}" method="post" id="form-escanear">
-					<div class="campo-ruta">
-						<input type="text" id="ruta" name="ruta" placeholder="C:\Mis Fotos"
-							   value="C:\" autocomplete="off">
-						<button type="button" class="btn-secundario" onclick="ir(document.getElementById('ruta').value)">Ir</button>
-						<button type="submit" class="btn-primario">Escanear esta carpeta</button>
-					</div>
-				</form>
+			<div class="campo-ruta">
+				<input type="text" id="rutaModal" placeholder="C:\Mis Fotos" value="C:\" autocomplete="off">
+				<button type="button" class="btn-secundario" onclick="ir(document.getElementById('rutaModal').value)">Ir</button>
 			</div>
 
-			<div class="navegacion">
-				<h3>Contenido</h3>
-				<div id="breadcrumb" class="breadcrumb"></div>
-				<div id="carpetas" class="grid-carpetas">
-					<p class="cargando">Seleccioná una unidad para ver sus carpetas.</p>
-				</div>
+			<div id="breadcrumb" class="breadcrumb"></div>
+			<div id="carpetas" class="grid-carpetas">
+				<p class="cargando">Cargando…</p>
 			</div>
-		</section>
-	</main>
+
+			<div class="modal-pie">
+				<span id="rutaActual" class="ruta-actual-texto">C:\</span>
+				<button type="button" class="btn-secundario" onclick="cerrarModal()">Cancelar</button>
+				<button type="button" class="btn-primario" onclick="seleccionarActual()">Seleccionar esta carpeta</button>
+			</div>
+		</div>
+	</div>
 
 	<footer class="pie">
 		<p>LimpiaMedia nunca elimina archivos: solo detecta y, si querés, los mueve.</p>
