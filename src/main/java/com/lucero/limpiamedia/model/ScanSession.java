@@ -35,6 +35,8 @@ public class ScanSession {
 	private long procesados;
 	private long duplicados;
 
+	private String carpetaDestino;
+
 	@OneToMany(mappedBy = "sesion", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ScannedFile> archivos = new ArrayList<>();
 
@@ -108,6 +110,14 @@ public class ScanSession {
 
 	public void setDuplicados(long duplicados) {
 		this.duplicados = duplicados;
+	}
+
+	public String getCarpetaDestino() {
+		return carpetaDestino;
+	}
+
+	public void setCarpetaDestino(String carpetaDestino) {
+		this.carpetaDestino = carpetaDestino;
 	}
 
 	public List<ScannedFile> getArchivos() {

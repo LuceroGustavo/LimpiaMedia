@@ -39,12 +39,16 @@ Software 100% local: Spring Boot + Thymeleaf + H2, corre en el navegador sin ser
 - [x] Pantalla de progreso (polling) y resultado con grupos ORIGINAL/DUPLICADO.
 - [x] Probar con FOTOS end-to-end (incluye caso "trampa" descartado por hash).
 - [ ] Probar con VIDEOS, DOCUMENTOS y SONIDO.
-- [ ] Mover duplicados a carpeta destino (Fase 5).
 
-### Fase 5 — Movimiento seguro
-- [ ] `MoveService`: mover duplicados a carpeta destino.
-- [ ] Renombrado `_1`, `_2` para no pisar archivos.
-- [ ] Validación de destino fuera de la carpeta escaneada.
+### Fase 5 — Movimiento seguro ✅
+- [x] `MoveService`: mover duplicados a carpeta destino.
+- [x] Sugerencia de destino `Desktop\LimpiaMedia_Duplicados_{TIPO}` editable por el usuario.
+- [x] Renombrado `_1`, `_2` para no pisar archivos.
+- [x] Exclusión automática de la carpeta destino en escaneos futuros (global).
+- [x] Historial de movimientos (`/movimientos`) con restauración por archivo.
+- [x] Journal de cambios en `registro/movimientos.jsonl`.
+- [x] Probar mover + restaurar + re-escaneo end-to-end con FOTOS.
+- [ ] Probar la Fase 5 con VIDEOS, DOCUMENTOS y SONIDO.
 
 ### Fase 6 — Pulido
 - [ ] Pruebas de punta a punta con archivos reales.

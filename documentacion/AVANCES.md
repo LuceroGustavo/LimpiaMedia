@@ -99,3 +99,32 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
   - Resultado muestra ORIGINAL/DUPLICADO y rutas. ✓
   - `mvnw test` OK.
 - Pendiente: mover duplicados a carpeta (Fase 5) y probar con videos/documentos/sonido.
+
+## 2026-08-01 — Fase 5 completada: mover duplicados + exclusión + restauración
+- El motor sigue siendo genérico; la Fase 5 se probó con FOTOS.
+- Entidades nuevas:
+  - `MoveRecord`: registro de cada archivo movido (sesión, archivo, tipo, ruta original, ruta nueva, fecha, restaurado).
+  - `CarpetaExcluida`: carpeta destino de duplicados que debe saltearse en futuros escaneos.
+  - Campos nuevos: `ScanSession.carpetaDestino`, `ScannedFile.movido`.
+- Repositorios: `MoveRecordRepository`, `CarpetaExcluidaRepository`, `ScannedFileRepository.findBySesionIdAndEsDuplicadoTrue`.
+- `service/MoveService`:
+  - `moverDuplicados(sesionId, carpetaDestino)`: crea la carpeta destino, registra la exclusión, mueve los duplicados (si el nombre ya existe usa `_1`, `_2`…), marca `movido=true`, guarda `MoveRecord` y escribe en el journal.
+  - `restaurar(moveId)`: mueve el archivo de vuelta a su ubicación original (si el original quedó ocupado, crea `_1`), marca `restaurado=true` y lo registra en el journal.
+  - **Journal de cambios**: archivo `registro/movimientos.jsonl` (una línea JSON por evento `mover`/`restaurar`, con escape manual de `\` y `"`, sin dependencia de Jackson).
+- `service/ScanService`: `cargarExcluidas` + `estaExcluida` con `SKIP_SUBTREE`. La exclusión es **global** (no depende de la raíz escaneada), así no se re-detectan los movidos aunque el escaneo arranque en otra raíz.
+- `ScanController`: `POST /escaneo/{id}/mover` (con flash `movidos`/`error`) y sugerencia de destino `Desktop\LimpiaMedia_Duplicados_{TIPO}`.
+- `MoveController`: `GET /movimientos` (historial) y `POST /movimientos/{id}/restaurar`.
+- Frontend:
+  - `static/js/carpetas.js`: buscador de carpetas (modal) extraído y compartido entre escaneo y resultado (`buscarCarpetaConfig.campoDestino` / `alSeleccionar`).
+  - `resultado.html`: panel "Mover duplicados" con campo precargado con la sugerencia, botón "Cambiar carpeta" que abre el modal, mensaje flash al mover y panel "Duplicados ya movidos" con link al historial.
+  - `movimientos.html`: tabla con fecha, tipo, original → nuevo, estado (MOVIDO/RESTAURADO) y botón Restaurar por fila.
+  - `scan.js`/`resultado.js`: solo configuran el modal compartido.
+  - `.gitignore`: agregada la carpeta `registro/`.
+- **Pruebas end-to-end**:
+  - Raíz con 2 pares duplicados + 1 único → `duplicados=2`. ✓
+  - Mover → los 2 duplicados aparecen en `destino\LimpiaMedia_Duplicados_FOTOS`, los originales quedan. ✓
+  - Journal con 2 líneas `mover` escapadas correctamente. ✓
+  - Re-escaneo de una raíz **que contiene** la carpeta destino → `duplicados=0` (exclusión global). ✓
+  - Restaurar → el archivo vuelve a su carpeta original y el historial marca RESTAURADO. ✓
+  - `mvnw compile` OK.
+- Pendiente: probar Fase 5 con VIDEOS/DOCUMENTOS/SONIDO y generar el `.jar` de distribución.

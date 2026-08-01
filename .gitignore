@@ -34,3 +34,6 @@ build/
 
 ### H2 local ###
 data/
+
+### Registro de movimientos local ###
+registro/

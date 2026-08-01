@@ -1,5 +1,8 @@
 package com.lucero.limpiamedia.controller;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -16,6 +19,7 @@ import com.lucero.limpiamedia.model.ScanType;
 import com.lucero.limpiamedia.model.ScannedFile;
 import com.lucero.limpiamedia.repository.DuplicateGroupRepository;
 import com.lucero.limpiamedia.repository.ScanSessionRepository;
+import com.lucero.limpiamedia.service.MoveService;
 import com.lucero.limpiamedia.service.ScanService;
 
 @Controller
@@ -24,12 +28,14 @@ public class ScanController {
 	private final ScanService scanService;
 	private final ScanSessionRepository sessionRepo;
 	private final DuplicateGroupRepository groupRepo;
+	private final MoveService moveService;
 
 	public ScanController(ScanService scanService, ScanSessionRepository sessionRepo,
-			DuplicateGroupRepository groupRepo) {
+			DuplicateGroupRepository groupRepo, MoveService moveService) {
 		this.scanService = scanService;
 		this.sessionRepo = sessionRepo;
 		this.groupRepo = groupRepo;
+		this.moveService = moveService;
 	}
 
 	@GetMapping("/scan/{tipo}")
@@ -71,10 +77,30 @@ public class ScanController {
 			}
 		}
 
+		String sugerencia = sugerirDestino(sesion);
+
 		model.addAttribute("sesion", sesion);
 		model.addAttribute("grupos", grupos);
 		model.addAttribute("totalDuplicados", totalDuplicados);
 		model.addAttribute("totalEspacio", totalEspacio);
+		model.addAttribute("sugerencia", sugerencia);
 		return "resultado";
+	}
+
+	@PostMapping("/escaneo/{id}/mover")
+	public String mover(@PathVariable Long id, @RequestParam String carpetaDestino, RedirectAttributes ra) {
+		try {
+			int movidos = moveService.moverDuplicados(id, carpetaDestino);
+			ra.addFlashAttribute("movidos", movidos);
+			ra.addFlashAttribute("destino", carpetaDestino.trim());
+		} catch (Exception e) {
+			ra.addFlashAttribute("error", "No se pudieron mover los archivos: " + e.getMessage());
+		}
+		return "redirect:/escaneo/" + id + "/resultado";
+	}
+
+	private String sugerirDestino(ScanSession sesion) {
+		return Path.of(System.getProperty("user.home"), "Desktop",
+				"LimpiaMedia_Duplicados_" + sesion.getTipo()).toString();
 	}
 }

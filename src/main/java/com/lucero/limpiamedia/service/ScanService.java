@@ -21,11 +21,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.lucero.limpiamedia.config.FileExtensionsConfig;
+import com.lucero.limpiamedia.model.CarpetaExcluida;
 import com.lucero.limpiamedia.model.DuplicateGroup;
 import com.lucero.limpiamedia.model.ScanSession;
 import com.lucero.limpiamedia.model.ScanStatus;
 import com.lucero.limpiamedia.model.ScanType;
 import com.lucero.limpiamedia.model.ScannedFile;
+import com.lucero.limpiamedia.repository.CarpetaExcluidaRepository;
 import com.lucero.limpiamedia.repository.DuplicateGroupRepository;
 import com.lucero.limpiamedia.repository.ScanSessionRepository;
 
@@ -37,15 +39,17 @@ public class ScanService {
 
 	private final ScanSessionRepository sessionRepo;
 	private final DuplicateGroupRepository groupRepo;
+	private final CarpetaExcluidaRepository exclRepo;
 	private final FileExtensionsConfig extConfig;
 	private final HashService hashService;
 	private final ThreadPoolTaskExecutor scanExecutor;
 
 	public ScanService(ScanSessionRepository sessionRepo, DuplicateGroupRepository groupRepo,
-			FileExtensionsConfig extConfig, HashService hashService,
+			CarpetaExcluidaRepository exclRepo, FileExtensionsConfig extConfig, HashService hashService,
 			@Qualifier("scanExecutor") ThreadPoolTaskExecutor scanExecutor) {
 		this.sessionRepo = sessionRepo;
 		this.groupRepo = groupRepo;
+		this.exclRepo = exclRepo;
 		this.extConfig = extConfig;
 		this.hashService = hashService;
 		this.scanExecutor = scanExecutor;
@@ -74,12 +78,14 @@ public class ScanService {
 			return;
 		}
 		try {
-			long total = contarArchivos(tipo, raiz);
+			List<Path> excluidas = cargarExcluidas(raiz);
+
+			long total = contarArchivos(tipo, raiz, excluidas);
 			sesion.setTotalArchivos(total);
 			sesion = sessionRepo.save(sesion);
 
 			List<InfoArchivo> archivos = new ArrayList<>();
-			recolectarArchivos(tipo, raiz, archivos, sesion);
+			recolectarArchivos(tipo, raiz, archivos, sesion, excluidas);
 
 			List<DuplicateGroup> grupos = detectarDuplicados(archivos, sesion);
 
@@ -104,9 +110,33 @@ public class ScanService {
 		}
 	}
 
-	private long contarArchivos(ScanType tipo, Path raiz) throws IOException {
+	private List<Path> cargarExcluidas(Path raiz) {
+		return exclRepo.findAll().stream()
+				.map(c -> Paths.get(c.getRutaExcluida()).toAbsolutePath().normalize())
+				.toList();
+	}
+
+	private boolean estaExcluida(Path dir, List<Path> excluidas) {
+		Path actual = dir.toAbsolutePath().normalize();
+		for (Path ex : excluidas) {
+			if (actual.startsWith(ex)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private long contarArchivos(ScanType tipo, Path raiz, List<Path> excluidas) throws IOException {
 		long[] contador = { 0 };
 		Files.walkFileTree(raiz, new SimpleFileVisitor<>() {
+			@Override
+			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+				if (estaExcluida(dir, excluidas)) {
+					return FileVisitResult.SKIP_SUBTREE;
+				}
+				return FileVisitResult.CONTINUE;
+			}
+
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
 				if (extConfig.tieneExtension(tipo, file.getFileName().toString())) {
@@ -123,9 +153,17 @@ public class ScanService {
 		return contador[0];
 	}
 
-	private void recolectarArchivos(ScanType tipo, Path raiz, List<InfoArchivo> destino, ScanSession sesion)
-			throws IOException {
+	private void recolectarArchivos(ScanType tipo, Path raiz, List<InfoArchivo> destino, ScanSession sesion,
+			List<Path> excluidas) throws IOException {
 		Files.walkFileTree(raiz, new SimpleFileVisitor<>() {
+			@Override
+			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+				if (estaExcluida(dir, excluidas)) {
+					return FileVisitResult.SKIP_SUBTREE;
+				}
+				return FileVisitResult.CONTINUE;
+			}
+
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
 				String nombre = file.getFileName().toString();

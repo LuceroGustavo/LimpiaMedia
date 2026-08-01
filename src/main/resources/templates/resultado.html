@@ -13,6 +13,12 @@
 	</header>
 
 	<main class="contenedor">
+		<div class="flash ok" th:if="${movidos}">
+			Se movieron <strong th:text="${movidos}"></strong> archivos duplicados a
+			<strong th:text="${destino}"></strong>.
+		</div>
+		<div class="flash error" th:if="${error}" th:text="${error}"></div>
+
 		<section class="panel resumen">
 			<h2>Resumen del escaneo</h2>
 			<div class="resumen-grid">
@@ -42,6 +48,32 @@
 			<p th:text="'Se analizaron ' + ${sesion.totalArchivos} + ' archivos y no se repitió ninguno.'"></p>
 		</div>
 
+		<section class="panel mover" th:if="${totalDuplicados > 0 and sesion.carpetaDestino == null}">
+			<h2>Mover duplicados</h2>
+			<p class="ayuda">
+				Los <strong th:text="${totalDuplicados}"></strong> archivos duplicados se van a mover a la
+				carpeta destino. Nunca se eliminan y podés restaurarlos desde el historial.
+			</p>
+			<form th:action="@{/escaneo/{id}/mover(id=${sesion.id})}" method="post">
+				<div class="campo-ruta">
+					<input type="text" name="carpetaDestino" id="destino"
+						   th:value="${sugerencia}" autocomplete="off">
+					<button type="button" class="btn-secundario" onclick="abrirModal()">Cambiar carpeta</button>
+					<button type="submit" class="btn-primario"
+							th:text="'Mover ' + ${totalDuplicados} + ' duplicados'">Mover duplicados</button>
+				</div>
+			</form>
+		</section>
+
+		<section class="panel mover-movido" th:if="${sesion.carpetaDestino != null}">
+			<h2>Duplicados ya movidos</h2>
+			<p class="ayuda">
+				Se movieron a: <strong th:text="${sesion.carpetaDestino}"></strong>.
+				Podés restaurarlos desde el
+				<a th:href="@{/movimientos}">historial de movimientos</a>.
+			</p>
+		</section>
+
 		<section class="panel grupo" th:each="g, st : ${grupos}">
 			<h3 class="grupo-titulo">
 				<span class="grupo-num">Grupo <span th:text="${st.count}"></span></span>
@@ -52,8 +84,8 @@
 			<ul class="lista-archivos">
 				<li th:each="f, i : ${g.archivos}">
 					<span class="etiqueta"
-						  th:classappend="${f.esDuplicado} ? 'etiqueta-dup' : 'etiqueta-orig'"
-						  th:text="${f.esDuplicado} ? 'DUPLICADO' : 'ORIGINAL'"></span>
+						  th:classappend="${f.movido} ? 'etiqueta-movido' : (${f.esDuplicado} ? 'etiqueta-dup' : 'etiqueta-orig')"
+						  th:text="${f.movido} ? 'MOVIDO' : (${f.esDuplicado} ? 'DUPLICADO' : 'ORIGINAL')"></span>
 					<span class="ruta" th:text="${f.ruta}"></span>
 				</li>
 			</ul>
@@ -61,12 +93,48 @@
 
 		<div class="acciones-finales">
 			<a class="btn-secundario enlace-boton" th:href="@{/scan/{tipo}(tipo=${sesion.tipo})}">Escanear otra carpeta</a>
+			<a class="btn-secundario enlace-boton" th:href="@{/movimientos}">Historial de movimientos</a>
 			<a class="btn-primario enlace-boton" th:href="@{/}">Volver al inicio</a>
 		</div>
 	</main>
 
+	<div class="modal-overlay" id="modal" style="display:none">
+		<div class="modal">
+			<div class="modal-cabecera">
+				<h3>Elegir carpeta destino</h3>
+				<button type="button" class="modal-cerrar" onclick="cerrarModal()">&times;</button>
+			</div>
+
+			<div class="unidades">
+				<h3>Unidades</h3>
+				<div id="unidades" class="fila-unidades">
+					<p class="cargando">Cargando unidades…</p>
+				</div>
+			</div>
+
+			<div class="campo-ruta">
+				<input type="text" id="rutaModal" placeholder="C:\Destino" autocomplete="off">
+				<button type="button" class="btn-secundario" onclick="ir(document.getElementById('rutaModal').value)">Ir</button>
+			</div>
+
+			<div id="breadcrumb" class="breadcrumb"></div>
+			<div id="carpetas" class="grid-carpetas">
+				<p class="cargando">Cargando…</p>
+			</div>
+
+			<div class="modal-pie">
+				<span id="rutaActual" class="ruta-actual-texto"></span>
+				<button type="button" class="btn-secundario" onclick="cerrarModal()">Cancelar</button>
+				<button type="button" class="btn-primario" onclick="seleccionarActual()">Seleccionar esta carpeta</button>
+			</div>
+		</div>
+	</div>
+
 	<footer class="pie">
-		<p>LimpiaMedia nunca elimina archivos: solo detecta y, si querés, los mueve.</p>
+		<p>LimpiaMedia nunca elimina archivos: solo detecta, mueve y restaura.</p>
 	</footer>
+
+	<script th:src="@{/js/carpetas.js}"></script>
+	<script th:src="@{/js/resultado.js}"></script>
 </body>
 </html>

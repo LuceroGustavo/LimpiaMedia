@@ -47,7 +47,7 @@ LimpiaMedia/
     ├── main/java/com/lucero/limpiamedia/
     │   ├── LimpiaMediaApplication.java
     │   ├── config/           ← configuración (ext, H2, async)
-    │   ├── controller/       ← Home, Scan, Folder, File
+    │   ├── controller/       ← Home, Scan, Folder, ScanApi, Move
     │   ├── service/          ← FileSystem, Scan, DuplicateDetector, Hash, Move
     │   ├── model/            ← entidades JPA
     │   ├── repository/       ← repositorios JPA
@@ -70,9 +70,11 @@ LimpiaMedia/
    - **1er filtro**: agrupar por `nombre + tamaño` (rápido).
    - **Confirmación**: a los candidatos se les calcula hash **SHA-256** → solo duplicados reales.
 5. Resultado en `/escaneo/{id}/resultado`: resumen + grupos con etiquetas ORIGINAL/DUPLICADO y rutas completas (incluye subcarpetas).
-6. Botón **"Mover duplicados a carpeta"** → elegir destino (sugerido: `Duplicados/`) → mueve.
+6. Panel **"Mover duplicados"**: campo precargado con sugerencia `Desktop\LimpiaMedia_Duplicados_{TIPO}` (editable, con modal "Cambiar carpeta").
    - Nunca pisa archivos: si existe el nombre en destino, renombra con sufijo `_1`, `_2`.
-   - Valida que el destino no esté dentro de la carpeta escaneada.
+   - La carpeta destino queda **excluida automáticamente** de escaneos futuros (no se re-detectan los movidos).
+7. `/movimientos`: **historial de movimientos** con botón **Restaurar** por archivo (devuelve el archivo a su ubicación original).
+   - Todo movimiento se registra en el journal `registro/movimientos.jsonl` (eventos `mover`/`restaurar`).
 
 ## Extensiones soportadas por categoría (config en clase `config/FileExtensionsConfig`)
 
@@ -91,10 +93,12 @@ LimpiaMedia/
 
 ## Estado actual
 
-> **Fase 4 — En curso (FOTOS funcional).** Escaneo recursivo con progreso y detección de
-> duplicados por nombre+tamaño → hash SHA-256. Página de resultado con grupos
-> ORIGINAL/DUPLICADO. Probado end-to-end con fotos (incluye descarte del caso "trampa").
-> **Siguiente:** probar otros tipos + Fase 5 (mover duplicados). Ver `documentacion/AVANCES.md`.
+> **Fase 5 — Completa (FOTOS).** Escaneo recursivo con progreso, detección por
+> nombre+tamaño → hash SHA-256, **mover duplicados** a una carpeta destino con exclusión
+> automática de escaneos futuros y **historial con restauración** (`/movimientos`).
+> Journal de cambios en `registro/movimientos.jsonl`. Probado end-to-end con fotos
+> (mover + restaurar + re-escaneo sin re-detección).
+> **Siguiente:** probar VIDEOS/DOCUMENTOS/SONIDO y generar el `.jar`. Ver `documentacion/AVANCES.md`.
 
 ## Reglas del proyecto
 

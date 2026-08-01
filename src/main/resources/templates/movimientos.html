@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Historial de movimientos — LimpiaMedia</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+	<header class="hero hero-chico">
+		<h1>Historial de movimientos</h1>
+		<a class="volver" th:href="@{/}">&larr; Volver al inicio</a>
+	</header>
+
+	<main class="contenedor">
+		<div class="flash ok" th:if="${ok}" th:text="${ok}"></div>
+		<div class="flash error" th:if="${error}" th:text="${error}"></div>
+
+		<section class="panel">
+			<h2>Archivos movidos</h2>
+			<p class="ayuda">
+				Cada fila registra un archivo movido a la carpeta de duplicados.
+				Usá <strong>Restaurar</strong> para devolverlo a su ubicación original.
+			</p>
+
+			<div th:if="${movimientos.isEmpty()}" class="aviso">
+				<p>Todavía no se movió ningún archivo.</p>
+			</div>
+
+			<table class="tabla" th:if="${!movimientos.isEmpty()}">
+				<thead>
+					<tr>
+						<th>Fecha</th>
+						<th>Tipo</th>
+						<th>Original</th>
+						<th>Nuevo</th>
+						<th>Estado</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="m : ${movimientos}">
+						<td th:text="${#temporals.format(m.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+						<td th:text="${m.tipo}"></td>
+						<td class="ruta" th:text="${m.archivoOriginal}"></td>
+						<td class="ruta" th:text="${m.archivoNuevo}"></td>
+						<td>
+							<span class="etiqueta"
+								  th:classappend="${m.restaurado} ? 'etiqueta-orig' : 'etiqueta-dup'"
+								  th:text="${m.restaurado} ? 'RESTAURADO' : 'MOVIDO'"></span>
+						</td>
+						<td>
+							<form th:if="${!m.restaurado}"
+								  th:action="@{/movimientos/{id}/restaurar(id=${m.id})}" method="post">
+								<button type="submit" class="btn-secundario btn-chico">Restaurar</button>
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+	</main>
+
+	<footer class="pie">
+		<p>LimpiaMedia nunca elimina archivos: solo detecta, mueve y restaura.</p>
+	</footer>
+</body>
+</html>

@@ -26,6 +26,7 @@ public class ScannedFile {
 	private long tamanio;
 	private String hash;
 	private boolean esDuplicado;
+	private boolean movido;
 
 	public Long getId() {
 		return id;
@@ -105,5 +106,13 @@ public class ScannedFile {
 
 	public void setEsDuplicado(boolean esDuplicado) {
 		this.esDuplicado = esDuplicado;
+	}
+
+	public boolean isMovido() {
+		return movido;
+	}
+
+	public void setMovido(boolean movido) {
+		this.movido = movido;
 	}
 }

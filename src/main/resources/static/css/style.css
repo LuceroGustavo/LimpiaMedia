@@ -620,3 +620,77 @@ body {
 	flex-wrap: wrap;
 	margin-top: 1.4rem;
 }
+
+.flash {
+	border-radius: 8px;
+	padding: .8rem 1rem;
+	margin-bottom: 1.2rem;
+	font-size: .95rem;
+}
+
+.flash.ok {
+	background: #d1fae5;
+	color: #065f46;
+	border: 1px solid #a7f3d0;
+}
+
+.flash.error {
+	background: #fee2e2;
+	color: #991b1b;
+	border: 1px solid #fecaca;
+}
+
+.mover {
+	border: 2px solid #4f46e5;
+}
+
+.mover-movido {
+	border: 2px solid #10b981;
+}
+
+.etiqueta-movido {
+	background: #bfdbfe;
+	color: #1e3a8a;
+}
+
+.tabla {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: .88rem;
+}
+
+.tabla th,
+.tabla td {
+	text-align: left;
+	padding: .55rem .6rem;
+	border-bottom: 1px solid #e5e7eb;
+	vertical-align: top;
+}
+
+.tabla th {
+	background: #f9fafb;
+	color: #4b5563;
+	font-weight: 600;
+}
+
+.tabla tbody tr:hover {
+	background: #f9fafb;
+}
+
+.btn-chico {
+	padding: .35rem .8rem;
+	font-size: .82rem;
+}
+
+.pie-enlace {
+	margin-top: .4rem;
+}
+
+.pie-enlace a {
+	color: #4f46e5;
+	text-decoration: none;
+}
+
+.pie-enlace a:hover {
+	text-decoration: underline;
+}
