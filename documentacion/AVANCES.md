@@ -128,3 +128,7 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
   - Restaurar → el archivo vuelve a su carpeta original y el historial marca RESTAURADO. ✓
   - `mvnw compile` OK.
 - Pendiente: probar Fase 5 con VIDEOS/DOCUMENTOS/SONIDO y generar el `.jar` de distribución.
+
+## 2026-08-01 — Limpieza de datos de prueba
+- Se borraron `data/` (H2) y `registro/` (journal) para que la app arranque con el historial vacío.
+- El registro "RESTAURADO" que se veía en `/movimientos` era residuo del test end-to-end de la Fase 5 (se movieron y restauraron archivos de prueba), no una acción del usuario.
