@@ -65,10 +65,11 @@ LimpiaMedia/
    - Navegador de unidades (C:, D:…) + árbol de carpetas navegable.
    - Campo para pegar la ruta directa (ej: `D:\Fotos`).
 3. Escaneo **asíncrono** con barra de progreso (no congela la pantalla en discos grandes).
+   - `POST /scan/{tipo}/iniciar` → `/escaneo/{id}` (progreso, polling a `/api/escaneo/{id}`).
 4. Detección de duplicados:
    - **1er filtro**: agrupar por `nombre + tamaño` (rápido).
    - **Confirmación**: a los candidatos se les calcula hash **SHA-256** → solo duplicados reales.
-5. Resultado en **árbol** (jsTree): estructura de carpetas con duplicados marcados/agrupados.
+5. Resultado en `/escaneo/{id}/resultado`: resumen + grupos con etiquetas ORIGINAL/DUPLICADO y rutas completas (incluye subcarpetas).
 6. Botón **"Mover duplicados a carpeta"** → elegir destino (sugerido: `Duplicados/`) → mueve.
    - Nunca pisa archivos: si existe el nombre en destino, renombra con sufijo `_1`, `_2`.
    - Valida que el destino no esté dentro de la carpeta escaneada.
@@ -90,10 +91,10 @@ LimpiaMedia/
 
 ## Estado actual
 
-> **Fase 3 — Completada.** Navegación de carpetas funcional: unidades de disco, breadcrumb,
-> grilla de subcarpetas y campo de ruta. `GET /api/unidades`, `GET /api/carpetas`.
-> **Siguiente:** Fase 4 (escaneo asíncrono con progreso + detección de duplicados).
-> Ver `documentacion/AVANCES.md`.
+> **Fase 4 — En curso (FOTOS funcional).** Escaneo recursivo con progreso y detección de
+> duplicados por nombre+tamaño → hash SHA-256. Página de resultado con grupos
+> ORIGINAL/DUPLICADO. Probado end-to-end con fotos (incluye descarte del caso "trampa").
+> **Siguiente:** probar otros tipos + Fase 5 (mover duplicados). Ver `documentacion/AVANCES.md`.
 
 ## Reglas del proyecto
 

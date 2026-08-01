@@ -31,11 +31,15 @@ Software 100% local: Spring Boot + Thymeleaf + H2, corre en el navegador sin ser
 - [x] Pantalla `scan.html`: navegador de carpetas + campo de ruta.
 - [x] Pruebas: unidades (C:, D:, E:), rutas con espacios, breadcrumb y POST iniciar.
 
-### Fase 4 — Escaneo y detección
-- [ ] `ScanService`: escaneo asíncrono con progreso.
-- [ ] `DuplicateDetector`: filtro nombre+tamaño → hash SHA-256.
-- [ ] `HashService`: cálculo de hash.
-- [ ] Pantalla de progreso y resultado en árbol (jsTree).
+### Fase 4 — Escaneo y detección (FOTOS primero)
+- [x] `ScanService`: escaneo asíncrono con progreso.
+- [x] `DuplicateDetector`: filtro nombre+tamaño → hash SHA-256.
+- [x] `HashService`: cálculo de hash.
+- [x] Escaneo recursivo (subcarpetas incluidas).
+- [x] Pantalla de progreso (polling) y resultado con grupos ORIGINAL/DUPLICADO.
+- [x] Probar con FOTOS end-to-end (incluye caso "trampa" descartado por hash).
+- [ ] Probar con VIDEOS, DOCUMENTOS y SONIDO.
+- [ ] Mover duplicados a carpeta destino (Fase 5).
 
 ### Fase 5 — Movimiento seguro
 - [ ] `MoveService`: mover duplicados a carpeta destino.

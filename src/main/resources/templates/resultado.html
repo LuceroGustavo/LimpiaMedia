@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Resultado — LimpiaMedia</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+	<header class="hero hero-chico">
+		<h1>Duplicados de <span th:text="${sesion.tipo}"></span></h1>
+		<a class="volver" th:href="@{/}">&larr; Volver al inicio</a>
+	</header>
+
+	<main class="contenedor">
+		<section class="panel resumen">
+			<h2>Resumen del escaneo</h2>
+			<div class="resumen-grid">
+				<div class="resumen-item">
+					<span class="resumen-numero" th:text="${sesion.totalArchivos}"></span>
+					<span class="resumen-etiqueta">Archivos analizados</span>
+				</div>
+				<div class="resumen-item">
+					<span class="resumen-numero" th:text="${grupos.size()}"></span>
+					<span class="resumen-etiqueta">Grupos duplicados</span>
+				</div>
+				<div class="resumen-item">
+					<span class="resumen-numero" th:text="${totalDuplicados}"></span>
+					<span class="resumen-etiqueta">Archivos duplicados</span>
+				</div>
+				<div class="resumen-item">
+					<span class="resumen-numero"
+						  th:text="${totalEspacio > 0 ? #numbers.formatDecimal(totalEspacio / 1048576.0, 1, 1) : '0'}"></span>
+					<span class="resumen-etiqueta">Espacio en duplicados (MB)</span>
+				</div>
+			</div>
+			<p class="resumen-ruta">Carpeta escaneada: <strong th:text="${sesion.rutaRaiz}"></strong></p>
+		</section>
+
+		<div th:if="${grupos.isEmpty()}" class="panel aviso">
+			<h2>No se encontraron archivos duplicados.</h2>
+			<p th:text="'Se analizaron ' + ${sesion.totalArchivos} + ' archivos y no se repitió ninguno.'"></p>
+		</div>
+
+		<section class="panel grupo" th:each="g, st : ${grupos}">
+			<h3 class="grupo-titulo">
+				<span class="grupo-num">Grupo <span th:text="${st.count}"></span></span>
+				<span class="grupo-nombre" th:text="${g.archivos[0].nombre}"></span>
+				<span class="grupo-meta"
+					  th:text="'(' + ${g.archivos.size()} + ' copias · ' + ${#numbers.formatDecimal(g.tamanio / 1048576.0, 1, 1)} + ' MB c/u)'"></span>
+			</h3>
+			<ul class="lista-archivos">
+				<li th:each="f, i : ${g.archivos}">
+					<span class="etiqueta"
+						  th:classappend="${f.esDuplicado} ? 'etiqueta-dup' : 'etiqueta-orig'"
+						  th:text="${f.esDuplicado} ? 'DUPLICADO' : 'ORIGINAL'"></span>
+					<span class="ruta" th:text="${f.ruta}"></span>
+				</li>
+			</ul>
+		</section>
+
+		<div class="acciones-finales">
+			<a class="btn-secundario enlace-boton" th:href="@{/scan/{tipo}(tipo=${sesion.tipo})}">Escanear otra carpeta</a>
+			<a class="btn-primario enlace-boton" th:href="@{/}">Volver al inicio</a>
+		</div>
+	</main>
+
+	<footer class="pie">
+		<p>LimpiaMedia nunca elimina archivos: solo detecta y, si querés, los mueve.</p>
+	</footer>
+</body>
+</html>

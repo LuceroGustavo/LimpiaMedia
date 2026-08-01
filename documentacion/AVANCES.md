@@ -76,3 +76,26 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
   - Carpetas con atributo DOS oculto o de sistema (`Files.readAttributes` → `DosFileAttributes`).
 - Corrección de import: `DosFileAttributes` vive en `java.nio.file.attribute`, no en `java.nio.file` (causaba "cannot find symbol").
 - **Pruebas**: `mvnw compile` OK. `C:\` pasó de 28 a 19 carpetas visibles; `C:\Users\LUCERO-PC` de 64 a 29, sin `.` ni `$` ni ocultas de sistema.
+
+## 2026-08-01 — Fase 4 (FOTOS): escaneo recursivo + detección de duplicados
+- Enfocado en **fotos** primero (el motor es genérico para los 4 tipos; se testea con FOTOS).
+- `config/FileExtensionsConfig`: extensiones por tipo (FOTOS: jpg, jpeg, png, gif, bmp, webp, tiff, heic, raw, cr2, nef, jfif, svg).
+- `config/AsyncConfig`: `ThreadPoolTaskExecutor` (bean `scanExecutor`) para escaneo en segundo plano.
+- `service/HashService`: hash SHA-256 por streaming (buffer 8 KB); devuelve `null` si no se puede leer.
+- `service/ScanService`:
+  - `iniciarEscaneo(tipo, ruta)` valida la ruta, crea `ScanSession` EN_PROGRESO y ejecuta el escaneo en el executor.
+  - Escaneo **recursivo** con `Files.walkFileTree` (incluye subcarpetas; carpetas sin permiso se omiten).
+  - Fase 1: conteo total. Fase 2: recolección con progreso (guarda cada 100). Fase 3: detección.
+  - Detección: agrupa por **nombre+tamaño** → candidatos → **hash SHA-256** → grupos reales (primer archivo = ORIGINAL, resto = DUPLICADO).
+- `ScanController`: `POST /scan/{tipo}/iniciar` (valida y redirige), `GET /escaneo/{id}` (progreso), `GET /escaneo/{id}/resultado`.
+- `ScanApiController`: `GET /api/escaneo/{id}` → JSON `{estado, total, procesados, duplicados}` para el polling.
+- `DuplicateGroup.archivos` ahora `cascade=ALL` para persistir archivos junto al grupo. `DuplicateGroupRepository.findBySesion_IdOrderById`.
+- Plantillas: `progreso.html` (barra de progreso con polling cada 1s, redirige al resultado al completar) y `resultado.html` (resumen + grupos con etiquetas ORIGINAL/DUPLICADO y ruta completa).
+- Fix: `#lists.first(g.archivos)` no acepta colecciones de Hibernate → se usa `g.archivos[0].nombre`.
+- Fix importante: H2 URL ahora `jdbc:h2:file:./data/limpiamedia;AUTO_SERVER=TRUE` para que DevTools (reinicio automático) no falle por bloqueo del archivo H2.
+- **Pruebas end-to-end** (carpeta con subcarpetas):
+  - 7 fotos (2 duplicadas + 1 "trampa" con mismo nombre y tamaño pero contenido distinto + 1 única + 1 .txt ignorado) → `total=7`, `duplicados=2`, la "trampa" fue **descartada por el hash**. ✓
+  - Carpeta sin duplicados → `duplicados=0` y mensaje "No se encontraron". ✓
+  - Resultado muestra ORIGINAL/DUPLICADO y rutas. ✓
+  - `mvnw test` OK.
+- Pendiente: mover duplicados a carpeta (Fase 5) y probar con videos/documentos/sonido.

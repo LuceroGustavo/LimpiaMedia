@@ -460,3 +460,163 @@ body {
 	padding: .5rem .7rem;
 	border-radius: 6px;
 }
+
+.error-box {
+	background: #fee2e2;
+	color: #991b1b;
+	border: 1px solid #fecaca;
+	border-radius: 8px;
+	padding: .7rem .9rem;
+	margin-bottom: 1rem;
+	font-size: .92rem;
+}
+
+.centro {
+	text-align: center;
+}
+
+.estado-texto {
+	color: #4b5563;
+	font-size: 1rem;
+	margin: .6rem 0 1rem;
+}
+
+.barra {
+	background: #e5e7eb;
+	border-radius: 8px;
+	height: 16px;
+	overflow: hidden;
+}
+
+.barra-relleno {
+	background: linear-gradient(90deg, #4f46e5, #7c3aed);
+	height: 100%;
+	width: 0;
+	transition: width .4s ease;
+}
+
+.barra-texto {
+	color: #6b7280;
+	margin-top: .6rem;
+	font-size: .9rem;
+}
+
+.resumen {
+	margin-bottom: 1.2rem;
+}
+
+.resumen-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: .8rem;
+	margin: 1rem 0;
+}
+
+.resumen-item {
+	background: #f9fafb;
+	border-radius: 10px;
+	padding: .9rem;
+	text-align: center;
+}
+
+.resumen-numero {
+	display: block;
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: #4f46e5;
+}
+
+.resumen-etiqueta {
+	display: block;
+	font-size: .8rem;
+	color: #6b7280;
+	margin-top: .2rem;
+}
+
+.resumen-ruta {
+	color: #6b7280;
+	font-size: .9rem;
+	word-break: break-all;
+}
+
+.grupo {
+	margin-bottom: 1.2rem;
+}
+
+.grupo-titulo {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: .5rem;
+	margin-bottom: .6rem;
+	font-size: 1.05rem;
+}
+
+.grupo-num {
+	background: #4f46e5;
+	color: #fff;
+	border-radius: 6px;
+	padding: .15rem .6rem;
+	font-size: .8rem;
+}
+
+.grupo-nombre {
+	font-weight: 700;
+}
+
+.grupo-meta {
+	color: #6b7280;
+	font-size: .85rem;
+	font-weight: 400;
+}
+
+.lista-archivos {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.lista-archivos li {
+	display: flex;
+	align-items: flex-start;
+	gap: .6rem;
+	padding: .5rem .6rem;
+	border-radius: 6px;
+}
+
+.lista-archivos li:nth-child(odd) {
+	background: #f9fafb;
+}
+
+.etiqueta {
+	font-size: .7rem;
+	font-weight: 700;
+	padding: .15rem .45rem;
+	border-radius: 5px;
+	white-space: nowrap;
+	flex-shrink: 0;
+	margin-top: .05rem;
+}
+
+.etiqueta-orig {
+	background: #d1fae5;
+	color: #065f46;
+}
+
+.etiqueta-dup {
+	background: #fee2e2;
+	color: #991b1b;
+}
+
+.ruta {
+	font-size: .88rem;
+	color: #374151;
+	word-break: break-all;
+}
+
+.acciones-finales {
+	display: flex;
+	gap: .8rem;
+	flex-wrap: wrap;
+	margin-top: 1.4rem;
+}

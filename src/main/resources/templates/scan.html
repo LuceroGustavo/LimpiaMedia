@@ -15,6 +15,7 @@
 	<main class="contenedor">
 		<section class="panel">
 			<h2>Elegí la carpeta a escanear</h2>
+			<div class="error-box" th:if="${error}" th:text="${error}"></div>
 			<p class="ayuda">
 				Hacé clic en <strong>Seleccionar carpeta</strong> y navegá hasta la carpeta o
 				disco donde quieras buscar duplicados.

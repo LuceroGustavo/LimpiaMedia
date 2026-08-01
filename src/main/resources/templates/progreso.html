@@ -8,26 +8,60 @@
 </head>
 <body>
 	<header class="hero hero-chico">
-		<h1>Escaneo de <span th:text="${tipo}"></span></h1>
+		<h1>Buscando archivos duplicados</h1>
 		<a class="volver" th:href="@{/}">&larr; Volver al inicio</a>
 	</header>
 
 	<main class="contenedor">
-		<section class="panel">
-			<h2>Carpeta seleccionada</h2>
-			<p class="ruta-elegida" th:text="${ruta}"></p>
-			<div class="aviso">
-				<p>
-					El escaneo real (con progreso y detección de duplicados) se implementa
-					en la siguiente fase.
-				</p>
+		<section class="panel centro">
+			<h2>Escaneando…</h2>
+			<p class="estado-texto" id="estado">Iniciando escaneo…</p>
+			<div class="barra">
+				<div class="barra-relleno" id="relleno"></div>
 			</div>
-			<a class="btn-primario enlace-boton" th:href="@{/scan/{tipo}(tipo=${tipo})}">Elegir otra carpeta</a>
+			<p class="barra-texto" id="texto">Preparando escaneo…</p>
 		</section>
 	</main>
 
 	<footer class="pie">
 		<p>LimpiaMedia nunca elimina archivos: solo detecta y, si querés, los mueve.</p>
 	</footer>
+
+	<script th:inline="javascript">
+		(function () {
+			var id = [[${id}]];
+			var estado = document.getElementById('estado');
+			var relleno = document.getElementById('relleno');
+			var texto = document.getElementById('texto');
+
+			var intervalo = setInterval(function () {
+				fetch('/api/escaneo/' + id)
+					.then(function (r) { return r.json(); })
+					.then(function (d) {
+						if (d.estado === 'COMPLETADO') {
+							clearInterval(intervalo);
+							window.location = '/escaneo/' + id + '/resultado';
+						} else if (d.estado === 'ERROR') {
+							clearInterval(intervalo);
+							estado.textContent = 'Ocurrió un error durante el escaneo.';
+							texto.textContent = 'Revisá que la carpeta exista y tengas permisos.';
+						} else {
+							estado.textContent = 'Escaneando…';
+							if (d.total > 0) {
+								var pct = Math.round(d.procesados * 100 / d.total);
+								if (pct > 100) { pct = 100; }
+								relleno.style.width = pct + '%';
+								texto.textContent = d.procesados + ' / ' + d.total + ' archivos procesados (' + pct + '%)';
+							} else {
+								texto.textContent = 'Buscando archivos…';
+							}
+						}
+					})
+					.catch(function () {
+						estado.textContent = 'Reconectando…';
+					});
+			}, 1000);
+		})();
+	</script>
 </body>
 </html>

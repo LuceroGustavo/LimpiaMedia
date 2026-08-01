@@ -3,6 +3,7 @@ package com.lucero.limpiamedia.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +25,7 @@ public class DuplicateGroup {
 	private String hash;
 	private long tamanio;
 
-	@OneToMany(mappedBy = "grupo")
+	@OneToMany(mappedBy = "grupo", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ScannedFile> archivos = new ArrayList<>();
 
 	public Long getId() {
