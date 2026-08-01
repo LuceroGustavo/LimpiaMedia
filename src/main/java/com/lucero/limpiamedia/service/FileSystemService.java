@@ -6,6 +6,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.DosFileAttributes;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -36,7 +37,7 @@ public class FileSystemService {
 		}
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
 			for (Path p : stream) {
-				if (Files.isDirectory(p)) {
+				if (Files.isDirectory(p) && !esCarpetaOculta(p)) {
 					String nombre = p.getFileName() == null ? p.toString() : p.getFileName().toString();
 					carpetas.add(new CarpetaDTO(p.toString(), nombre));
 				}
@@ -46,6 +47,19 @@ public class FileSystemService {
 		}
 		carpetas.sort(Comparator.comparing(CarpetaDTO::getNombre, String.CASE_INSENSITIVE_ORDER));
 		return carpetas;
+	}
+
+	private boolean esCarpetaOculta(Path p) {
+		String nombre = p.getFileName() == null ? "" : p.getFileName().toString();
+		if (nombre.startsWith("$") || nombre.startsWith(".")) {
+			return true;
+		}
+		try {
+			DosFileAttributes attrs = Files.readAttributes(p, DosFileAttributes.class);
+			return attrs.isHidden() || attrs.isSystem();
+		} catch (IOException e) {
+			return false;
+		}
 	}
 
 	public boolean esDirectorio(String ruta) {

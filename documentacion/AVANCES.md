@@ -67,3 +67,12 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
 - Al seleccionar: el modal se cierra y queda visible **solo la carpeta elegida** (resaltada), con el botón "Escanear esta carpeta" habilitado.
 - Extras: cierre con `Escape`, clic fuera del modal y `Enter` en el campo de ruta.
 - **Pruebas**: `mvnw compile` OK. `/scan/FOTOS` → 200 con botón y modal. `POST /scan/FOTOS/iniciar` → 200. JS validado con `node --check`.
+
+## 2026-08-01 — DevTools configurado + filtro de carpetas ocultas
+- `application.properties`: agregados `spring.devtools.restart.enabled=true`, `spring.devtools.livereload.enabled=true` y `spring.thymeleaf.cache=false` (así el proyecto se reinicia solo al guardar cambios y las plantillas se ven al refrescar).
+- `FileSystemService`: nuevo filtro `esCarpetaOculta(Path)` en `listarSubcarpetas` que oculta:
+  - Carpetas que empiezan con `$` (`$Recycle.Bin`, `$WINDOWS.~BT`, etc.).
+  - Carpetas que empiezan con `.` (`.m2`, `.gradle`, `.vscode`, etc.).
+  - Carpetas con atributo DOS oculto o de sistema (`Files.readAttributes` → `DosFileAttributes`).
+- Corrección de import: `DosFileAttributes` vive en `java.nio.file.attribute`, no en `java.nio.file` (causaba "cannot find symbol").
+- **Pruebas**: `mvnw compile` OK. `C:\` pasó de 28 a 19 carpetas visibles; `C:\Users\LUCERO-PC` de 64 a 29, sin `.` ni `$` ni ocultas de sistema.
