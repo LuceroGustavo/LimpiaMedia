@@ -49,6 +49,16 @@
 			<p th:text="'Se analizaron ' + ${sesion.totalArchivos} + ' archivos y no se repitió ninguno.'"></p>
 		</div>
 
+		<div th:if="${!grupos.isEmpty()}" class="panel filtros">
+			<div class="filtros-barra">
+				<input type="search" id="buscarGrupo" placeholder="Buscar por nombre…" autocomplete="off">
+				<select id="filtrarExtension">
+					<option value="">Todas las extensiones</option>
+				</select>
+				<span class="filtros-contador" id="contadorGrupos"></span>
+			</div>
+		</div>
+
 		<section class="panel mover" th:if="${totalDuplicados > 0 and sesion.carpetaDestino == null}">
 			<h2>Mover duplicados</h2>
 			<p class="ayuda">
@@ -87,7 +97,7 @@
 					  th:text="'(' + ${g.archivos.size()} + ' copias · ' + ${#numbers.formatDecimal(g.tamanio / 1048576.0, 1, 1)} + ' MB c/u)'"></span>
 			</h3>
 			<ul class="lista-archivos">
-				<li th:each="f, i : ${g.archivos}">
+				<li th:each="f, i : ${g.archivos}" th:data-id="${f.id}" th:data-ext="${f.extension}">
 					<span class="etiqueta"
 						  th:classappend="${f.movido} ? 'etiqueta-movido' : (${f.esDuplicado} ? 'etiqueta-dup' : 'etiqueta-orig')"
 						  th:text="${f.movido} ? 'MOVIDO' : (${f.esDuplicado} ? 'DUPLICADO' : 'ORIGINAL')"></span>
@@ -97,11 +107,25 @@
 		</section>
 
 		<div class="acciones-finales">
+			<a class="btn-secundario enlace-boton" th:if="${!grupos.isEmpty()}"
+			   th:href="@{/escaneo/{id}/exportar(id=${sesion.id})}">Descargar reporte (CSV)</a>
 			<a class="btn-secundario enlace-boton" th:href="${urlScan}">Escanear otra carpeta</a>
 			<a class="btn-secundario enlace-boton" th:href="@{/movimientos}">Historial de movimientos</a>
 			<a class="btn-primario enlace-boton" th:href="@{/}">Volver al inicio</a>
 		</div>
 	</main>
+
+	<div class="modal-overlay" id="modalImagen" style="display:none">
+		<div class="modal modal-imagen">
+			<div class="modal-cabecera">
+				<h3>Vista previa</h3>
+				<button type="button" class="modal-cerrar" onclick="cerrarModalImagen()">&times;</button>
+			</div>
+			<div class="modal-imagen-contenido">
+				<img id="imagenGrande" src="" alt="Vista previa">
+			</div>
+		</div>
+	</div>
 
 	<div class="modal-overlay" id="modal" style="display:none">
 		<div class="modal">

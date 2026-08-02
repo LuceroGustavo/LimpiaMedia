@@ -212,3 +212,10 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
   ALTER TABLE SCAN_SESSION ALTER COLUMN TIPO SET DATA TYPE ENUM('DOCUMENTOS','FOTOS','SONIDO','VIDEOS','PERSONALIZADO');
   ```
   Las instalaciones nuevas (jar) crean el ENUM ya con los 5 valores, no requieren nada. Si en el futuro se agrega otro valor a `ScanType`, `ScanStatus` o `ScanPhase`, hay que ampliar el ENUM correspondiente igual.
+
+## 2026-08-02 — Mejoras de frontend (reporte, dashboard, filtros, vista previa)
+- **Exportar reporte del escaneo**: botón "Descargar reporte (CSV)" en el resultado. Endpoint `GET /escaneo/{id}/exportar` genera un CSV con BOM UTF-8 (abre bien en Excel): columnas Grupo, Etiqueta, Nombre, Ruta, Tamaño (MB), Hash. Solo aparece si hay grupos.
+- **Dashboard en el inicio**: el `index` ahora muestra un resumen (escaneos realizados, completados, archivos analizados, duplicados encontrados) y el historial de todos los escaneos en tabla (tipo, fecha `dd/MM/yyyy HH:mm`, estado con píldora de color, archivos, duplicados) con enlaces "Ver" (resultado) o "Progreso".
+- **Búsqueda y filtros en resultados**: campo de texto para filtrar los grupos por nombre de archivo + select de extensión (se arma con las extensiones presentes) + contador "Mostrando X de Y grupos". Todo client-side (JS).
+- **Vista previa de imágenes**: endpoint `GET /archivo/{id}` sirve el archivo si es una imagen (`jpg, jpeg, png, gif, bmp, webp, svg, ico, jfif`) con su Content-Type correcto; en los resultados, cada archivo de imagen muestra una miniatura (44 px) que al hacer clic abre un modal con la imagen grande. Sin miniaturas para videos/documentos.
+- **Pruebas** (instancia aislada :8081): dashboard renderiza resumen + historial ✓; escaneo FOTOS con 2 duplicados (rojo.png/rojo_1.png, azul.jpg/azul (2).jpg) ✓; `/archivo/{id}` devuelve `200 image/png` ✓; CSV con los 2 grupos y hashes idénticos por grupo ✓; JS de filtros/miniaturas/modal servido ✓. `mvnw clean package` verde (6 tests) y `.jar` regenerado.
