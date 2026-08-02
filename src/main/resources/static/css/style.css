@@ -765,3 +765,9 @@ body {
 .ext input {
 	accent-color: #4f46e5;
 }
+
+.escanear-final {
+	display: flex;
+	justify-content: flex-end;
+	gap: .6rem;
+}
