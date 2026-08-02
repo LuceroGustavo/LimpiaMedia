@@ -197,3 +197,13 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
 - **Infraestructura**: los tests (`LimpiaMediaApplicationTests`) usan una **BD H2 en memoria** (nueva `src/test/resources/application.properties`) y ya no tocan la BD real del usuario (antes cada build marcaba como ERROR sus sesiones en curso por el listener de limpieza).
 - **Migración BD real**: las columnas nuevas (`fase`, `total_verificar`, `procesados_verificar`) se crean **nullable** para que `ddl-auto=update` funcione sobre la BD existente con filas (un `long` primitivo genera `NOT NULL` y H2 rechaza el `alter` con filas previas). Al reiniciar la app con el código nuevo, Hibernate agrega las columnas solo.
 - **Pruebas** (instancia aislada :8081): con 121 archivos → `total=121, totalVerificar=80, procesadosVerificar=80, duplicados=40` exacto; con 2.250 archivos → `totalVerificar=1500, duplicados=750` ✓. `mvnw clean package` verde (6 tests) y `.jar` regenerado.
+
+## 2026-08-01 — Detectar un formato específico (búsqueda personalizada)
+- **Nueva tarjeta** en el inicio: "Detectar un formato específico" → abre un **formulario con checkboxes** de formatos agrupados por categoría (Imágenes, Videos, Documentos, Sonido, Comprimidos, Programas, Otros). Botones "Seleccionar todas" / "Desmarcar todas" globales y un "Todas" por categoría.
+- **Cómo funciona**: el escaneo solo compara archivos **de los formatos tildados** (un JPG no se compara con un PDF). Se puede elegir un solo formato (ej: solo JPG) o varios.
+- **Backend**:
+  - `ScanType.PERSONALIZADO` + `ScanSession.extensionesFiltradas` (string con los formatos elegidos, para mostrarlos en el resultado).
+  - `ScanService.iniciarEscaneoPersonalizado(Set<String>, ruta)`: filtra por el conjunto de extensiones; el conteo/recolección ahora reciben `Set<String>` en lugar de `ScanType` (refactor de `contarArchivos`/`recolectarArchivos`).
+  - `FileExtensionsConfig.categorias()` expone las categorías para el formulario y `extensionesDe(tipo)`/`tieneExtension(Set,…)` generalizan el filtro.
+  - `ScanController`: `GET /scan/personalizado` (formulario), `POST /scan/personalizado/iniciar` (validación: al menos un formato; mismo guard de "ya hay un escaneo en curso"). En el resultado, el título muestra "formatos jpg, pdf…" y el botón "Escanear otra carpeta" vuelve al formulario.
+- **Pruebas** (instancia aislada :8081): solo PDF+JPG → total=27 (excluye mp3/exe) ✓; solo JPG → total=14, 1 duplicado, y un PDF duplicado queda fuera ✓; sin extensiones → flash de error "Tenés que seleccionar al menos un formato." ✓; título y enlace correctos en el resultado ✓. `mvnw clean package` verde y `.jar` regenerado.

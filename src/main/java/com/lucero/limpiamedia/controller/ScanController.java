@@ -3,7 +3,10 @@ package com.lucero.limpiamedia.controller;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.lucero.limpiamedia.config.FileExtensionsConfig;
 import com.lucero.limpiamedia.model.DuplicateGroup;
 import com.lucero.limpiamedia.model.ScanSession;
 import com.lucero.limpiamedia.model.ScanStatus;
@@ -30,13 +34,15 @@ public class ScanController {
 	private final ScanSessionRepository sessionRepo;
 	private final DuplicateGroupRepository groupRepo;
 	private final MoveService moveService;
+	private final FileExtensionsConfig extConfig;
 
 	public ScanController(ScanService scanService, ScanSessionRepository sessionRepo,
-			DuplicateGroupRepository groupRepo, MoveService moveService) {
+			DuplicateGroupRepository groupRepo, MoveService moveService, FileExtensionsConfig extConfig) {
 		this.scanService = scanService;
 		this.sessionRepo = sessionRepo;
 		this.groupRepo = groupRepo;
 		this.moveService = moveService;
+		this.extConfig = extConfig;
 	}
 
 	@GetMapping("/scan/{tipo}")
@@ -45,13 +51,16 @@ public class ScanController {
 		return "scan";
 	}
 
+	@GetMapping("/scan/personalizado")
+	public String scanPersonalizado(Model model) {
+		model.addAttribute("categorias", extConfig.categorias());
+		return "scan-personalizado";
+	}
+
 	@PostMapping("/scan/{tipo}/iniciar")
 	public String iniciar(@PathVariable ScanType tipo, @RequestParam String ruta, RedirectAttributes ra) {
 		try {
-			List<ScanSession> enCurso = sessionRepo.findByEstadoOrderByInicioDesc(ScanStatus.EN_PROGRESO);
-			if (!enCurso.isEmpty()) {
-				ra.addFlashAttribute("error", "Ya hay un escaneo en curso (sesión " + enCurso.get(0).getId()
-						+ "). Esperá a que termine antes de iniciar otro.");
+			if (hayEscaneoEnCurso(ra, "redirect:/scan/" + tipo)) {
 				return "redirect:/scan/" + tipo;
 			}
 			ScanSession sesion = scanService.iniciarEscaneo(tipo, ruta);
@@ -60,6 +69,32 @@ public class ScanController {
 			ra.addFlashAttribute("error", e.getMessage());
 			return "redirect:/scan/" + tipo;
 		}
+	}
+
+	@PostMapping("/scan/personalizado/iniciar")
+	public String iniciarPersonalizado(@RequestParam(name = "ext", required = false) List<String> extensiones,
+			@RequestParam String ruta, RedirectAttributes ra) {
+		try {
+			if (hayEscaneoEnCurso(ra, "redirect:/scan/personalizado")) {
+				return "redirect:/scan/personalizado";
+			}
+			Set<String> filtro = new HashSet<>(extensiones == null ? new ArrayList<>() : extensiones);
+			ScanSession sesion = scanService.iniciarEscaneoPersonalizado(filtro, ruta);
+			return "redirect:/escaneo/" + sesion.getId();
+		} catch (IllegalArgumentException e) {
+			ra.addFlashAttribute("error", e.getMessage());
+			return "redirect:/scan/personalizado";
+		}
+	}
+
+	private boolean hayEscaneoEnCurso(RedirectAttributes ra, String volverA) {
+		List<ScanSession> enCurso = sessionRepo.findByEstadoOrderByInicioDesc(ScanStatus.EN_PROGRESO);
+		if (!enCurso.isEmpty()) {
+			ra.addFlashAttribute("error", "Ya hay un escaneo en curso (sesión " + enCurso.get(0).getId()
+					+ "). Esperá a que termine antes de iniciar otro.");
+			return true;
+		}
+		return false;
 	}
 
 	@GetMapping("/escaneo/{id}")
@@ -76,7 +111,7 @@ public class ScanController {
 		}
 		if (sesion.getEstado() == ScanStatus.ERROR) {
 			ra.addFlashAttribute("error", "El escaneo terminó con un error. Probá de nuevo.");
-			return "redirect:/scan/" + sesion.getTipo();
+			return "redirect:" + urlScan(sesion);
 		}
 		List<DuplicateGroup> grupos = groupRepo.findBySesion_IdOrderById(id);
 
@@ -98,7 +133,20 @@ public class ScanController {
 		model.addAttribute("totalDuplicados", totalDuplicados);
 		model.addAttribute("totalEspacio", totalEspacio);
 		model.addAttribute("sugerencia", sugerencia);
+		model.addAttribute("tituloTipo", tituloTipo(sesion));
+		model.addAttribute("urlScan", urlScan(sesion));
 		return "resultado";
+	}
+
+	private String urlScan(ScanSession sesion) {
+		return sesion.getTipo() == ScanType.PERSONALIZADO ? "/scan/personalizado" : "/scan/" + sesion.getTipo();
+	}
+
+	private String tituloTipo(ScanSession sesion) {
+		if (sesion.getTipo() == ScanType.PERSONALIZADO) {
+			return "formatos " + sesion.getExtensionesFiltradas();
+		}
+		return sesion.getTipo().name();
 	}
 
 	@PostMapping("/escaneo/{id}/mover")

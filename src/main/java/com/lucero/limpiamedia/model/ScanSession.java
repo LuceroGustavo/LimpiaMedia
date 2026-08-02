@@ -26,6 +26,8 @@ public class ScanSession {
 
 	private String rutaRaiz;
 
+	private String extensionesFiltradas;
+
 	@Enumerated(EnumType.STRING)
 	private ScanStatus estado = ScanStatus.EN_PROGRESO;
 
@@ -69,6 +71,14 @@ public class ScanSession {
 
 	public void setRutaRaiz(String rutaRaiz) {
 		this.rutaRaiz = rutaRaiz;
+	}
+
+	public String getExtensionesFiltradas() {
+		return extensionesFiltradas;
+	}
+
+	public void setExtensionesFiltradas(String extensionesFiltradas) {
+		this.extensionesFiltradas = extensionesFiltradas;
 	}
 
 	public ScanStatus getEstado() {

@@ -8,7 +8,7 @@
 </head>
 <body>
 	<header class="hero hero-chico">
-		<h1>Duplicados de <span th:text="${sesion.tipo}"></span></h1>
+		<h1>Duplicados de <span th:text="${tituloTipo}"></span></h1>
 		<a class="volver" th:href="@{/}">&larr; Volver al inicio</a>
 	</header>
 
@@ -97,7 +97,7 @@
 		</section>
 
 		<div class="acciones-finales">
-			<a class="btn-secundario enlace-boton" th:href="@{/scan/{tipo}(tipo=${sesion.tipo})}">Escanear otra carpeta</a>
+			<a class="btn-secundario enlace-boton" th:href="${urlScan}">Escanear otra carpeta</a>
 			<a class="btn-secundario enlace-boton" th:href="@{/movimientos}">Historial de movimientos</a>
 			<a class="btn-primario enlace-boton" th:href="@{/}">Volver al inicio</a>
 		</div>

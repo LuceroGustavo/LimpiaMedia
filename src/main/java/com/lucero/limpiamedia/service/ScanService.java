@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,23 +61,37 @@ public class ScanService {
 	}
 
 	public ScanSession iniciarEscaneo(ScanType tipo, String ruta) {
+		return iniciarEscaneoCon(tipo, extConfig.extensionesDe(tipo), ruta);
+	}
+
+	public ScanSession iniciarEscaneoPersonalizado(Set<String> extensiones, String ruta) {
+		if (extensiones == null || extensiones.isEmpty()) {
+			throw new IllegalArgumentException("Tenés que seleccionar al menos un formato.");
+		}
+		return iniciarEscaneoCon(ScanType.PERSONALIZADO, new HashSet<>(extensiones), ruta);
+	}
+
+	private ScanSession iniciarEscaneoCon(ScanType tipo, Set<String> extensiones, String ruta) {
 		Path raiz = Paths.get(ruta);
 		if (!Files.isDirectory(raiz)) {
 			throw new IllegalArgumentException("La ruta no es una carpeta válida: " + ruta);
 		}
 		ScanSession sesion = new ScanSession();
 		sesion.setTipo(tipo);
+		if (tipo == ScanType.PERSONALIZADO) {
+			sesion.setExtensionesFiltradas(extensiones.stream().sorted().collect(Collectors.joining(", ")));
+		}
 		sesion.setRutaRaiz(ruta);
 		sesion.setEstado(ScanStatus.EN_PROGRESO);
 		sesion.setInicio(LocalDateTime.now());
 		sesion = sessionRepo.save(sesion);
 
 		final Long id = sesion.getId();
-		scanExecutor.execute(() -> ejecutarEscaneo(id, tipo, raiz));
+		scanExecutor.execute(() -> ejecutarEscaneo(id, extensiones, raiz));
 		return sesion;
 	}
 
-	private void ejecutarEscaneo(Long id, ScanType tipo, Path raiz) {
+	private void ejecutarEscaneo(Long id, Set<String> extensiones, Path raiz) {
 		ScanSession sesion = sessionRepo.findById(id).orElse(null);
 		if (sesion == null) {
 			return;
@@ -85,13 +100,13 @@ public class ScanService {
 			List<Path> excluidas = cargarExcluidas(raiz);
 
 			sesion.setFase(ScanPhase.CONTANDO);
-			long total = contarArchivos(tipo, raiz, excluidas);
+			long total = contarArchivos(extensiones, raiz, excluidas);
 			sesion.setTotalArchivos(total);
 			sesion.setFase(ScanPhase.RECOLECTANDO);
 			sesion = sessionRepo.save(sesion);
 
 			List<InfoArchivo> archivos = new ArrayList<>();
-			recolectarArchivos(tipo, raiz, archivos, sesion, excluidas);
+			recolectarArchivos(extensiones, raiz, archivos, sesion, excluidas);
 			sesion.setFase(ScanPhase.VERIFICANDO);
 			sesion = sessionRepo.save(sesion);
 
@@ -135,7 +150,7 @@ public class ScanService {
 		return false;
 	}
 
-	private long contarArchivos(ScanType tipo, Path raiz, List<Path> excluidas) throws IOException {
+	private long contarArchivos(Set<String> extensiones, Path raiz, List<Path> excluidas) throws IOException {
 		long[] contador = { 0 };
 		Files.walkFileTree(raiz, new SimpleFileVisitor<>() {
 			@Override
@@ -148,7 +163,7 @@ public class ScanService {
 
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-				if (extConfig.tieneExtension(tipo, file.getFileName().toString())) {
+				if (extConfig.tieneExtension(extensiones, file.getFileName().toString())) {
 					contador[0]++;
 				}
 				return FileVisitResult.CONTINUE;
@@ -162,7 +177,7 @@ public class ScanService {
 		return contador[0];
 	}
 
-	private void recolectarArchivos(ScanType tipo, Path raiz, List<InfoArchivo> destino, ScanSession sesion,
+	private void recolectarArchivos(Set<String> extensiones, Path raiz, List<InfoArchivo> destino, ScanSession sesion,
 			List<Path> excluidas) throws IOException {
 		Files.walkFileTree(raiz, new SimpleFileVisitor<>() {
 			@Override
@@ -176,7 +191,7 @@ public class ScanService {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
 				String nombre = file.getFileName().toString();
-				if (extConfig.tieneExtension(tipo, nombre)) {
+				if (extConfig.tieneExtension(extensiones, nombre)) {
 					Path padre = file.getParent();
 					destino.add(new InfoArchivo(nombre, file.toString(),
 							padre == null ? "" : padre.toString(),
