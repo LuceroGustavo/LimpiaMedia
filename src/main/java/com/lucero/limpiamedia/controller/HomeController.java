@@ -6,17 +6,29 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.lucero.limpiamedia.model.ScanSession;
 import com.lucero.limpiamedia.repository.ScanSessionRepository;
+import com.lucero.limpiamedia.service.ScanService;
 
 @Controller
 public class HomeController {
 
 	private final ScanSessionRepository sessionRepo;
+	private final ScanService scanService;
 
-	public HomeController(ScanSessionRepository sessionRepo) {
+	public HomeController(ScanSessionRepository sessionRepo, ScanService scanService) {
 		this.sessionRepo = sessionRepo;
+		this.scanService = scanService;
+	}
+
+	@PostMapping("/escaneos/borrar")
+	public String borrarHistorialEscaneos(RedirectAttributes ra) {
+		int borradas = scanService.borrarHistorialEscaneos();
+		ra.addFlashAttribute("ok", "Historial de escaneos borrado (" + borradas + " sesiones).");
+		return "redirect:/";
 	}
 
 	@GetMapping("/")

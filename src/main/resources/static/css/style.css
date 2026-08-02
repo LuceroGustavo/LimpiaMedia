@@ -916,6 +916,11 @@ body {
 
 .historial-titulo {
 	margin-top: 1.8rem;
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
 }
 
 .historial-titulo h2 {

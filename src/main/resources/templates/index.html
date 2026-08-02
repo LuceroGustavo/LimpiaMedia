@@ -72,6 +72,7 @@
 		</div>
 
 		<section class="panel dashboard">
+			<div class="flash ok" th:if="${ok}" th:text="${ok}"></div>
 			<h2>Resumen</h2>
 			<div class="resumen-grid">
 				<div class="resumen-item">
@@ -95,6 +96,11 @@
 			<div class="historial-titulo">
 				<h2>Historial de escaneos</h2>
 				<p class="ayuda" th:if="${sesiones.isEmpty()}">Todavía no hay escaneos.</p>
+				<form th:if="${!sesiones.isEmpty()}"
+					  th:action="@{/escaneos/borrar}" method="post"
+					  onsubmit="return confirm('¿Borrar todo el historial de escaneos? Los archivos físicos no se tocan.');">
+					<button type="submit" class="btn-peligro">Borrar historial de escaneos</button>
+				</form>
 			</div>
 
 			<div class="tabla-scroll" th:if="${!sesiones.isEmpty()}">

@@ -34,6 +34,7 @@ import com.lucero.limpiamedia.model.ScannedFile;
 import com.lucero.limpiamedia.repository.CarpetaExcluidaRepository;
 import com.lucero.limpiamedia.repository.DuplicateGroupRepository;
 import com.lucero.limpiamedia.repository.ScanSessionRepository;
+import com.lucero.limpiamedia.repository.ScannedFileRepository;
 
 @Service
 public class ScanService {
@@ -44,20 +45,31 @@ public class ScanService {
 
 	private final ScanSessionRepository sessionRepo;
 	private final DuplicateGroupRepository groupRepo;
+	private final ScannedFileRepository fileRepo;
 	private final CarpetaExcluidaRepository exclRepo;
 	private final FileExtensionsConfig extConfig;
 	private final HashService hashService;
 	private final ThreadPoolTaskExecutor scanExecutor;
 
 	public ScanService(ScanSessionRepository sessionRepo, DuplicateGroupRepository groupRepo,
-			CarpetaExcluidaRepository exclRepo, FileExtensionsConfig extConfig, HashService hashService,
-			@Qualifier("scanExecutor") ThreadPoolTaskExecutor scanExecutor) {
+			ScannedFileRepository fileRepo, CarpetaExcluidaRepository exclRepo, FileExtensionsConfig extConfig,
+			HashService hashService, @Qualifier("scanExecutor") ThreadPoolTaskExecutor scanExecutor) {
 		this.sessionRepo = sessionRepo;
 		this.groupRepo = groupRepo;
+		this.fileRepo = fileRepo;
 		this.exclRepo = exclRepo;
 		this.extConfig = extConfig;
 		this.hashService = hashService;
 		this.scanExecutor = scanExecutor;
+	}
+
+	public int borrarHistorialEscaneos() {
+		long sesiones = sessionRepo.count();
+		fileRepo.deleteAll();
+		groupRepo.deleteAll();
+		sessionRepo.deleteAll();
+		log.info("Historial de escaneos borrado ({} sesiones)", sesiones);
+		return (int) sesiones;
 	}
 
 	public ScanSession iniciarEscaneo(ScanType tipo, String ruta) {
