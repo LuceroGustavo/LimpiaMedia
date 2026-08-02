@@ -1136,11 +1136,31 @@ body {
 .hero-nuevo {
 	position: relative;
 	overflow: hidden;
+	display: flex;
+	align-items: stretch;
+	gap: 2rem;
 	border-radius: 24px;
 	background: linear-gradient(160deg, #eef1ff 0%, #f7f9fb 55%, #fdf6ff 100%);
 	border: 1px solid #e8eaf0;
-	padding: 2rem 2.4rem;
+	padding: 1.2rem 2.4rem 1.2rem 1.2rem;
 	margin-bottom: 2.4rem;
+}
+
+.hero-logo {
+	align-self: stretch;
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+.hero-logo img {
+	height: 220px;
+	width: 220px;
+	object-fit: contain;
+	border-radius: 20px;
+	background: #fff;
+	border: 1px solid #e8eaf0;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
 }
 
 .hero-blob {
