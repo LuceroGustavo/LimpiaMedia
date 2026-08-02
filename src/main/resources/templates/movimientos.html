@@ -17,11 +17,20 @@
 		<div class="flash error" th:if="${error}" th:text="${error}"></div>
 
 		<section class="panel">
-			<h2>Archivos movidos</h2>
-			<p class="ayuda">
-				Cada fila registra un archivo movido a la carpeta de duplicados.
-				Usá <strong>Restaurar</strong> para devolverlo a su ubicación original.
-			</p>
+			<div class="panel-cabecera">
+				<div>
+					<h2>Archivos movidos</h2>
+					<p class="ayuda">
+						Cada fila registra un archivo movido a la carpeta de duplicados.
+						Usá <strong>Restaurar</strong> para devolverlo a su ubicación original.
+					</p>
+				</div>
+				<form th:if="${!movimientos.isEmpty()}"
+					  th:action="@{/movimientos/borrar}" method="post"
+					  onsubmit="return confirm('¿Borrar todo el historial? Esta acción no se puede deshacer. Los archivos ya movidos quedarán donde están.');">
+					<button type="submit" class="btn-peligro">Borrar historial</button>
+				</form>
+			</div>
 
 			<div th:if="${movimientos.isEmpty()}" class="aviso">
 				<p>Todavía no se movió ningún archivo.</p>

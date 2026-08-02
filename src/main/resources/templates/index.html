@@ -15,40 +15,60 @@
 
 	<main class="contenedor">
 		<div class="grid-tarjetas">
-			<a class="tarjeta tarjeta-fotos" th:href="@{/scan/FOTOS}">
-				<div class="icono"></div>
-				<h2>Detectar duplicados de fotos</h2>
-				<p>JPG, PNG, WEBP, HEIC, RAW y más.</p>
-				<span class="accion">Comenzar</span>
-			</a>
+			<div class="star-border" style="--sb-color:#0ea5e9">
+				<div class="border-gradient-bottom"></div>
+				<div class="border-gradient-top"></div>
+				<a class="tarjeta tarjeta-fotos" th:href="@{/scan/FOTOS}">
+					<div class="icono"></div>
+					<h2>Detectar duplicados de fotos</h2>
+					<p>JPG, PNG, WEBP, HEIC, RAW y más.</p>
+					<span class="accion">Comenzar</span>
+				</a>
+			</div>
 
-			<a class="tarjeta tarjeta-videos" th:href="@{/scan/VIDEOS}">
-				<div class="icono"></div>
-				<h2>Detectar duplicados de videos</h2>
-				<p>MP4, MKV, MOV, AVI, WEBM y más.</p>
-				<span class="accion">Comenzar</span>
-			</a>
+			<div class="star-border" style="--sb-color:#f43f5e">
+				<div class="border-gradient-bottom"></div>
+				<div class="border-gradient-top"></div>
+				<a class="tarjeta tarjeta-videos" th:href="@{/scan/VIDEOS}">
+					<div class="icono"></div>
+					<h2>Detectar duplicados de videos</h2>
+					<p>MP4, MKV, MOV, AVI, WEBM y más.</p>
+					<span class="accion">Comenzar</span>
+				</a>
+			</div>
 
-			<a class="tarjeta tarjeta-documentos" th:href="@{/scan/DOCUMENTOS}">
-				<div class="icono"></div>
-				<h2>Detectar duplicados de documentos</h2>
-				<p>PDF, DOCX, XLSX, TXT, CSV y más.</p>
-				<span class="accion">Comenzar</span>
-			</a>
+			<div class="star-border" style="--sb-color:#f59e0b">
+				<div class="border-gradient-bottom"></div>
+				<div class="border-gradient-top"></div>
+				<a class="tarjeta tarjeta-documentos" th:href="@{/scan/DOCUMENTOS}">
+					<div class="icono"></div>
+					<h2>Detectar duplicados de documentos</h2>
+					<p>PDF, DOCX, XLSX, TXT, CSV y más.</p>
+					<span class="accion">Comenzar</span>
+				</a>
+			</div>
 
-			<a class="tarjeta tarjeta-sonido" th:href="@{/scan/SONIDO}">
-				<div class="icono"></div>
-				<h2>Detectar duplicados de sonido</h2>
-				<p>MP3, WAV, FLAC, OGG, M4A y más.</p>
-				<span class="accion">Comenzar</span>
-			</a>
+			<div class="star-border" style="--sb-color:#10b981">
+				<div class="border-gradient-bottom"></div>
+				<div class="border-gradient-top"></div>
+				<a class="tarjeta tarjeta-sonido" th:href="@{/scan/SONIDO}">
+					<div class="icono"></div>
+					<h2>Detectar duplicados de sonido</h2>
+					<p>MP3, WAV, FLAC, OGG, M4A y más.</p>
+					<span class="accion">Comenzar</span>
+				</a>
+			</div>
 
-			<a class="tarjeta tarjeta-personalizado" th:href="@{/scan/personalizado}">
-				<div class="icono"></div>
-				<h2>Detectar un formato específico</h2>
-				<p>Elegí exactamente qué formatos comparar: solo JPG, solo PDF, o los que quieras.</p>
-				<span class="accion">Elegir formatos</span>
-			</a>
+			<div class="star-border" style="--sb-color:#8b5cf6">
+				<div class="border-gradient-bottom"></div>
+				<div class="border-gradient-top"></div>
+				<a class="tarjeta tarjeta-personalizado" th:href="@{/scan/personalizado}">
+					<div class="icono"></div>
+					<h2>Detectar un formato específico</h2>
+					<p>Elegí exactamente qué formatos comparar: solo JPG, solo PDF, o los que quieras.</p>
+					<span class="accion">Elegir formatos</span>
+				</a>
+			</div>
 		</div>
 
 		<section class="panel dashboard">

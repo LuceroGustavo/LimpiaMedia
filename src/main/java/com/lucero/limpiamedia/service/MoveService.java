@@ -84,6 +84,13 @@ public class MoveService {
 		return movidos;
 	}
 
+	public int borrarHistorial() {
+		long antes = moveRepo.count();
+		moveRepo.deleteAll();
+		log.info("Historial de movimientos borrado ({} registros)", antes);
+		return (int) antes;
+	}
+
 	public void restaurar(Long moveId) throws IOException {
 		MoveRecord rec = moveRepo.findById(moveId).orElseThrow(
 				() -> new IllegalArgumentException("Movimiento no encontrado"));

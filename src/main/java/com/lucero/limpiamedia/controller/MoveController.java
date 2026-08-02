@@ -37,4 +37,11 @@ public class MoveController {
 		}
 		return "redirect:/movimientos";
 	}
+
+	@PostMapping("/movimientos/borrar")
+	public String borrarHistorial(RedirectAttributes ra) {
+		int borrados = moveService.borrarHistorial();
+		ra.addFlashAttribute("ok", "Historial borrado (" + borrados + " registros).");
+		return "redirect:/movimientos";
+	}
 }

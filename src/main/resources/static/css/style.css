@@ -115,23 +115,63 @@ body {
 	gap: 1.2rem;
 }
 
+.star-border {
+	position: relative;
+	border-radius: 14px;
+	overflow: hidden;
+	display: block;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+	transition: transform .15s ease, box-shadow .15s ease;
+	--sb-color: #4f46e5;
+	--sb-speed: 6s;
+}
+
+.star-border:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
+}
+
+.border-gradient-bottom,
+.border-gradient-top {
+	position: absolute;
+	width: 300%;
+	height: 50%;
+	opacity: .7;
+	border-radius: 50%;
+	z-index: 0;
+	pointer-events: none;
+}
+
+.border-gradient-bottom {
+	bottom: -12px;
+	right: -250%;
+	background: radial-gradient(circle, var(--sb-color), transparent 10%);
+	animation: star-movement-bottom var(--sb-speed) linear infinite alternate;
+}
+
+.border-gradient-top {
+	top: -12px;
+	left: -250%;
+	background: radial-gradient(circle, var(--sb-color), transparent 10%);
+	animation: star-movement-top var(--sb-speed) linear infinite alternate;
+}
+
+.star-border .tarjeta {
+	position: relative;
+	z-index: 1;
+	height: 100%;
+	border-radius: 14px;
+}
+
 .tarjeta {
 	display: flex;
 	flex-direction: column;
 	gap: .6rem;
 	background: #fff;
-	border-radius: 14px;
 	padding: 1.4rem;
 	text-decoration: none;
 	color: inherit;
 	border: 2px solid transparent;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
-	transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-}
-
-.tarjeta:hover {
-	transform: translateY(-4px);
-	box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
 }
 
 .tarjeta .icono {
@@ -308,6 +348,42 @@ body {
 
 .btn-secundario:hover {
 	background: #f3f4f6;
+}
+
+.btn-peligro {
+	background: #fff;
+	color: #dc2626;
+	border: 1px solid #fecaca;
+	border-radius: 8px;
+	padding: .6rem 1rem;
+	font-weight: 600;
+	font-size: .95rem;
+	cursor: pointer;
+	transition: background .12s ease, color .12s ease;
+	white-space: nowrap;
+}
+
+.btn-peligro:hover {
+	background: #dc2626;
+	color: #fff;
+	border-color: #dc2626;
+}
+
+.panel-cabecera {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+	margin-bottom: 1.2rem;
+}
+
+.panel-cabecera h2 {
+	margin-bottom: .2rem;
+}
+
+.panel-cabecera .ayuda {
+	margin-bottom: 0;
 }
 
 .enlace-boton {
@@ -941,4 +1017,26 @@ body {
 	max-height: 70vh;
 	object-fit: contain;
 	border-radius: 6px;
+}
+
+@keyframes star-movement-bottom {
+	0% {
+		transform: translate(0%, 0%);
+		opacity: 1;
+	}
+	100% {
+		transform: translate(-100%, 0%);
+		opacity: 0;
+	}
+}
+
+@keyframes star-movement-top {
+	0% {
+		transform: translate(0%, 0%);
+		opacity: 1;
+	}
+	100% {
+		transform: translate(100%, 0%);
+		opacity: 0;
+	}
 }
