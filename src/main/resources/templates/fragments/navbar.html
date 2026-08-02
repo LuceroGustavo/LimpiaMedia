@@ -3,8 +3,7 @@
 <body>
 	<nav class="navbar" th:fragment="navbar">
 		<a class="navbar-logo" th:href="@{/}">
-			<span class="navbar-marca"></span>
-			<span class="navbar-nombre">LimpiaMedia</span>
+			<img class="navbar-logo-img" th:src="@{/img/navbar.png}" alt="LimpiaMedia">
 		</a>
 		<div class="navbar-links">
 			<a class="nav-link" th:classappend="${rutaActual == '/'} ? 'activo'"

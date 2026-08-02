@@ -219,3 +219,32 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
 - **Búsqueda y filtros en resultados**: campo de texto para filtrar los grupos por nombre de archivo + select de extensión (se arma con las extensiones presentes) + contador "Mostrando X de Y grupos". Todo client-side (JS).
 - **Vista previa de imágenes**: endpoint `GET /archivo/{id}` sirve el archivo si es una imagen (`jpg, jpeg, png, gif, bmp, webp, svg, ico, jfif`) con su Content-Type correcto; en los resultados, cada archivo de imagen muestra una miniatura (44 px) que al hacer clic abre un modal con la imagen grande. Sin miniaturas para videos/documentos.
 - **Pruebas** (instancia aislada :8081): dashboard renderiza resumen + historial ✓; escaneo FOTOS con 2 duplicados (rojo.png/rojo_1.png, azul.jpg/azul (2).jpg) ✓; `/archivo/{id}` devuelve `200 image/png` ✓; CSV con los 2 grupos y hashes idénticos por grupo ✓; JS de filtros/miniaturas/modal servido ✓. `mvnw clean package` verde (6 tests) y `.jar` regenerado.
+
+## 2026-08-02 — Navbar minimalista reutilizable + botón "borrar historial" de movimientos
+- **Navbar reutilizable**: nuevo fragmento Thymeleaf `templates/fragments/navbar.html` (`th:fragment="navbar"`) insertado en las 6 plantillas (`index`, `scan`, `scan-personalizado`, `progreso`, `resultado`, `movimientos`) con `th:insert`. Links: Inicio y Historial de movimientos, con clase `activo` según la ruta.
+- **`config/VistaAdvice`**: `@ControllerAdvice` que expone `rutaActual` (el requestURI) como atributo de modelo en todas las vistas. Es necesario porque **Thymeleaf 3.1 ya no expone `#request` por defecto** en las expresiones de plantilla (antes usaba `#request.requestURI`, lanzaba `EL1011E ... on null context object`). En el fragmento se usa `rutaActual == '/'` y `rutaActual.startsWith('/movimientos')`.
+- **CSS del navbar** en `style.css`: sticky con blur, links con hover, link activo violeta. Se quitaron los "← Volver al inicio" del hero de todas las páginas (ya lo cubre el navbar).
+- **Botón "Borrar historial" de movimientos** (`POST /movimientos/borrar`): solo borra los registros `MOVE_RECORD` de la BD (`MoveService.borrarHistorial()`), con `confirm` JS. No toca los archivos físicos ni el journal `registro/movimientos.jsonl` (decisión del usuario).
+- **Pruebas** (instancia aislada :8081, BD temporal): navbar presente en index/scan/personalizado/movimientos con link activo correcto ✓; botón borrar historial visible solo con registros, con confirm y action correctos ✓; POST devuelve 302 y la BD queda en 0 registros, la página muestra el aviso vacío y el botón desaparece ✓. `mvnw -q compile` OK.
+
+## 2026-08-02 — Efecto StarBorder (borde de estrellas) adaptado a CSS puro
+- El usuario compartió el componente React `StarBorder` de reactbits.dev (https://www.reactbits.dev/animations/star-border). Como LimpiaMedia es **Thymeleaf (no React)**, no se importó el JSX: se replicó el efecto 1:1 con **HTML + CSS puro**, que es donde vive toda la magia.
+- **Marcado**: en `index.html` cada tarjeta quedó envuelta en `<div class="star-border" style="--sb-color:#...">` con dos divs `<div class="border-gradient-bottom">` / `<div class="border-gradient-top">` antes del `<a class="tarjeta">`.
+- **CSS** en `style.css`:
+  - `.star-border`: contenedor relativo con `overflow:hidden`, border-radius 14px, `--sb-color` y `--sb-speed` (variables CSS), shadow y hover `translateY(-4px)` (el transform se movió del `.tarjeta` al contenedor para que `overflow:hidden` no recorte el efecto).
+  - `.border-gradient-bottom/.top`: absolutos, `width:300%; height:50%`, `border-radius:50%`, `background: radial-gradient(circle, var(--sb-color), transparent 10%)`, animación infinita alternate con `@keyframes star-movement-bottom` / `star-movement-top` (idénticos a los de reactbits: translate 0%→±100% con fade de opacidad).
+  - Colores por tarjeta: fotos `#0ea5e9`, videos `#f43f5e`, documentos `#f59e0b`, sonido `#10b981`, personalizado `#8b5cf6`.
+- **Pruebas**: home renderiza 5 contenedores `star-border` con sus gradientes y las variables de color ✓; CSS con keyframes y clases servido ✓. `mvnw -q compile` OK.
+
+## 2026-08-02 — Botón "Borrar historial de escaneos" en la home
+- **`POST /escaneos/borrar`**: `HomeController.borrarHistorialEscaneos()` llama a `ScanService.borrarHistorialEscaneos()`, que borra en **orden de FK**: `ScannedFile` → `DuplicateGroup` → `ScanSession` (`deleteAll` de cada repositorio).
+- Botón rojo "Borrar historial de escaneos" en la sección "Historial de escaneos" del dashboard (`index.html`), visible solo si hay sesiones, con `confirm` JS y flash de confirmación (`ok`). CSS: `.btn-peligro` (reutilizado) y `.historial-titulo` ahora es flex para alinear el botón a la derecha.
+- **No toca**: los archivos físicos, `MOVE_RECORD` (historial de movimientos) ni el journal.
+- **Pruebas** (instancia aislada :8081, BD temporal): botón visible solo con sesiones ✓; insertada sesión de prueba → POST 302, tablas `SCAN_SESSION`/`SCANNED_FILE`/`DUPLICATE_GROUP` en 0 y `MOVE_RECORD` intacta ✓; home recargada sin botón, con aviso vacío y flash "Historial de escaneos borrado (N sesiones)" ✓.
+
+## 2026-08-02 — Logo en el navbar
+- El usuario creó `static/img/navbar.png` (logo que ya incluye el nombre de la app).
+- En `fragments/navbar.html` se reemplazó el `<span class="navbar-marca">` + `<span class="navbar-nombre">LimpiaMedia</span>` por `<img class="navbar-logo-img" th:src="@{/img/navbar.png}" alt="LimpiaMedia">` (sin texto, la imagen ya trae el nombre).
+- CSS: `.navbar-logo-img` con `height:34px; width:auto; display:block`. Se eliminaron `.navbar-marca` y `.navbar-nombre`.
+- **Pruebas** (instancia aislada :8081): navbar renderiza `/img/navbar.png` y ya no muestra "navbar-nombre" ✓; `GET /img/navbar.png` → `200 image/png` ✓.
+- **Pendiente**: empaquetar con **jpackage** (Plan B) para distribuir el instalador de escritorio.
