@@ -7,23 +7,36 @@
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-	<nav th:insert="fragments/navbar :: navbar"></nav>
-	<header class="hero hero-chico">
-		<h1>Detectar un formato específico</h1>
-	</header>
+	<nav th:insert="~{fragments/navbar :: navbar}"></nav>
 
-	<main class="contenedor">
+	<main class="contenedor-nuevo pagina-interna">
+		<header class="pagina-cabecera">
+			<div class="pagina-eyebrow">
+				<span class="icono-ms">tune</span> Análisis a medida
+			</div>
+			<h1 class="pagina-titulo">Detectar un formato específico</h1>
+			<p class="pagina-sub">
+				Compará solo los formatos que te interesan. Un JPG no se compara con un PDF:
+				cada formato se analiza por separado.
+			</p>
+		</header>
+
 		<form th:action="@{/scan/personalizado/iniciar}" method="post">
-			<section class="panel">
-				<h2>Elegí la carpeta a escanear</h2>
+			<section class="seleccion-card">
+				<div class="seleccion-titulo">
+					<div class="seleccion-icono"><span class="icono-ms">folder_open</span></div>
+					<div>
+						<h2>Elegí la carpeta a escanear</h2>
+						<p>Primero marcá la carpeta o disco donde querés buscar duplicados.</p>
+					</div>
+				</div>
+
 				<div class="error-box" th:if="${error}" th:text="${error}"></div>
-				<p class="ayuda">
-					Primero marcá la carpeta o disco donde querés buscar duplicados. Después
-					elegí los formatos abajo y al final tocá <strong>Escanear</strong>.
-				</p>
 
 				<div class="selector-carpeta">
-					<button type="button" class="btn-primario" id="btnAbrir" onclick="abrirModal()">Seleccionar carpeta</button>
+					<button type="button" class="btn-primario btn-grande" id="btnAbrir" onclick="abrirModal()">
+						<span class="icono-ms">folder_open</span> Seleccionar carpeta
+					</button>
 					<div class="carpeta-seleccionada" id="carpetaSeleccionada">
 						<span class="sin-seleccion">Ninguna carpeta seleccionada todavía.</span>
 					</div>
@@ -32,16 +45,22 @@
 				<input type="hidden" name="ruta" id="ruta" value="">
 			</section>
 
-			<section class="panel">
-				<h2>Elegí los formatos a buscar</h2>
-				<p class="ayuda">
-					Tildá los formatos que querés comparar. Solo se van a buscar duplicados entre
-					los formatos seleccionados (un JPG no se compara con un PDF).
-				</p>
+			<section class="seleccion-card">
+				<div class="seleccion-titulo">
+					<div class="seleccion-icono"><span class="icono-ms">extension</span></div>
+					<div>
+						<h2>Elegí los formatos a buscar</h2>
+						<p>Tildá los formatos que querés comparar.</p>
+					</div>
+				</div>
 
 				<div class="acciones-categorias">
-					<button type="button" class="btn-secundario" id="seleccionarTodas">Seleccionar todas</button>
-					<button type="button" class="btn-secundario" id="desmarcarTodas">Desmarcar todas</button>
+					<button type="button" class="btn-secundario" id="seleccionarTodas">
+						<span class="icono-ms">select_all</span> Seleccionar todas
+					</button>
+					<button type="button" class="btn-secundario" id="desmarcarTodas">
+						<span class="icono-ms">deselect</span> Desmarcar todas
+					</button>
 				</div>
 
 				<div class="categorias">
@@ -63,7 +82,9 @@
 			</section>
 
 			<div class="panel escanear-final">
-				<button type="submit" class="btn-primario" id="btnEscanear" disabled>Escanear esta carpeta</button>
+				<button type="submit" class="btn-primario btn-grande" id="btnEscanear" disabled>
+					<span class="icono-ms">rocket_launch</span> Escanear esta carpeta
+				</button>
 			</div>
 		</form>
 	</main>
@@ -100,8 +121,23 @@
 		</div>
 	</div>
 
-	<footer class="pie">
-		<p>LimpiaMedia nunca elimina archivos: solo detecta y, si querés, los mueve.</p>
+	<footer class="pie-nuevo">
+		<div class="pie-nuevo-interno">
+			<div class="pie-nuevo-marca">
+				<div class="pie-nuevo-titulo">LimpiaMedia</div>
+				<p>Simplificá tu almacenamiento local eliminando el desorden y los duplicados con precisión.</p>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Recursos</span>
+				<a th:href="@{/movimientos}">Historial de movimientos</a>
+				<a th:href="@{/scan/personalizado}">Formato específico</a>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Privacidad</span>
+				<p>Todo el procesamiento es local. LimpiaMedia no sube tus archivos a la nube.</p>
+				<p class="pie-copy">© 2026 LimpiaMedia. Todos los derechos reservados.</p>
+			</div>
+		</div>
 	</footer>
 
 	<script th:src="@{/js/carpetas.js}"></script>

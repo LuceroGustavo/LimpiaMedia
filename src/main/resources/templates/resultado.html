@@ -7,12 +7,24 @@
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-	<nav th:insert="fragments/navbar :: navbar"></nav>
-	<header class="hero hero-chico">
-		<h1>Duplicados de <span th:text="${tituloTipo}"></span></h1>
-	</header>
+	<nav th:insert="~{fragments/navbar :: navbar}"></nav>
 
-	<main class="contenedor">
+	<main class="contenedor-nuevo resultado-main">
+		<!-- Overlay de procesamiento al mover -->
+		<div class="procesando-overlay" id="procesando-overlay">
+			<div class="procesando-card">
+				<div class="procesando-circulo">
+					<svg viewbox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+						<circle class="procesando-pista" cx="18" cy="18" fill="none" r="16" stroke-width="3"></circle>
+						<circle class="procesando-arco" cx="18" cy="18" fill="none" r="16" stroke-width="3"></circle>
+					</svg>
+					<span class="procesando-texto" id="procesando-texto">0%</span>
+				</div>
+				<h3>Moviendo archivos</h3>
+				<p>Reorganizando tu espacio digital de forma segura…</p>
+			</div>
+		</div>
+
 		<div class="flash ok" th:if="${movidos}">
 			Se movieron <strong th:text="${movidos}"></strong> archivos duplicados a
 			<strong th:text="${destino}"></strong>.
@@ -20,62 +32,83 @@
 		<div class="flash error" th:if="${error}" th:text="${error}"></div>
 		<div class="flash ok" th:if="${ok}" th:text="${ok}"></div>
 
-		<section class="panel resumen">
-			<h2>Resumen del escaneo</h2>
-			<div class="resumen-grid">
-				<div class="resumen-item">
-					<span class="resumen-numero" th:text="${sesion.totalArchivos}"></span>
-					<span class="resumen-etiqueta">Archivos analizados</span>
+		<!-- Cabecera del resultado -->
+		<section class="resultado-cabecera">
+			<div class="resultado-titulo">
+				<div class="resultado-eyebrow">
+					<span class="icono-ms">check_circle</span>
+					Análisis finalizado
 				</div>
-				<div class="resumen-item">
-					<span class="resumen-numero" th:text="${grupos.size()}"></span>
-					<span class="resumen-etiqueta">Grupos duplicados</span>
-				</div>
-				<div class="resumen-item">
-					<span class="resumen-numero" th:text="${totalDuplicados}"></span>
-					<span class="resumen-etiqueta">Archivos duplicados</span>
-				</div>
-				<div class="resumen-item">
-					<span class="resumen-numero"
-						  th:text="${totalEspacio > 0 ? #numbers.formatDecimal(totalEspacio / 1048576.0, 1, 1) : '0'}"></span>
-					<span class="resumen-etiqueta">Espacio en duplicados (MB)</span>
-				</div>
+				<h1>Duplicados de <span th:text="${tituloTipo}"></span></h1>
+				<p>Detectamos archivos idénticos que ocupan espacio innecesario. Revisá los grupos antes de proceder.</p>
 			</div>
-			<p class="resumen-ruta">Carpeta escaneada: <strong th:text="${sesion.rutaRaiz}"></strong></p>
+			<div class="resultado-acciones">
+				<a class="btn-secundario btn-grande" th:if="${!grupos.isEmpty()}"
+				   th:href="@{/escaneo/{id}/exportar(id=${sesion.id})}">
+					<span class="icono-ms">download</span> Reporte CSV
+				</a>
+				<a class="btn-primario btn-grande" th:href="${urlScan}">
+					<span class="icono-ms">refresh</span> Nuevo escaneo
+				</a>
+			</div>
 		</section>
 
-		<div th:if="${grupos.isEmpty()}" class="panel aviso">
-			<h2>No se encontraron archivos duplicados.</h2>
-			<p th:text="'Se analizaron ' + ${sesion.totalArchivos} + ' archivos y no se repitió ninguno.'"></p>
-		</div>
-
-		<div th:if="${!grupos.isEmpty()}" class="panel filtros">
-			<div class="filtros-barra">
-				<input type="search" id="buscarGrupo" placeholder="Buscar por nombre…" autocomplete="off">
-				<select id="filtrarExtension">
-					<option value="">Todas las extensiones</option>
-				</select>
-				<span class="filtros-contador" id="contadorGrupos"></span>
-			</div>
-		</div>
-
-		<section class="panel mover" th:if="${totalDuplicados > 0 and sesion.carpetaDestino == null}">
-			<h2>Mover duplicados</h2>
-			<p class="ayuda">
-				Los <strong th:text="${totalDuplicados}"></strong> archivos duplicados se van a mover a la
-				carpeta destino. Nunca se eliminan y podés restaurarlos desde el historial.
-			</p>
-			<form th:action="@{/escaneo/{id}/mover(id=${sesion.id})}" method="post">
-				<div class="campo-ruta">
-					<input type="text" name="carpetaDestino" id="destino"
-						   th:value="${sugerencia}" autocomplete="off">
-					<button type="button" class="btn-secundario" onclick="abrirModal()">Cambiar carpeta</button>
-					<button type="submit" class="btn-primario"
-							th:text="'Mover ' + ${totalDuplicados} + ' duplicados'">Mover duplicados</button>
+		<!-- Estadísticas -->
+		<section class="seccion-stats">
+			<div class="stats-grid">
+				<div class="stat-card">
+					<span class="stat-etiqueta">Archivos analizados</span>
+					<span class="stat-valor" th:text="${sesion.totalArchivos}">1200</span>
 				</div>
-			</form>
+				<div class="stat-card">
+					<span class="stat-etiqueta">Grupos duplicados</span>
+					<span class="stat-valor" th:text="${grupos.size()}">15</span>
+				</div>
+				<div class="stat-card">
+					<span class="stat-etiqueta">Total duplicados</span>
+					<span class="stat-valor primario" th:text="${totalDuplicados}">312</span>
+				</div>
+				<div class="stat-card stat-card-destacada">
+					<span class="stat-etiqueta">Espacio recuperable</span>
+					<span class="stat-valor"
+						  th:text="${totalEspacio > 0 ? #numbers.formatDecimal(totalEspacio / 1048576.0, 1, 1) : '0'}">850</span>
+					<span class="stat-unidad">MB</span>
+				</div>
+			</div>
+			<p class="resultado-ruta">Carpeta escaneada: <strong th:text="${sesion.rutaRaiz}"></strong></p>
 		</section>
 
+		<!-- Mover duplicados -->
+		<section class="mover-card" th:if="${totalDuplicados > 0 and sesion.carpetaDestino == null}">
+			<div class="mover-decoracion"></div>
+			<div class="mover-contenido">
+				<div class="mover-texto">
+					<div class="mover-icono"><span class="icono-ms">security</span></div>
+					<h2>Mover duplicados de forma segura</h2>
+					<p>
+						LimpiaMedia nunca elimina tus archivos. Los <strong th:text="${totalDuplicados}"></strong>
+						duplicados se van a mover a una carpeta de seguridad donde podés revisarlos
+						antes de borrarlos. Podés restaurarlos desde el historial.
+					</p>
+				</div>
+				<form class="mover-form" th:action="@{/escaneo/{id}/mover(id=${sesion.id})}" method="post">
+					<div class="mover-campo">
+						<label for="destino">Ruta de destino</label>
+						<div class="mover-input">
+							<span class="icono-ms">folder_open</span>
+							<input type="text" name="carpetaDestino" id="destino"
+								   th:value="${sugerencia}" autocomplete="off">
+							<button type="button" class="btn-mini" onclick="abrirModal()">Cambiar</button>
+						</div>
+					</div>
+					<button type="submit" class="btn-mover" th:text="'Mover ' + ${totalDuplicados} + ' duplicados'">
+						Mover 312 duplicados
+					</button>
+				</form>
+			</div>
+		</section>
+
+		<!-- Duplicados ya movidos -->
 		<section class="panel mover-movido" th:if="${sesion.carpetaDestino != null}">
 			<h2>Duplicados ya movidos</h2>
 			<p class="ayuda">
@@ -89,32 +122,68 @@
 			</div>
 		</section>
 
-		<section class="panel grupo" th:each="g, st : ${grupos}">
-			<h3 class="grupo-titulo">
-				<span class="grupo-num">Grupo <span th:text="${st.count}"></span></span>
-				<span class="grupo-nombre" th:text="${g.archivos[0].nombre}"></span>
-				<span class="grupo-meta"
-					  th:text="'(' + ${g.archivos.size()} + ' copias · ' + ${#numbers.formatDecimal(g.tamanio / 1048576.0, 1, 1)} + ' MB c/u)'"></span>
-			</h3>
-			<ul class="lista-archivos">
-				<li th:each="f, i : ${g.archivos}" th:data-id="${f.id}" th:data-ext="${f.extension}">
-					<span class="etiqueta"
-						  th:classappend="${f.movido} ? 'etiqueta-movido' : (${f.esDuplicado} ? 'etiqueta-dup' : 'etiqueta-orig')"
-						  th:text="${f.movido} ? 'MOVIDO' : (${f.esDuplicado} ? 'DUPLICADO' : 'ORIGINAL')"></span>
-					<span class="ruta" th:text="${f.ruta}"></span>
-				</li>
-			</ul>
+		<!-- Vacío: no se encontraron duplicados -->
+		<div th:if="${grupos.isEmpty()}" class="vacio-historial">
+			<div class="vacio-icono"><span class="icono-ms">task_alt</span></div>
+			<h3>No se encontraron archivos duplicados.</h3>
+			<p th:text="'Se analizaron ' + ${sesion.totalArchivos} + ' archivos y no se repitió ninguno.'"></p>
+			<a class="btn-primario enlace-boton" th:href="${urlScan}">Escanear otra carpeta</a>
+		</div>
+
+		<!-- Filtros y resultados -->
+		<section class="seccion-filtros" th:if="${!grupos.isEmpty()}">
+			<div class="buscador">
+				<span class="icono-ms">search</span>
+				<input type="search" id="buscarGrupo" placeholder="Buscar por nombre de archivo…" autocomplete="off">
+			</div>
+			<div class="filtro-ext">
+				<span class="filtro-label">Filtrar por:</span>
+				<select id="filtrarExtension" class="select-filtro">
+					<option value="">Todos</option>
+				</select>
+			</div>
+			<span class="filtros-contador" id="contadorGrupos"></span>
 		</section>
 
-		<div class="acciones-finales">
-			<a class="btn-secundario enlace-boton" th:if="${!grupos.isEmpty()}"
-			   th:href="@{/escaneo/{id}/exportar(id=${sesion.id})}">Descargar reporte (CSV)</a>
-			<a class="btn-secundario enlace-boton" th:href="${urlScan}">Escanear otra carpeta</a>
-			<a class="btn-secundario enlace-boton" th:href="@{/movimientos}">Historial de movimientos</a>
-			<a class="btn-primario enlace-boton" th:href="@{/}">Volver al inicio</a>
-		</div>
+		<section class="lista-grupos" th:if="${!grupos.isEmpty()}">
+			<div class="grupo-card panel grupo" th:each="g, st : ${grupos}">
+				<div class="grupo-cabecera">
+					<div class="grupo-info">
+						<div class="grupo-icono"><span class="icono-ms">filter_none</span></div>
+						<div>
+							<div class="grupo-titulo">
+								<h3>Grupo <span th:text="${st.count}"></span>: <span th:text="${g.archivos[0].nombre}"></span></h3>
+								<span class="copias" th:text="${g.archivos.size()} + ' COPIAS'"></span>
+							</div>
+							<p class="grupo-meta"
+							   th:text="'Tamaño: ' + ${#numbers.formatDecimal(g.tamanio / 1048576.0, 1, 1)} + ' MB por archivo · Total: ' + ${#numbers.formatDecimal(g.tamanio * g.archivos.size() / 1048576.0, 1, 1)} + ' MB'"></p>
+						</div>
+					</div>
+				</div>
+				<ul class="lista-archivos">
+					<li th:each="f, i : ${g.archivos}" th:data-id="${f.id}" th:data-ext="${f.extension}">
+						<span class="archivo-icono"><span class="icono-ms">description</span></span>
+						<span class="ruta" th:text="${f.ruta}"></span>
+						<span class="etiqueta"
+							  th:classappend="${f.movido} ? 'etiqueta-movido' : (${f.esDuplicado} ? 'etiqueta-dup' : 'etiqueta-orig')"
+							  th:text="${f.movido} ? 'MOVIDO' : (${f.esDuplicado} ? 'DUPLICADO' : 'ORIGINAL')"></span>
+					</li>
+				</ul>
+			</div>
+		</section>
+
+		<!-- Acciones finales -->
+		<section class="acciones-finales-2" th:if="${!grupos.isEmpty()}">
+			<a class="enlace-nuevo" th:href="@{/movimientos}">
+				<span class="icono-ms">history</span> Historial
+			</a>
+			<a class="btn-secundario" th:href="@{/}">
+				<span class="icono-ms">home</span> Volver al inicio
+			</a>
+		</section>
 	</main>
 
+	<!-- Modal de vista previa de imagen -->
 	<div class="modal-overlay" id="modalImagen" style="display:none">
 		<div class="modal modal-imagen">
 			<div class="modal-cabecera">
@@ -127,6 +196,7 @@
 		</div>
 	</div>
 
+	<!-- Modal de selección de carpeta -->
 	<div class="modal-overlay" id="modal" style="display:none">
 		<div class="modal">
 			<div class="modal-cabecera">
@@ -159,8 +229,23 @@
 		</div>
 	</div>
 
-	<footer class="pie">
-		<p>LimpiaMedia nunca elimina archivos: solo detecta, mueve y restaura.</p>
+	<footer class="pie-nuevo">
+		<div class="pie-nuevo-interno">
+			<div class="pie-nuevo-marca">
+				<div class="pie-nuevo-titulo">LimpiaMedia</div>
+				<p>Simplificá tu almacenamiento local eliminando el desorden y los duplicados con precisión.</p>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Recursos</span>
+				<a th:href="@{/movimientos}">Historial de movimientos</a>
+				<a th:href="@{/scan/personalizado}">Formato específico</a>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Privacidad</span>
+				<p>Todo el procesamiento es local. LimpiaMedia no sube tus archivos a la nube.</p>
+				<p class="pie-copy">© 2026 LimpiaMedia. Todos los derechos reservados.</p>
+			</div>
+		</div>
 	</footer>
 
 	<script th:src="@{/js/carpetas.js}"></script>

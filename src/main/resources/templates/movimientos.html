@@ -7,71 +7,94 @@
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-	<nav th:insert="fragments/navbar :: navbar"></nav>
-	<header class="hero hero-chico">
-		<h1>Historial de movimientos</h1>
-	</header>
+	<nav th:insert="~{fragments/navbar :: navbar}"></nav>
 
-	<main class="contenedor">
+	<main class="contenedor-nuevo">
+		<header class="pagina-cabecera">
+			<div class="pagina-eyebrow">
+				<span class="icono-ms">history</span> Registro de seguridad
+			</div>
+			<h1 class="pagina-titulo">Historial de movimientos</h1>
+			<p class="pagina-sub">
+				Cada fila registra un archivo movido a la carpeta de duplicados.
+				Usá <strong>Restaurar</strong> para devolverlo a su ubicación original.
+			</p>
+		</header>
+
 		<div class="flash ok" th:if="${ok}" th:text="${ok}"></div>
 		<div class="flash error" th:if="${error}" th:text="${error}"></div>
 
-		<section class="panel">
-			<div class="panel-cabecera">
-				<div>
-					<h2>Archivos movidos</h2>
-					<p class="ayuda">
-						Cada fila registra un archivo movido a la carpeta de duplicados.
-						Usá <strong>Restaurar</strong> para devolverlo a su ubicación original.
-					</p>
-				</div>
+		<section class="historial-card">
+			<div class="historial-cabecera">
+				<h3>Archivos movidos</h3>
 				<form th:if="${!movimientos.isEmpty()}"
 					  th:action="@{/movimientos/borrar}" method="post"
 					  onsubmit="return confirm('¿Borrar todo el historial? Esta acción no se puede deshacer. Los archivos ya movidos quedarán donde están.');">
-					<button type="submit" class="btn-peligro">Borrar historial</button>
+					<button type="submit" class="btn-borrar">
+						<span class="icono-ms">delete_sweep</span> Borrar historial
+					</button>
 				</form>
 			</div>
 
-			<div th:if="${movimientos.isEmpty()}" class="aviso">
-				<p>Todavía no se movió ningún archivo.</p>
+			<div class="vacio-historial" th:if="${movimientos.isEmpty()}">
+				<div class="vacio-icono"><span class="icono-ms">inbox</span></div>
+				<h3>Todavía no se movió ningún archivo</h3>
+				<p>Los duplicados que muevas a la carpeta de seguridad van a aparecer acá.</p>
 			</div>
 
-			<table class="tabla" th:if="${!movimientos.isEmpty()}">
-				<thead>
-					<tr>
-						<th>Fecha</th>
-						<th>Tipo</th>
-						<th>Original</th>
-						<th>Nuevo</th>
-						<th>Estado</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="m : ${movimientos}">
-						<td th:text="${#temporals.format(m.fecha, 'dd/MM/yyyy HH:mm')}"></td>
-						<td th:text="${m.tipo}"></td>
-						<td class="ruta" th:text="${m.archivoOriginal}"></td>
-						<td class="ruta" th:text="${m.archivoNuevo}"></td>
-						<td>
-							<span class="etiqueta"
-								  th:classappend="${m.restaurado} ? 'etiqueta-orig' : 'etiqueta-dup'"
-								  th:text="${m.restaurado} ? 'RESTAURADO' : 'MOVIDO'"></span>
-						</td>
-						<td>
-							<form th:if="${!m.restaurado}"
-								  th:action="@{/movimientos/{id}/restaurar(id=${m.id})}" method="post">
-								<button type="submit" class="btn-secundario btn-chico">Restaurar</button>
-							</form>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+			<div class="tabla-scroll" th:if="${!movimientos.isEmpty()}">
+				<table class="tabla-nueva">
+					<thead>
+						<tr>
+							<th>Fecha</th>
+							<th>Tipo</th>
+							<th>Original</th>
+							<th>Nuevo</th>
+							<th>Estado</th>
+							<th class="th-derecha">Acción</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="m : ${movimientos}">
+							<td th:text="${#temporals.format(m.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+							<td th:text="${m.tipo}"></td>
+							<td class="ruta celda-truncada" th:text="${m.archivoOriginal}"></td>
+							<td class="ruta celda-truncada" th:text="${m.archivoNuevo}"></td>
+							<td>
+								<span class="pill"
+									  th:classappend="${m.restaurado} ? 'pill-ok' : 'pill-proceso'"
+									  th:text="${m.restaurado} ? 'RESTAURADO' : 'MOVIDO'"></span>
+							</td>
+							<td class="th-derecha">
+								<form th:if="${!m.restaurado}"
+									  th:action="@{/movimientos/{id}/restaurar(id=${m.id})}" method="post">
+									<button type="submit" class="btn-mini">Restaurar</button>
+								</form>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</section>
 	</main>
 
-	<footer class="pie">
-		<p>LimpiaMedia nunca elimina archivos: solo detecta, mueve y restaura.</p>
+	<footer class="pie-nuevo">
+		<div class="pie-nuevo-interno">
+			<div class="pie-nuevo-marca">
+				<div class="pie-nuevo-titulo">LimpiaMedia</div>
+				<p>Simplificá tu almacenamiento local eliminando el desorden y los duplicados con precisión.</p>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Recursos</span>
+				<a th:href="@{/movimientos}">Historial de movimientos</a>
+				<a th:href="@{/scan/personalizado}">Formato específico</a>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Privacidad</span>
+				<p>Todo el procesamiento es local. LimpiaMedia no sube tus archivos a la nube.</p>
+				<p class="pie-copy">© 2026 LimpiaMedia. Todos los derechos reservados.</p>
+			</div>
+		</div>
 	</footer>
 </body>
 </html>

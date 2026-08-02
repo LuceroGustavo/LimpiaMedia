@@ -1,0 +1,301 @@
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-container-high":"#e6e8ea","on-tertiary":"#ffffff","on-background":"#191c1e","inverse-on-surface":"#eff1f3","on-surface-variant":"#464554","on-primary":"#ffffff","surface-bright":"#f7f9fb","secondary":"#505f76","tertiary-fixed-dim":"#ffb783","on-primary-fixed-variant":"#2f2ebe","inverse-primary":"#c0c1ff","primary-fixed-dim":"#c0c1ff","outline":"#767586","error":"#ba1a1a","surface-container-highest":"#e0e3e5","tertiary-fixed":"#ffdcc5","surface-container":"#eceef0","on-tertiary-fixed-variant":"#703700","secondary-fixed-dim":"#b7c8e1","secondary-fixed":"#d3e4fe","surface-container-low":"#f2f4f6","error-container":"#ffdad6","surface-tint":"#494bd6","surface-container-lowest":"#ffffff","primary-container":"#6063ee","surface":"#f7f9fb","outline-variant":"#c7c4d7","on-secondary-container":"#54647a","on-primary-fixed":"#07006c","primary":"#4648d4","on-secondary":"#ffffff","background":"#f7f9fb","on-tertiary-fixed":"#301400","primary-fixed":"#e1e0ff","on-error-container":"#93000a","surface-variant":"#e0e3e5","on-primary-container":"#fffbff","on-error":"#ffffff","tertiary-container":"#b55d00","tertiary":"#904900","on-secondary-fixed-variant":"#38485d","inverse-surface":"#2d3133","on-surface":"#191c1e","on-secondary-fixed":"#0b1c30","surface-dim":"#d8dadc","secondary-container":"#d0e1fb","on-tertiary-container":"#fffbff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"md":"1.5rem","sm":"1rem","lg":"2rem","gutter":"1rem","margin":"1.5rem","base":"4px","xs":"0.5rem","xl":"3rem"},"fontFamily":{"display":["Inter"],"headline-lg":["Inter"],"label-md":["Inter"],"body-md":["Inter"],"body-lg":["Inter"],"headline-md":["Inter"],"headline-lg-mobile":["Inter"]},"fontSize":{"display":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-lg":["28px",{"lineHeight":"36px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.01em","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-md":["20px",{"lineHeight":"28px","fontWeight":"600"}],"headline-lg-mobile":["24px",{"lineHeight":"32px","fontWeight":"600"}]}}}}</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/></head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 w-full z-50 bg-surface/70 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-gutter flex items-center justify-between"><div class="flex items-center gap-xs"><span class="material-symbols-outlined text-primary text-[28px]">cleaning_services</span><span class="font-headline-md text-headline-md tracking-tight text-on-surface">LimpiaMedia</span></div><nav class="hidden md:flex items-center gap-md" data-active-classes="text-primary font-semibold"><a class="text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="file-analyzer" href="#">Analyzer</a><a class="text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="duplicate-manager" href="#">Duplicates</a><a class="text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="settings" href="#">Settings</a></nav><div class="flex items-center gap-sm"><button class="p-xs text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 min-h-screen bg-background"><div class="flex flex-col w-full">
+<!-- Interactive Progress Overlay (Hidden initially, shown on Move) -->
+<div class="fixed inset-0 z-[100] bg-surface/80 backdrop-blur-md flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500" id="processing-overlay">
+<div class="max-w-md w-full p-lg bg-surface-container-lowest rounded-xl shadow-xl text-center">
+<div class="relative w-24 h-24 mx-auto mb-md">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<circle class="stroke-surface-container" cx="18" cy="18" fill="none" r="16" stroke-width="3"></circle>
+<circle class="stroke-primary" cx="18" cy="18" fill="none" id="progress-circle" r="16" stroke-dasharray="100" stroke-dashoffset="100" stroke-linecap="round" stroke-width="3">
+<animate attributename="stroke-dashoffset" dur="2s" fill="freeze" from="100" to="0"></animate>
+</circle>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center font-headline-md text-primary" id="progress-text">0%</span>
+</div>
+<h3 class="font-headline-md text-on-surface mb-xs">Moviendo archivos</h3>
+<p class="text-body-md text-on-surface-variant">Reorganizando tu espacio digital de forma segura...</p>
+</div>
+</div>
+<!-- Header Section -->
+<section class="px-gutter pt-lg pb-md">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div class="flex flex-col gap-xs">
+<div class="flex items-center gap-xs text-primary mb-xs">
+<span class="material-symbols-outlined text-[20px]">image</span>
+<span class="font-label-md uppercase tracking-widest">Análisis Finalizado</span>
+</div>
+<h1 class="font-display text-display text-on-surface">Duplicados de Fotos</h1>
+<p class="text-body-lg text-on-surface-variant max-w-xl">Hemos detectado archivos idénticos que están ocupando espacio innecesario. Revisa los grupos antes de proceder.</p>
+</div>
+<div class="flex items-center gap-sm">
+<button class="flex items-center gap-xs px-md py-sm rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface font-label-md">
+<span class="material-symbols-outlined text-[18px]">download</span>
+          REPORTE CSV
+        </button>
+<button class="flex items-center gap-xs px-md py-sm rounded-lg bg-primary text-on-primary hover:opacity-90 transition-opacity font-label-md shadow-md">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+          NUEVO ESCANEO
+        </button>
+</div>
+</div>
+</section>
+<!-- Stats Grid -->
+<section class="px-gutter py-md">
+<div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+<div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-xs">
+<span class="text-outline font-label-md uppercase">Archivos analizados</span>
+<div class="flex items-baseline gap-xs">
+<span class="font-display text-display text-on-surface">4.2</span>
+<span class="font-headline-md text-on-surface-variant">k</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-xs">
+<span class="text-outline font-label-md uppercase">Grupos duplicados</span>
+<span class="font-display text-display text-on-surface">15</span>
+</div>
+<div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-outline-variant/30 flex flex-col gap-xs">
+<span class="text-outline font-label-md uppercase">Total duplicados</span>
+<span class="font-display text-display text-primary">312</span>
+</div>
+<div class="bg-tertiary-container p-md rounded-xl shadow-sm flex flex-col gap-xs">
+<span class="text-on-tertiary-container font-label-md uppercase opacity-80">Espacio recuperable</span>
+<div class="flex items-baseline gap-xs text-on-tertiary-container">
+<span class="font-display text-display">850</span>
+<span class="font-headline-md">MB</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Move Logic Card -->
+<section class="px-gutter py-md">
+<div class="max-w-7xl mx-auto bg-primary-container rounded-2xl p-lg shadow-xl relative overflow-hidden">
+<!-- Decorative background -->
+<div class="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+<div class="relative z-10 flex flex-col lg:flex-row gap-lg items-center">
+<div class="flex-1 text-on-primary-container">
+<div class="flex items-center gap-sm mb-sm">
+<span class="material-symbols-outlined p-xs bg-white/20 rounded-full">security</span>
+<h2 class="font-headline-lg text-headline-lg">Mover duplicados de forma segura</h2>
+</div>
+<p class="text-body-lg opacity-90 max-w-2xl">LimpiaMedia nunca elimina tus archivos. Los duplicados se moverán a una carpeta de seguridad donde podrás revisarlos manualmente antes de borrarlos.</p>
+</div>
+<div class="w-full lg:w-auto flex flex-col gap-sm min-w-[340px]">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-on-primary-container opacity-80 ml-1">RUTA DE DESTINO</label>
+<div class="flex items-center bg-white/10 backdrop-blur-md rounded-lg p-xs pl-sm border border-white/20">
+<span class="material-symbols-outlined text-on-primary-container/60 text-[18px] mr-xs">folder_open</span>
+<input class="bg-transparent border-none text-on-primary-container text-body-md focus:ring-0 w-full outline-none" readonly="" type="text" value="/Users/admin/Desktop/LimpiaMedia_Dups"/>
+<button class="px-sm py-xs bg-white text-primary font-label-md rounded-md hover:bg-surface-bright transition-colors whitespace-nowrap">
+                CAMBIAR
+              </button>
+</div>
+</div>
+<button class="w-full py-md bg-white text-primary font-headline-md rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg flex items-center justify-center gap-sm group" onclick="simulateMove()">
+            MOVER 312 DUPLICADOS
+            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Filter & Search -->
+<section class="px-gutter py-md">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-md items-center justify-between">
+<div class="relative w-full md:w-96">
+<span class="absolute left-md top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">search</span>
+<input class="w-full pl-xl pr-md py-sm bg-surface-container-low border border-outline-variant/30 rounded-full focus:bg-white focus:border-primary outline-none transition-all text-body-md" placeholder="Buscar por nombre de archivo..." type="text"/>
+</div>
+<div class="flex items-center gap-sm overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+<span class="text-label-md text-outline whitespace-nowrap">FILTRAR POR:</span>
+<button class="px-md py-xs rounded-full bg-primary text-on-primary font-label-md">Todos</button>
+<button class="px-md py-xs rounded-full bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface-variant font-label-md">.jpg</button>
+<button class="px-md py-xs rounded-full bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface-variant font-label-md">.png</button>
+<button class="px-md py-xs rounded-full bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface-variant font-label-md">.raw</button>
+</div>
+</div>
+</section>
+<!-- Results List -->
+<section class="px-gutter py-md pb-xl">
+<div class="max-w-7xl mx-auto flex flex-col gap-lg">
+<!-- Group 1 -->
+<div class="group-card bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden hover:shadow-md transition-shadow">
+<div class="p-md bg-surface-container-low flex flex-col md:flex-row md:items-center justify-between gap-sm">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">filter_none</span>
+</div>
+<div>
+<div class="flex items-center gap-xs">
+<h3 class="font-headline-md text-on-surface">Grupo 1: vacaciones_01.jpg</h3>
+<span class="px-xs py-[1px] bg-primary/10 text-primary text-[10px] font-bold rounded uppercase">3 COPIAS</span>
+</div>
+<p class="text-label-md text-outline uppercase tracking-wider">Tamaño: 2.4 MB por archivo • Total: 7.2 MB</p>
+</div>
+</div>
+<button class="text-primary font-label-md hover:underline flex items-center gap-xs">
+            Ver miniatura <span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+</div>
+<div class="p-md flex flex-col gap-xs">
+<!-- File Row 1 (Original) -->
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-low/50 rounded-lg transition-colors group">
+<div class="flex items-center gap-md min-w-0">
+<span class="material-symbols-outlined text-outline text-[20px]">description</span>
+<span class="text-body-md text-on-surface-variant truncate">/Users/admin/Pictures/2023/Summer/vacaciones_01.jpg</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="px-sm py-xs bg-secondary-container text-on-secondary-container text-[10px] font-bold rounded-full tracking-wider">ORIGINAL</span>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-outline hover:text-on-surface">
+<span class="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- File Row 2 (Duplicate) -->
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-low/50 rounded-lg transition-colors group">
+<div class="flex items-center gap-md min-w-0">
+<span class="material-symbols-outlined text-outline text-[20px]">description</span>
+<span class="text-body-md text-on-surface-variant truncate">/Users/admin/Downloads/vacaciones_01_copia.jpg</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="px-sm py-xs bg-error-container text-on-error-container text-[10px] font-bold rounded-full tracking-wider uppercase">DUPLICADO</span>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-outline hover:text-on-surface">
+<span class="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- File Row 3 (Duplicate) -->
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-low/50 rounded-lg transition-colors group">
+<div class="flex items-center gap-md min-w-0">
+<span class="material-symbols-outlined text-outline text-[20px]">description</span>
+<span class="text-body-md text-on-surface-variant truncate">/Volumes/ExternalDrive/Backup/vacaciones_01.jpg</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="px-sm py-xs bg-error-container text-on-error-container text-[10px] font-bold rounded-full tracking-wider uppercase">DUPLICADO</span>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-outline hover:text-on-surface">
+<span class="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Group 2 -->
+<div class="group-card bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden hover:shadow-md transition-shadow">
+<div class="p-md bg-surface-container-low flex flex-col md:flex-row md:items-center justify-between gap-sm">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">filter_none</span>
+</div>
+<div>
+<div class="flex items-center gap-xs">
+<h3 class="font-headline-md text-on-surface">Grupo 2: IMG_4821.png</h3>
+<span class="px-xs py-[1px] bg-primary/10 text-primary text-[10px] font-bold rounded uppercase">2 COPIAS</span>
+</div>
+<p class="text-label-md text-outline uppercase tracking-wider">Tamaño: 8.1 MB por archivo • Total: 16.2 MB</p>
+</div>
+</div>
+<button class="text-primary font-label-md hover:underline flex items-center gap-xs">
+            Ver miniatura <span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+</div>
+<div class="p-md flex flex-col gap-xs">
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-low/50 rounded-lg transition-colors group">
+<div class="flex items-center gap-md min-w-0">
+<span class="material-symbols-outlined text-outline text-[20px]">description</span>
+<span class="text-body-md text-on-surface-variant truncate">/Users/admin/Pictures/Wallpapers/IMG_4821.png</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="px-sm py-xs bg-secondary-container text-on-secondary-container text-[10px] font-bold rounded-full tracking-wider">ORIGINAL</span>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-outline hover:text-on-surface">
+<span class="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-low/50 rounded-lg transition-colors group">
+<div class="flex items-center gap-md min-w-0">
+<span class="material-symbols-outlined text-outline text-[20px]">description</span>
+<span class="text-body-md text-on-surface-variant truncate">/Users/admin/Desktop/Old/IMG_4821.png</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="px-sm py-xs bg-error-container text-on-error-container text-[10px] font-bold rounded-full tracking-wider uppercase">DUPLICADO</span>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-outline hover:text-on-surface">
+<span class="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final Footer Actions -->
+<section class="px-gutter py-xl bg-surface-container-low/50 border-t border-outline-variant/20">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-lg">
+<div class="flex flex-wrap items-center justify-center md:justify-start gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors font-label-md uppercase tracking-wider flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">history</span>
+          HISTORIAL
+        </button>
+<button class="text-on-surface-variant hover:text-primary transition-colors font-label-md uppercase tracking-wider flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+          PREFERENCIAS
+        </button>
+</div>
+<button class="px-xl py-md bg-surface-container-highest text-on-surface font-headline-md rounded-xl hover:bg-outline-variant/40 transition-colors" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        Volver al inicio
+      </button>
+</div>
+</section>
+<script>
+    function simulateMove() {
+      const overlay = document.getElementById('processing-overlay');
+      const progressText = document.getElementById('progress-text');
+      const progressCircle = document.getElementById('progress-circle');
+      
+      overlay.classList.remove('opacity-0', 'pointer-events-none');
+      overlay.classList.add('opacity-100');
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 15) + 5;
+        if (progress > 100) progress = 100;
+        
+        progressText.innerText = progress + '%';
+        progressCircle.style.strokeDashoffset = 100 - progress;
+        
+        if (progress === 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            alert('¡312 Archivos movidos con éxito! Tu almacenamiento respira mejor.');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100');
+            // Mocking UI update for moved files
+            document.querySelectorAll('.bg-error-container').forEach(el => {
+              el.classList.remove('bg-error-container', 'text-on-error-container');
+              el.classList.add('bg-tertiary-fixed', 'text-on-tertiary-fixed-variant');
+              el.innerText = 'MOVIDO';
+            });
+          }, 800);
+        }
+      }, 300);
+    }
+
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('opacity-100', 'translate-y-0');
+          entry.target.classList.remove('opacity-0', 'translate-y-8');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.group-card').forEach(card => {
+      card.classList.add('transition-all', 'duration-700', 'opacity-0', 'translate-y-8');
+      observer.observe(card);
+    });
+  </script>
+</div></main><footer class="w-full bg-surface-container-low py-xl"><div class="max-w-7xl mx-auto px-gutter grid grid-cols-1 md:grid-cols-3 gap-lg text-sm text-on-surface-variant"><div class="flex flex-col gap-xs"><div class="font-headline-md text-on-surface mb-xs">LimpiaMedia</div><p class="text-body-md">Streamlining your local storage by eliminating clutter and duplicates with precision.</p></div><div class="flex flex-col gap-xs"><span class="font-label-md uppercase text-outline">Resources</span><a class="hover:text-primary transition-colors" href="#">Documentation</a><a class="hover:text-primary transition-colors" href="#">Security Standards</a><a class="hover:text-primary transition-colors" href="#">Support</a></div><div class="flex flex-col gap-xs"><span class="font-label-md uppercase text-outline">Privacy</span><p class="text-body-md">All processing is done locally. LimpiaMedia does not upload your files to the cloud.</p><div class="mt-xs pt-xs border-t border-outline-variant">© 2024 LimpiaMedia. All rights reserved.</div></div></div></footer></body></html>

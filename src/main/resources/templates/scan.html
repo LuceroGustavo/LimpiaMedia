@@ -7,22 +7,35 @@
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-	<nav th:insert="fragments/navbar :: navbar"></nav>
-	<header class="hero hero-chico">
-		<h1>Detectar duplicados de <span th:text="${tipo}"></span></h1>
-	</header>
+	<nav th:insert="~{fragments/navbar :: navbar}"></nav>
 
-	<main class="contenedor">
-		<section class="panel">
-			<h2>Elegí la carpeta a escanear</h2>
-			<div class="error-box" th:if="${error}" th:text="${error}"></div>
-			<p class="ayuda">
-				Hacé clic en <strong>Seleccionar carpeta</strong> y navegá hasta la carpeta o
-				disco donde quieras buscar duplicados.
+	<main class="contenedor-nuevo pagina-interna">
+		<header class="pagina-cabecera">
+			<div class="pagina-eyebrow">
+				<span class="icono-ms">folder_managed</span> Nuevo análisis
+			</div>
+			<h1 class="pagina-titulo">Detectar duplicados de <span th:text="${tipo}"></span></h1>
+			<p class="pagina-sub">
+				Elegí la carpeta o disco donde LimpiaMedia va a buscar archivos idénticos.
+				Los archivos se analizan en tu equipo: nada se sube a la nube.
 			</p>
+		</header>
+
+		<section class="seleccion-card">
+			<div class="seleccion-titulo">
+				<div class="seleccion-icono"><span class="icono-ms">folder_open</span></div>
+				<div>
+					<h2>Elegí la carpeta a escanear</h2>
+					<p>Hacé clic en <strong>Seleccionar carpeta</strong> y navegá hasta la carpeta o disco.</p>
+				</div>
+			</div>
+
+			<div class="error-box" th:if="${error}" th:text="${error}"></div>
 
 			<div class="selector-carpeta">
-				<button type="button" class="btn-primario" id="btnAbrir" onclick="abrirModal()">Seleccionar carpeta</button>
+				<button type="button" class="btn-primario btn-grande" id="btnAbrir" onclick="abrirModal()">
+					<span class="icono-ms">folder_open</span> Seleccionar carpeta
+				</button>
 				<div class="carpeta-seleccionada" id="carpetaSeleccionada">
 					<span class="sin-seleccion">Ninguna carpeta seleccionada todavía.</span>
 				</div>
@@ -30,7 +43,9 @@
 
 			<form th:action="@{/scan/{tipo}/iniciar(tipo=${tipo})}" method="post" class="form-escanear">
 				<input type="hidden" name="ruta" id="ruta" value="">
-				<button type="submit" class="btn-primario" id="btnEscanear" disabled>Escanear esta carpeta</button>
+				<button type="submit" class="btn-primario btn-grande" id="btnEscanear" disabled>
+					<span class="icono-ms">rocket_launch</span> Escanear esta carpeta
+				</button>
 			</form>
 		</section>
 	</main>
@@ -67,8 +82,23 @@
 		</div>
 	</div>
 
-	<footer class="pie">
-		<p>LimpiaMedia nunca elimina archivos: solo detecta y, si querés, los mueve.</p>
+	<footer class="pie-nuevo">
+		<div class="pie-nuevo-interno">
+			<div class="pie-nuevo-marca">
+				<div class="pie-nuevo-titulo">LimpiaMedia</div>
+				<p>Simplificá tu almacenamiento local eliminando el desorden y los duplicados con precisión.</p>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Recursos</span>
+				<a th:href="@{/movimientos}">Historial de movimientos</a>
+				<a th:href="@{/scan/personalizado}">Formato específico</a>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Privacidad</span>
+				<p>Todo el procesamiento es local. LimpiaMedia no sube tus archivos a la nube.</p>
+				<p class="pie-copy">© 2026 LimpiaMedia. Todos los derechos reservados.</p>
+			</div>
+		</div>
 	</footer>
 
 	<script th:src="@{/js/carpetas.js}"></script>

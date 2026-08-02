@@ -102,4 +102,28 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 	window.cerrarModalImagen = cerrarModalImagen;
+
+	var moverForm = document.querySelector('.mover-form');
+	if (moverForm) {
+		moverForm.addEventListener('submit', function () {
+			mostrarProcesando();
+		});
+	}
+
+	function mostrarProcesando() {
+		var overlay = document.getElementById('procesando-overlay');
+		var texto = document.getElementById('procesando-texto');
+		if (!overlay) {
+			return;
+		}
+		overlay.classList.add('visible');
+		var p = 0;
+		var t = setInterval(function () {
+			p = Math.min(100, p + 7);
+			texto.textContent = p + '%';
+			if (p >= 100) {
+				clearInterval(t);
+			}
+		}, 80);
+	}
 });

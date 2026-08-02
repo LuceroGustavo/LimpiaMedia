@@ -7,148 +7,253 @@
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-	<nav th:insert="fragments/navbar :: navbar"></nav>
-	<header class="hero">
-		<h1>LimpiaMedia</h1>
-		<p>Detectá archivos duplicados en tu PC. Elegí una categoría para empezar.</p>
-	</header>
+	<nav th:insert="~{fragments/navbar :: navbar}"></nav>
 
-	<main class="contenedor">
-		<div class="grid-tarjetas">
-			<div class="star-border" style="--sb-color:#0ea5e9">
-				<div class="border-gradient-bottom"></div>
-				<div class="border-gradient-top"></div>
-				<a class="tarjeta tarjeta-fotos" th:href="@{/scan/FOTOS}">
-					<div class="icono"></div>
-					<h2>Detectar duplicados de fotos</h2>
-					<p>JPG, PNG, WEBP, HEIC, RAW y más.</p>
-					<span class="accion">Comenzar</span>
-				</a>
+	<main class="contenedor-nuevo">
+		<!-- Hero con fondo animado -->
+		<section class="hero-nuevo">
+			<div class="hero-blob" aria-hidden="true">
+				<svg viewbox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+					<path d="M44.7,-76.4C58.1,-69.2,69.2,-58.1,76.4,-44.7C83.7,-31.3,87.1,-15.7,86.3,-0.5C85.5,14.7,80.5,29.4,72.2,42.4C63.9,55.4,52.3,66.6,38.9,73.8C25.5,81,10.3,84.2,-4.5,82.7C-19.3,81.2,-33.6,75,-46.3,66.2C-59,57.4,-70.1,46,-77.3,32.6C-84.5,19.2,-87.8,3.8,-86.6,-11.2C-85.4,-26.2,-79.7,-40.8,-70,-52.8C-60.3,-64.8,-46.6,-74.2,-32.5,-80.7C-18.4,-87.2,-3.9,-90.8,10.8,-88.4C25.5,-86,31.3,-83.6,44.7,-76.4Z" fill="#4648d4" transform="translate(100 100)"></path>
+				</svg>
 			</div>
-
-			<div class="star-border" style="--sb-color:#f43f5e">
-				<div class="border-gradient-bottom"></div>
-				<div class="border-gradient-top"></div>
-				<a class="tarjeta tarjeta-videos" th:href="@{/scan/VIDEOS}">
-					<div class="icono"></div>
-					<h2>Detectar duplicados de videos</h2>
-					<p>MP4, MKV, MOV, AVI, WEBM y más.</p>
-					<span class="accion">Comenzar</span>
-				</a>
-			</div>
-
-			<div class="star-border" style="--sb-color:#f59e0b">
-				<div class="border-gradient-bottom"></div>
-				<div class="border-gradient-top"></div>
-				<a class="tarjeta tarjeta-documentos" th:href="@{/scan/DOCUMENTOS}">
-					<div class="icono"></div>
-					<h2>Detectar duplicados de documentos</h2>
-					<p>PDF, DOCX, XLSX, TXT, CSV y más.</p>
-					<span class="accion">Comenzar</span>
-				</a>
-			</div>
-
-			<div class="star-border" style="--sb-color:#10b981">
-				<div class="border-gradient-bottom"></div>
-				<div class="border-gradient-top"></div>
-				<a class="tarjeta tarjeta-sonido" th:href="@{/scan/SONIDO}">
-					<div class="icono"></div>
-					<h2>Detectar duplicados de sonido</h2>
-					<p>MP3, WAV, FLAC, OGG, M4A y más.</p>
-					<span class="accion">Comenzar</span>
-				</a>
-			</div>
-
-			<div class="star-border" style="--sb-color:#8b5cf6">
-				<div class="border-gradient-bottom"></div>
-				<div class="border-gradient-top"></div>
-				<a class="tarjeta tarjeta-personalizado" th:href="@{/scan/personalizado}">
-					<div class="icono"></div>
-					<h2>Detectar un formato específico</h2>
-					<p>Elegí exactamente qué formatos comparar: solo JPG, solo PDF, o los que quieras.</p>
-					<span class="accion">Elegir formatos</span>
-				</a>
-			</div>
-		</div>
-
-		<section class="panel dashboard">
-			<div class="flash ok" th:if="${ok}" th:text="${ok}"></div>
-			<h2>Resumen</h2>
-			<div class="resumen-grid">
-				<div class="resumen-item">
-					<span class="resumen-numero" th:text="${totalEscaneos}"></span>
-					<span class="resumen-etiqueta">Escaneos realizados</span>
+			<div class="hero-contenido">
+				<div class="hero-badge">
+					<span class="icono-ms hero-badge-icono">cleaning_services</span>
+					<span class="hero-badge-texto">Inteligencia de almacenamiento</span>
+					<span class="hero-badge-linea"></span>
 				</div>
-				<div class="resumen-item">
-					<span class="resumen-numero" th:text="${completados}"></span>
-					<span class="resumen-etiqueta">Completados</span>
+				<h1 class="hero-titulo">
+					Organizá tu vida digital <em>con precisión.</em>
+				</h1>
+				<p class="hero-subtitulo">
+					Escanéa, categorizá y eliminá los archivos duplicados de tus discos locales.
+					Gestión profesional de archivos, sin la complejidad de la nube.
+				</p>
+			</div>
+		</section>
+
+		<!-- Grilla de categorías (asimetrica, estilo stitch) -->
+		<section class="seccion-cats">
+			<div class="seccion-cabecera">
+				<div>
+					<span class="seccion-eyebrow">Analítica de archivos</span>
+					<h2 class="seccion-titulo">Elegí una categoría</h2>
 				</div>
-				<div class="resumen-item">
-					<span class="resumen-numero" th:text="${totalArchivos}"></span>
-					<span class="resumen-etiqueta">Archivos analizados</span>
-				</div>
-				<div class="resumen-item">
-					<span class="resumen-numero" th:text="${totalDuplicados}"></span>
-					<span class="resumen-etiqueta">Duplicados encontrados</span>
-				</div>
+				<div class="seccion-linea"></div>
 			</div>
 
-			<div class="historial-titulo">
-				<h2>Historial de escaneos</h2>
-				<p class="ayuda" th:if="${sesiones.isEmpty()}">Todavía no hay escaneos.</p>
-				<form th:if="${!sesiones.isEmpty()}"
-					  th:action="@{/escaneos/borrar}" method="post"
-					  onsubmit="return confirm('¿Borrar todo el historial de escaneos? Los archivos físicos no se tocan.');">
-					<button type="submit" class="btn-peligro">Borrar historial de escaneos</button>
-				</form>
-			</div>
+			<div class="grid-cats">
+				<div class="cat celda-4">
+					<div class="star-border" style="--sb-color:#4648d4">
+						<div class="border-gradient-bottom"></div>
+						<div class="border-gradient-top"></div>
+						<a class="tarjeta cat-fotos" th:href="@{/scan/FOTOS}">
+							<div class="cat-icono"><span class="icono-ms">image</span></div>
+							<div class="cat-contenido">
+								<h3>Fotos</h3>
+								<p>JPG, PNG, WEBP, RAW, HEIC</p>
+								<span class="cat-accion">
+									Comenzar <span class="icono-ms">arrow_forward</span>
+								</span>
+							</div>
+						</a>
+					</div>
+				</div>
 
-			<div class="tabla-scroll" th:if="${!sesiones.isEmpty()}">
-				<table class="tabla">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Tipo</th>
-							<th>Fecha</th>
-							<th>Estado</th>
-							<th>Archivos</th>
-							<th>Duplicados</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="s : ${sesiones}">
-							<td th:text="${s.id}"></td>
-							<td>
-								<span th:if="${s.tipo.name() == 'PERSONALIZADO'}" th:text="'Formatos: ' + ${s.extensionesFiltradas}"></span>
-								<span th:if="${s.tipo.name() != 'PERSONALIZADO'}" th:text="${s.tipo}"></span>
-							</td>
-							<td th:text="${#temporals.format(s.inicio, 'dd/MM/yyyy HH:mm')}"></td>
-							<td>
-								<span class="estado-pill"
-									  th:classappend="${s.estado.name() == 'COMPLETADO'} ? 'estado-pill-ok' : (${s.estado.name() == 'ERROR'} ? 'estado-pill-error' : 'estado-pill-proceso')"
-									  th:text="${s.estado.name()}"></span>
-							</td>
-							<td th:text="${s.totalArchivos}"></td>
-							<td th:text="${s.duplicados}"></td>
-							<td>
-								<a class="btn-chico btn-secundario"
-								   th:if="${s.estado.name() == 'COMPLETADO'}"
-								   th:href="@{/escaneo/{id}/resultado(id=${s.id})}">Ver</a>
-								<a class="btn-chico btn-secundario"
-								   th:if="${s.estado.name() == 'EN_PROGRESO'}"
-								   th:href="@{/escaneo/{id}(id=${s.id})}">Progreso</a>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+				<div class="cat celda-4">
+					<div class="star-border" style="--sb-color:#d5484a">
+						<div class="border-gradient-bottom"></div>
+						<div class="border-gradient-top"></div>
+						<a class="tarjeta cat-videos" th:href="@{/scan/VIDEOS}">
+							<div class="cat-icono"><span class="icono-ms">movie</span></div>
+							<div class="cat-contenido">
+								<h3>Videos</h3>
+								<p>MP4, MKV, MOV, AVI, WMV</p>
+								<span class="cat-accion">
+									Comenzar <span class="icono-ms">arrow_forward</span>
+								</span>
+							</div>
+						</a>
+					</div>
+				</div>
+
+				<div class="cat celda-4">
+					<div class="star-border" style="--sb-color:#b55d00">
+						<div class="border-gradient-bottom"></div>
+						<div class="border-gradient-top"></div>
+						<a class="tarjeta cat-documentos" th:href="@{/scan/DOCUMENTOS}">
+							<div class="cat-icono"><span class="icono-ms">description</span></div>
+							<div class="cat-contenido">
+								<h3>Documentos</h3>
+								<p>PDF, DOCX, XLSX, TXT, PPTX</p>
+								<span class="cat-accion">
+									Comenzar <span class="icono-ms">arrow_forward</span>
+								</span>
+							</div>
+						</a>
+					</div>
+				</div>
+
+				<div class="cat celda-6">
+					<div class="star-border" style="--sb-color:#0e9f6e">
+						<div class="border-gradient-bottom"></div>
+						<div class="border-gradient-top"></div>
+						<a class="tarjeta cat-sonido" th:href="@{/scan/SONIDO}">
+							<div class="cat-icono"><span class="icono-ms">audio_file</span></div>
+							<div class="cat-contenido">
+								<h3>Sonido</h3>
+								<p>MP3, WAV, FLAC, AAC, OGG</p>
+								<span class="cat-accion">
+									Comenzar <span class="icono-ms">arrow_forward</span>
+								</span>
+							</div>
+						</a>
+					</div>
+				</div>
+
+				<div class="cat celda-6">
+					<div class="star-border" style="--sb-color:#8b5cf6">
+						<div class="border-gradient-bottom"></div>
+						<div class="border-gradient-top"></div>
+						<a class="tarjeta cat-personalizado" th:href="@{/scan/personalizado}">
+							<div class="cat-icono"><span class="icono-ms">tune</span></div>
+							<div class="cat-contenido">
+								<h3>Personalizado</h3>
+								<p>Configurá tus propios filtros y extensiones</p>
+								<span class="cat-accion">
+									Configurar <span class="icono-ms">settings</span>
+								</span>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Estadísticas del dashboard -->
+		<section class="seccion-stats">
+			<div class="contenido-ancho">
+				<div class="stats-grid">
+					<div class="stat-card">
+						<span class="stat-etiqueta">Escaneos</span>
+						<span class="stat-valor primario" th:text="${totalEscaneos}">124</span>
+						<div class="stat-pie">
+							<span class="icono-ms">trending_up</span> Total realizados
+						</div>
+					</div>
+					<div class="stat-card">
+						<span class="stat-etiqueta">Completados</span>
+						<span class="stat-valor" th:text="${completados}">98</span>
+						<div class="stat-barra">
+							<div class="stat-barra-relleno"
+								 th:style="'width:' + (${totalEscaneos} > 0 ? ${completados * 100 / totalEscaneos} : 0) + '%'"></div>
+						</div>
+					</div>
+					<div class="stat-card">
+						<span class="stat-etiqueta">Archivos</span>
+						<span class="stat-valor" th:text="${totalArchivos}">4.2k</span>
+						<div class="stat-pie">Analizados</div>
+					</div>
+					<div class="stat-card">
+						<span class="stat-etiqueta">Duplicados</span>
+						<span class="stat-valor error" th:text="${totalDuplicados}">312</span>
+						<div class="stat-pie error">
+							<span class="icono-ms">warning</span> Posible desorden
+						</div>
+					</div>
+				</div>
+
+				<!-- Historial de escaneos -->
+				<div class="historial-card">
+					<div class="historial-cabecera">
+						<h3>Historial de escaneos</h3>
+						<form th:if="${!sesiones.isEmpty()}"
+							  th:action="@{/escaneos/borrar}" method="post"
+							  onsubmit="return confirm('¿Borrar todo el historial de escaneos? Los archivos físicos no se tocan.');">
+							<button type="submit" class="btn-borrar">
+								<span class="icono-ms">delete_sweep</span> Borrar historial
+							</button>
+						</form>
+					</div>
+
+					<div class="flash ok" th:if="${ok}" th:text="${ok}"></div>
+
+					<div class="tabla-scroll" th:if="${!sesiones.isEmpty()}">
+						<table class="tabla-nueva">
+							<thead>
+								<tr>
+									<th>Fecha</th>
+									<th>Directorio</th>
+									<th>Categoría</th>
+									<th>Estado</th>
+									<th class="th-derecha">Acción</th>
+								</tr>
+							</thead>
+							<tbody class="divide">
+								<tr th:each="s : ${sesiones}">
+									<td th:text="${#temporals.format(s.inicio, 'dd/MM/yyyy HH:mm')}"></td>
+									<td class="celda-truncada" th:text="${s.rutaRaiz}"></td>
+									<td>
+										<div class="celda-categoria">
+											<span class="punto" th:classappend="${s.tipo.name() == 'FOTOS'} ? 'punto-fotos' : (${s.tipo.name() == 'VIDEOS'} ? 'punto-videos' : (${s.tipo.name() == 'DOCUMENTOS'} ? 'punto-documentos' : (${s.tipo.name() == 'SONIDO'} ? 'punto-sonido' : 'punto-personalizado')))"></span>
+											<span th:if="${s.tipo.name() == 'PERSONALIZADO'}" th:text="'Formatos: ' + ${s.extensionesFiltradas}"></span>
+											<span th:if="${s.tipo.name() != 'PERSONALIZADO'}" th:text="${s.tipo}"></span>
+										</div>
+									</td>
+									<td>
+										<span class="pill"
+											  th:classappend="${s.estado.name() == 'COMPLETADO'} ? 'pill-ok' : (${s.estado.name() == 'ERROR'} ? 'pill-error' : 'pill-proceso')"
+											  th:if="${s.estado.name() == 'COMPLETADO'}">Completado</span>
+										<span class="pill pill-error"
+											  th:if="${s.estado.name() == 'ERROR'}">Error</span>
+										<span class="pill pill-proceso"
+											  th:if="${s.estado.name() == 'EN_PROGRESO'}">Analizando…</span>
+									</td>
+									<td class="th-derecha">
+										<div class="celda-acciones">
+											<a class="btn-icono"
+											   th:if="${s.estado.name() == 'COMPLETADO'}"
+											   th:href="@{/escaneo/{id}/resultado(id=${s.id})}"
+											   title="Ver resultado"><span class="icono-ms">visibility</span></a>
+											<a class="btn-icono"
+											   th:if="${s.estado.name() == 'EN_PROGRESO'}"
+											   th:href="@{/escaneo/{id}(id=${s.id})}"
+											   title="Ver progreso"><span class="icono-ms">hourglass_empty</span></a>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="vacio-historial" th:if="${sesiones.isEmpty()}">
+						<div class="vacio-icono"><span class="icono-ms">query_stats</span></div>
+						<h3>No hay actividad reciente</h3>
+						<p>Empeza seleccionando una categoría para analizar tus archivos y liberar espacio.</p>
+					</div>
+				</div>
 			</div>
 		</section>
 	</main>
 
-	<footer class="pie">
-		<p>LimpiaMedia nunca elimina archivos: solo detecta y, si querés, los mueve.</p>
-		<p class="pie-enlace"><a th:href="@{/movimientos}">Historial de movimientos</a></p>
+	<footer class="pie-nuevo">
+		<div class="pie-nuevo-interno">
+			<div class="pie-nuevo-marca">
+				<div class="pie-nuevo-titulo">LimpiaMedia</div>
+				<p>Simplificá tu almacenamiento local eliminando el desorden y los duplicados con precisión.</p>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Recursos</span>
+				<a th:href="@{/movimientos}">Historial de movimientos</a>
+				<a th:href="@{/scan/personalizado}">Formato específico</a>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Privacidad</span>
+				<p>Todo el procesamiento es local. LimpiaMedia no sube tus archivos a la nube.</p>
+				<p class="pie-copy">© 2026 LimpiaMedia. Todos los derechos reservados.</p>
+			</div>
+		</div>
 	</footer>
 </body>
 </html>

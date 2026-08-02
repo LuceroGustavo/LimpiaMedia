@@ -7,14 +7,14 @@
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-	<nav th:insert="fragments/navbar :: navbar"></nav>
-	<header class="hero hero-chico">
-		<h1>Buscando archivos duplicados</h1>
-	</header>
+	<nav th:insert="~{fragments/navbar :: navbar}"></nav>
 
-	<main class="contenedor">
-		<section class="panel centro">
-			<h2>Escaneando…</h2>
+	<main class="contenedor-nuevo progreso-main">
+		<section class="progreso-card">
+			<div class="progreso-icono">
+				<span class="icono-ms">radar</span>
+			</div>
+			<h1>Buscando archivos duplicados</h1>
 			<p class="estado-texto" id="estado">Iniciando escaneo…</p>
 			<div class="barra">
 				<div class="barra-relleno" id="relleno"></div>
@@ -23,8 +23,23 @@
 		</section>
 	</main>
 
-	<footer class="pie">
-		<p>LimpiaMedia nunca elimina archivos: solo detecta y, si querés, los mueve.</p>
+	<footer class="pie-nuevo">
+		<div class="pie-nuevo-interno">
+			<div class="pie-nuevo-marca">
+				<div class="pie-nuevo-titulo">LimpiaMedia</div>
+				<p>Simplificá tu almacenamiento local eliminando el desorden y los duplicados con precisión.</p>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Recursos</span>
+				<a th:href="@{/movimientos}">Historial de movimientos</a>
+				<a th:href="@{/scan/personalizado}">Formato específico</a>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Privacidad</span>
+				<p>Todo el procesamiento es local. LimpiaMedia no sube tus archivos a la nube.</p>
+				<p class="pie-copy">© 2026 LimpiaMedia. Todos los derechos reservados.</p>
+			</div>
+		</div>
 	</footer>
 
 	<script th:inline="javascript">
