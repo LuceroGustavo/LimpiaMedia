@@ -207,3 +207,8 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
   - `FileExtensionsConfig.categorias()` expone las categorías para el formulario y `extensionesDe(tipo)`/`tieneExtension(Set,…)` generalizan el filtro.
   - `ScanController`: `GET /scan/personalizado` (formulario), `POST /scan/personalizado/iniciar` (validación: al menos un formato; mismo guard de "ya hay un escaneo en curso"). En el resultado, el título muestra "formatos jpg, pdf…" y el botón "Escanear otra carpeta" vuelve al formulario.
 - **Pruebas** (instancia aislada :8081): solo PDF+JPG → total=27 (excluye mp3/exe) ✓; solo JPG → total=14, 1 duplicado, y un PDF duplicado queda fuera ✓; sin extensiones → flash de error "Tenés que seleccionar al menos un formato." ✓; título y enlace correctos en el resultado ✓. `mvnw clean package` verde y `.jar` regenerado.
+- **⚠ Migración de BD existentes**: Hibernate 7 mapea los enums Java a tipo **nativo ENUM de H2**, y `ddl-auto=update` NO amplía un ENUM ya creado. Al agregar `ScanType.PERSONALIZADO`, una BD creada con el enum viejo (4 valores) falla al insertar con error `Valor no permitido para la columna "('DOCUMENTOS','FOTOS','SONIDO','VIDEOS')"`. Fix manual en la BD (una sola vez, se ejecuta con la app levantada porque usa AUTO_SERVER):
+  ```sql
+  ALTER TABLE SCAN_SESSION ALTER COLUMN TIPO SET DATA TYPE ENUM('DOCUMENTOS','FOTOS','SONIDO','VIDEOS','PERSONALIZADO');
+  ```
+  Las instalaciones nuevas (jar) crean el ENUM ya con los 5 valores, no requieren nada. Si en el futuro se agrega otro valor a `ScanType`, `ScanStatus` o `ScanPhase`, hay que ampliar el ENUM correspondiente igual.
