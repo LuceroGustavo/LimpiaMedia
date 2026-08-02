@@ -4,6 +4,68 @@
 	padding: 0;
 }
 
+.navbar {
+	position: sticky;
+	top: 0;
+	z-index: 40;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: .7rem 1.4rem;
+	background: rgba(255, 255, 255, .92);
+	backdrop-filter: blur(8px);
+	border-bottom: 1px solid #eef0f5;
+}
+
+.navbar-logo {
+	display: flex;
+	align-items: center;
+	gap: .6rem;
+	text-decoration: none;
+	color: inherit;
+}
+
+.navbar-marca {
+	width: 30px;
+	height: 30px;
+	border-radius: 8px;
+	background: linear-gradient(135deg, #4f46e5, #7c3aed);
+	box-shadow: 0 2px 6px rgba(79, 70, 229, .35);
+}
+
+.navbar-nombre {
+	font-weight: 800;
+	font-size: 1.05rem;
+	letter-spacing: .3px;
+}
+
+.navbar-links {
+	display: flex;
+	gap: .2rem;
+}
+
+.nav-link {
+	text-decoration: none;
+	color: #6b7280;
+	padding: .45rem .85rem;
+	border-radius: 8px;
+	font-weight: 600;
+	font-size: .92rem;
+	transition: background .12s ease, color .12s ease;
+	white-space: nowrap;
+}
+
+.nav-link:hover {
+	background: #f3f4f6;
+	color: #1f2937;
+}
+
+.nav-link.activo {
+	color: #4f46e5;
+	background: #eef2ff;
+}
+
 body {
 	font-family: "Segoe UI", Roboto, Arial, sans-serif;
 	background: #f4f6fa;

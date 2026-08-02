@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+	<nav class="navbar" th:fragment="navbar">
+		<a class="navbar-logo" th:href="@{/}">
+			<span class="navbar-marca"></span>
+			<span class="navbar-nombre">LimpiaMedia</span>
+		</a>
+		<div class="navbar-links">
+			<a class="nav-link" th:classappend="${rutaActual == '/'} ? 'activo'"
+			   th:href="@{/}">Inicio</a>
+			<a class="nav-link" th:classappend="${rutaActual.startsWith('/movimientos')} ? 'activo'"
+			   th:href="@{/movimientos}">Historial de movimientos</a>
+		</div>
+	</nav>
+</body>
+</html>
