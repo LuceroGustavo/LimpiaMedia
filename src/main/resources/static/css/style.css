@@ -90,6 +90,38 @@
 	background: #eef2ff;
 }
 
+.navbar-cerrar {
+	display: flex;
+	align-items: center;
+	margin: 0;
+}
+
+.btn-cerrar {
+	display: inline-flex;
+	align-items: center;
+	gap: .35rem;
+	border: 1px solid #e5e7eb;
+	background: #fff;
+	color: #dc2626;
+	font-weight: 600;
+	font-size: .85rem;
+	font-family: inherit;
+	padding: .4rem .8rem;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background .12s ease, border-color .12s ease;
+	white-space: nowrap;
+}
+
+.btn-cerrar:hover {
+	background: #fef2f2;
+	border-color: #fecaca;
+}
+
+.btn-cerrar .material-symbols-outlined {
+	font-size: 1.1rem;
+}
+
 body {
 	font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
 	background: #f7f9fb;
@@ -2499,4 +2531,68 @@ body {
 
 .etiqueta {
 	border-radius: 6px;
+}
+
+/* ---------- Diálogo de confirmación personalizado ---------- */
+
+#modalCerrar.modal-overlay {
+	z-index: 60;
+}
+
+.modal-cerrar-dialogo {
+	width: min(400px, 92vw);
+	text-align: center;
+	animation: aparecer-modal .18s ease;
+	position: relative;
+}
+
+@keyframes aparecer-modal {
+	from {
+		opacity: 0;
+		transform: scale(.95);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.modal-cerrar-dialogo .modal-cabecera {
+	justify-content: center;
+}
+
+.modal-cerrar-dialogo .modal-cerrar {
+	position: absolute;
+	top: .6rem;
+	right: .8rem;
+}
+
+.modal-cerrar-texto {
+	color: var(--md-on-surface-variant);
+	font-size: .95rem;
+	line-height: 1.5;
+	margin: 0 0 1.2rem;
+}
+
+.modal-cerrar-dialogo .modal-pie {
+	justify-content: center;
+}
+
+.btn-cerrar-confirmar {
+	display: inline-flex;
+	align-items: center;
+	border: none;
+	background: #dc2626;
+	color: #fff;
+	font-weight: 600;
+	font-size: .85rem;
+	font-family: inherit;
+	padding: .45rem 1.1rem;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background .12s ease;
+}
+
+.btn-cerrar-confirmar:hover {
+	background: #b91c1c;
 }

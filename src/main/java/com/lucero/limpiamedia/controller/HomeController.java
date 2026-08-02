@@ -2,6 +2,8 @@ package com.lucero.limpiamedia.controller;
 
 import java.util.List;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,16 +20,31 @@ public class HomeController {
 
 	private final ScanSessionRepository sessionRepo;
 	private final ScanService scanService;
+	private final ConfigurableApplicationContext context;
 
-	public HomeController(ScanSessionRepository sessionRepo, ScanService scanService) {
+	public HomeController(ScanSessionRepository sessionRepo, ScanService scanService,
+			ConfigurableApplicationContext context) {
 		this.sessionRepo = sessionRepo;
 		this.scanService = scanService;
+		this.context = context;
 	}
 
 	@PostMapping("/escaneos/borrar")
 	public String borrarHistorialEscaneos(RedirectAttributes ra) {
 		int borradas = scanService.borrarHistorialEscaneos();
 		ra.addFlashAttribute("ok", "Historial de escaneos borrado (" + borradas + " sesiones).");
+		return "redirect:/";
+	}
+
+	@PostMapping("/apagar")
+	public String apagar() {
+		new Thread(() -> {
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException ignored) {
+			}
+			SpringApplication.exit(context, () -> 0);
+		}, "apagar-limpiamedia").start();
 		return "redirect:/";
 	}
 

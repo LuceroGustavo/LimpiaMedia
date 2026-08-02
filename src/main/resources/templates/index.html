@@ -7,7 +7,7 @@
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-	<nav th:insert="~{fragments/navbar :: navbar}"></nav>
+	<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
 
 	<main class="contenedor-nuevo">
 		<!-- Hero con fondo animado -->
@@ -173,7 +173,7 @@
 						<h3>Historial de escaneos</h3>
 						<form th:if="${!sesiones.isEmpty()}"
 							  th:action="@{/escaneos/borrar}" method="post"
-							  onsubmit="return confirm('¿Borrar todo el historial de escaneos? Los archivos físicos no se tocan.');">
+							  onsubmit="return abrirConfirmacion(event, this, 'Borrar historial de escaneos', '¿Seguro que querés borrar todo el historial? Los archivos físicos no se tocan.', 'Sí, borrar');">
 							<button type="submit" class="btn-borrar">
 								<span class="icono-ms">delete_sweep</span> Borrar historial
 							</button>

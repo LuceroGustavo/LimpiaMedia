@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<body>
-	<nav class="navbar" th:fragment="navbar">
+<body th:fragment="navbar">
+	<nav class="navbar">
 		<a class="navbar-logo" th:href="@{/}">
 			<img class="navbar-logo-img" th:src="@{/img/navbar.png}" alt="LimpiaMedia">
 		</a>
@@ -11,6 +11,56 @@
 			<a class="nav-link" th:classappend="${rutaActual.startsWith('/movimientos')} ? 'activo'"
 			   th:href="@{/movimientos}">Historial de movimientos</a>
 		</div>
+		<form method="post" th:action="@{/apagar}" class="navbar-cerrar" id="formCerrar"
+			  onsubmit="return abrirConfirmacion(event, this, 'Cerrar LimpiaMedia', '¿Seguro que querés cerrar la aplicación? Se guardará todo tu trabajo y podrás volver a abrirla cuando quieras.', 'Sí, cerrar');">
+			<button type="submit" class="btn-cerrar" title="Cerrar la aplicación">
+				Cerrar
+			</button>
+		</form>
 	</nav>
+
+	<div class="modal-overlay" id="modalConfirmacion" style="display: none;">
+		<div class="modal modal-cerrar-dialogo" role="dialog" aria-modal="true"
+			 aria-labelledby="tituloConfirmacion">
+			<div class="modal-cabecera">
+				<h3 id="tituloConfirmacion">Confirmar acción</h3>
+				<button type="button" class="modal-cerrar" aria-label="Cancelar"
+						onclick="cerrarConfirmacion()">&times;</button>
+			</div>
+			<p class="modal-cerrar-texto" id="mensajeConfirmacion"></p>
+			<div class="modal-pie">
+				<button type="button" class="btn-cerrar" onclick="cerrarConfirmacion()">Cancelar</button>
+				<button type="button" class="btn-cerrar-confirmar" id="botonConfirmar">Sí, continuar</button>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		let formularioConfirmacion = null;
+
+		function abrirConfirmacion(evento, formulario, titulo, mensaje, etiquetaBoton) {
+			evento.preventDefault();
+			formularioConfirmacion = formulario;
+			document.getElementById('tituloConfirmacion').textContent = titulo || 'Confirmar acción';
+			document.getElementById('mensajeConfirmacion').textContent = mensaje || '';
+			if (etiquetaBoton) {
+				document.getElementById('botonConfirmar').textContent = etiquetaBoton;
+			}
+			document.getElementById('modalConfirmacion').style.display = 'flex';
+		}
+
+		function cerrarConfirmacion() {
+			formularioConfirmacion = null;
+			document.getElementById('modalConfirmacion').style.display = 'none';
+		}
+
+		function confirmarConfirmacion() {
+			if (formularioConfirmacion) {
+				formularioConfirmacion.submit();
+			}
+		}
+
+		document.getElementById('botonConfirmar').addEventListener('click', confirmarConfirmacion);
+	</script>
 </body>
 </html>

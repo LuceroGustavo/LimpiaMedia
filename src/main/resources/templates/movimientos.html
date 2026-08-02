@@ -7,7 +7,7 @@
 	<link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-	<nav th:insert="~{fragments/navbar :: navbar}"></nav>
+	<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
 
 	<main class="contenedor-nuevo">
 		<header class="pagina-cabecera">
@@ -29,7 +29,7 @@
 				<h3>Archivos movidos</h3>
 				<form th:if="${!movimientos.isEmpty()}"
 					  th:action="@{/movimientos/borrar}" method="post"
-					  onsubmit="return confirm('¿Borrar todo el historial? Esta acción no se puede deshacer. Los archivos ya movidos quedarán donde están.');">
+					  onsubmit="return abrirConfirmacion(event, this, 'Borrar historial de movimientos', '¿Seguro que querés borrar todo el historial? Esta acción no se puede deshacer. Los archivos ya movidos quedarán donde están.', 'Sí, borrar');">
 					<button type="submit" class="btn-borrar">
 						<span class="icono-ms">delete_sweep</span> Borrar historial
 					</button>
