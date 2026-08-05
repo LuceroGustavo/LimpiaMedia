@@ -18,6 +18,21 @@ Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
 - Endpoint `GET /api/recientes` (en `FolderController`). Se registra en `ScanService.registrarRutaReciente()`.
 - **Pruebas**: `mvnw compile` OK, `node --check` OK, `mvnw test` verde (6 tests).
 
+## 2026-08-05 — Nuevo módulo: "Buscar comparativas"
+- Plan de desarrollo en `documentacion/PLAN_COMPARATIVAS.md` (se puede retomar si no se termina hoy).
+- **Concepto**: buscador de archivos por **patrón de nombre** (comodines `*` y `?`) sobre una carpeta/disco elegido, que lista TODOS los que coinciden para ordenarlos por fecha y ver cuál es el **más actualizado** (casos: muchos archivos del mismo tema repartidos en varias carpetas).
+- **Sintaxis**: `*.xlsx` (todos los xlsx) · `*avances*` (contiene) · `avab*.xlsx` (empieza y termina) · sin comodines = "contiene" (case-insensitive). Con comodín calza el nombre completo.
+- **Atributos por archivo**: nombre, ruta, carpeta contenedora, extensión, tamaño (bytes), fecha creación, fecha última modificación, fecha último acceso y **propietario/usuario** (`Files.getOwner()`, formato `DOMINIO\usuario`).
+- **Backend**: `dto/FileComparativaDTO` (fechas LocalDateTime + getters `*Epoch()` para ordenar en el cliente), `service/ComparativaService.buscar()` (`Files.walkFileTree` recursivo, patrón→regex, ignora carpetas sin permisos), `controller/ComparativaController` (`GET /comparativas`, `POST /comparativas/buscar` → redirect a `GET /comparativas/resultado?ruta&patron`, `GET /comparativas/abrir-carpeta` que abre la carpeta contenedora en Explorer).
+- **Frontend**: `comparativas.html` (formulario con selector de carpeta reutilizado + campo de patrón + resumen + tabla) y `comparativas.js` (orden por clic en encabezados, filtro de texto, checkbox "Resaltar el más actualizado" que pinta la fila con mayor fecha de modificación, orden inicial por modificación desc). Navbar nuevo link "Comparativas".
+- **Pruebas**: `mvnw compile` OK, `node --check` OK, `mvnw test` verde (**12 tests**; 6 nuevos de patrones en `ComparativaServicePatronTest`). Pendiente: prueba end-to-end del usuario.
+
+## 2026-08-05 — Fix "Buscar comparativas": no traía la carpeta seleccionada
+- **Bug reportado por el usuario**: podía abrir el selector y marcar la carpeta, pero al hacer clic en "Seleccionar esta carpeta" no la traía (no se mostraba ni se habilitaba el botón "Buscar archivos").
+- **Causa**: en `comparativas.html` **faltaba el campo oculto** `<input type="hidden" name="ruta" id="ruta">` (presente en `scan.html` y `scan-personalizado.html`). `comparativas.js` hace `document.getElementById('ruta').value = ruta`, que al no existir `#ruta` devolvía `null` → error de JS en `alSeleccionar` → la selección no se aplicaba.
+- **Fix**: agregado el campo oculto `#ruta` en `comparativas.html` antes del campo de patrón.
+- **Pruebas**: `mvnw compile` OK. Pendiente de prueba end-to-end del usuario.
+
 ## 2026-08-01 — Inicio del proyecto
 - Se creó `leeme_primero.md` en la raíz con el contexto completo para IA.
 - Se creó la carpeta `documentacion/` con `PLAN.md`, `AVANCES.md` y `HISTORIAL.md`.

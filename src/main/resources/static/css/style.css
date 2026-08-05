@@ -2607,3 +2607,92 @@ body {
 .btn-cerrar-confirmar:hover {
 	background: #b91c1c;
 }
+
+/* ---------- Buscar comparativas ---------- */
+
+.patron-campo {
+	margin-top: 1.2rem;
+}
+
+.escanear-final {
+	margin-top: 1.2rem;
+}
+
+.resumen-comp {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+	gap: 1rem;
+	margin: 1.5rem 0;
+	padding: 1.2rem 1.4rem;
+}
+
+.resumen-comp-celda {
+	display: flex;
+	flex-direction: column;
+	gap: .2rem;
+	min-width: 0;
+}
+
+.resumen-comp .celda-truncada {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.filtros-comparativa {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.resaltar-check {
+	display: inline-flex;
+	align-items: center;
+	gap: .4rem;
+	font-size: .9rem;
+	font-weight: 600;
+	color: var(--md-on-surface-variant);
+	cursor: pointer;
+}
+
+.resaltar-check input {
+	accent-color: var(--md-primary);
+	width: 1rem;
+	height: 1rem;
+}
+
+.buscador-chico {
+	max-width: 260px;
+}
+
+.nombre-archivo {
+	font-weight: 600;
+}
+
+.th-ordenable {
+	cursor: pointer;
+	user-select: none;
+	white-space: nowrap;
+}
+
+.th-ordenable.orden-asc::after {
+	content: ' \25B2';
+	font-size: .65rem;
+	color: var(--md-primary);
+}
+
+.th-ordenable.orden-desc::after {
+	content: ' \25BC';
+	font-size: .65rem;
+	color: var(--md-primary);
+}
+
+.fila-mas-reciente {
+	background: #fef9c3 !important;
+	box-shadow: inset 3px 0 0 #eab308;
+}
+
+.fila-mas-reciente .nombre-archivo {
+	color: #854d0e;
+}

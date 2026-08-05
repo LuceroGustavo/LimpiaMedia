@@ -8,6 +8,8 @@
 		<div class="navbar-links">
 			<a class="nav-link" th:classappend="${rutaActual == '/'} ? 'activo'"
 			   th:href="@{/}">Inicio</a>
+			<a class="nav-link" th:classappend="${rutaActual.startsWith('/comparativas')} ? 'activo'"
+			   th:href="@{/comparativas}">Comparativas</a>
 			<a class="nav-link" th:classappend="${rutaActual.startsWith('/movimientos')} ? 'activo'"
 			   th:href="@{/movimientos}">Historial de movimientos</a>
 		</div>

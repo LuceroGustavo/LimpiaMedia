@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Buscar comparativas — LimpiaMedia</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+	<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
+
+	<main class="contenedor-nuevo pagina-interna">
+		<header class="pagina-cabecera">
+			<div class="pagina-eyebrow">
+				<span class="icono-ms">manage_search</span> Comparativas de archivos
+			</div>
+			<h1 class="pagina-titulo">Buscar comparativas</h1>
+			<p class="pagina-sub">
+				Buscá por patrón de nombre (ej: <strong>*.xlsx</strong>, <strong>*avances*</strong>,
+				<strong>avab*.xlsx</strong>) y ordená los resultados por fecha para ver cuál es el más actualizado.
+			</p>
+		</header>
+
+		<form th:action="@{/comparativas/buscar}" method="post">
+			<section class="seleccion-card">
+				<div class="seleccion-titulo">
+					<div class="seleccion-icono"><span class="icono-ms">folder_open</span></div>
+					<div>
+						<h2>Elegí la carpeta a buscar</h2>
+						<p>Se recorre la carpeta y todas sus subcarpetas.</p>
+					</div>
+				</div>
+
+				<div class="error-box" th:if="${error}" th:text="${error}"></div>
+				<div class="flash ok" th:if="${ok}" th:text="${ok}"></div>
+
+				<div class="selector-carpeta">
+					<button type="button" class="btn-primario btn-grande" id="btnAbrir" onclick="abrirModal()">
+						<span class="icono-ms">folder_open</span> Seleccionar carpeta
+					</button>
+					<div class="carpeta-seleccionada" id="carpetaSeleccionada">
+						<span th:if="${ruta == null}" class="sin-seleccion">Ninguna carpeta seleccionada todavía.</span>
+						<span th:if="${ruta != null}" class="ruta-elegida" th:text="${ruta}"></span>
+					</div>
+				</div>
+
+				<input type="hidden" name="ruta" id="ruta" value="">
+
+				<div class="mover-campo patron-campo">
+					<label for="patron">Patrón de búsqueda</label>
+					<div class="mover-input">
+						<span class="icono-ms">search</span>
+						<input type="text" name="patron" id="patron" placeholder="*.xlsx  ·  *avances*  ·  avab*.xlsx"
+							   th:value="${patron}" autocomplete="off">
+					</div>
+				</div>
+
+				<div class="escanear-final">
+					<button type="submit" class="btn-primario btn-grande" id="btnBuscar" th:disabled="${ruta == null}">
+						<span class="icono-ms">manage_search</span> Buscar archivos
+					</button>
+				</div>
+			</section>
+		</form>
+
+		<!-- Resumen -->
+		<section class="panel resumen-comp" th:if="${resultados != null}">
+			<div class="resumen-comp-celda">
+				<span class="stat-etiqueta">Archivos encontrados</span>
+				<span class="stat-valor primario" th:text="${total}"></span>
+			</div>
+			<div class="resumen-comp-celda">
+				<span class="stat-etiqueta">Espacio total</span>
+				<span class="stat-valor"
+					  th:text="${#numbers.formatDecimal(totalBytes / 1048576.0, 1, 1)} + ' MB'"></span>
+			</div>
+			<div class="resumen-comp-celda">
+				<span class="stat-etiqueta">Patrón</span>
+				<span class="stat-valor" th:text="${patron}"></span>
+			</div>
+			<div class="resumen-comp-celda">
+				<span class="stat-etiqueta">Carpeta</span>
+				<span class="stat-valor celda-truncada" th:text="${ruta}"></span>
+			</div>
+		</section>
+
+		<!-- Resultados -->
+		<section class="historial-card" th:if="${resultados != null and !resultados.isEmpty()}">
+			<div class="historial-cabecera">
+				<h3>Resultados</h3>
+				<div class="filtros-comparativa">
+					<label class="resaltar-check">
+						<input type="checkbox" id="resaltarReciente" checked>
+						Resaltar el más actualizado
+					</label>
+					<div class="buscador buscador-chico">
+						<span class="icono-ms">filter_alt</span>
+						<input type="search" id="filtroTabla" placeholder="Filtrar esta lista…" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div class="tabla-scroll">
+				<table class="tabla-nueva" id="tablaResultados">
+					<thead>
+						<tr>
+							<th class="th-ordenable orden-asc" data-campo="modificacion">Modificado</th>
+							<th class="th-ordenable" data-campo="nombre">Nombre</th>
+							<th class="th-ordenable" data-campo="carpeta">Carpeta</th>
+							<th class="th-ordenable" data-campo="tamanio">Tamaño</th>
+							<th class="th-ordenable" data-campo="creacion">Creado</th>
+							<th class="th-ordenable" data-campo="acceso">Último acceso</th>
+							<th class="th-ordenable" data-campo="propietario">Usuario</th>
+							<th class="th-derecha">Carpeta</th>
+						</tr>
+					</thead>
+					<tbody class="divide">
+						<tr th:each="f : ${resultados}"
+							th:attr="data-nombre=${f.nombre},
+									data-carpeta=${f.carpetaPadre},
+									data-tamanio=${f.tamanio},
+									data-modificacion=${f.fechaModificacionEpoch},
+									data-creacion=${f.fechaCreacionEpoch},
+									data-acceso=${f.fechaAccesoEpoch},
+									data-propietario=${f.propietario}">
+							<td th:text="${f.fechaModificacion != null ? #temporals.format(f.fechaModificacion, 'dd/MM/yyyy HH:mm') : '—'}"></td>
+							<td class="nombre-archivo" th:text="${f.nombre}"></td>
+							<td class="celda-truncada" th:text="${f.carpetaPadre}"></td>
+							<td class="th-derecha"
+								th:text="${f.tamanio > 1048576 ? #numbers.formatDecimal(f.tamanio / 1048576.0, 1, 1) + ' MB' : f.tamanio + ' B'}"></td>
+							<td th:text="${f.fechaCreacion != null ? #temporals.format(f.fechaCreacion, 'dd/MM/yyyy HH:mm') : '—'}"></td>
+							<td th:text="${f.fechaAcceso != null ? #temporals.format(f.fechaAcceso, 'dd/MM/yyyy HH:mm') : '—'}"></td>
+							<td th:text="${f.propietario != null ? f.propietario : '—'}"></td>
+							<td class="th-derecha">
+								<a class="btn-icono" title="Abrir carpeta en el Explorador"
+								   th:href="@{/comparativas/abrir-carpeta(ruta=${f.ruta}, volver=${ruta}, patron=${patron})}">
+									<span class="icono-ms">folder_open</span>
+								</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<p class="filtros-contador" id="contadorTabla"></p>
+		</section>
+
+		<!-- Vacío -->
+		<div th:if="${resultados != null and resultados.isEmpty()}" class="vacio-historial">
+			<div class="vacio-icono"><span class="icono-ms">search_off</span></div>
+			<h3>No se encontraron archivos con ese patrón</h3>
+			<p th:text="'Ningún archivo coincide con ' + ${patron} + ' en ' + ${ruta}"></p>
+			<a class="btn-primario enlace-boton" th:href="@{/comparativas}">Probar otro patrón</a>
+		</div>
+	</main>
+
+	<div class="modal-overlay" id="modal" style="display:none">
+		<div class="modal">
+			<div class="modal-cabecera">
+				<h3>Seleccionar carpeta</h3>
+				<button type="button" class="modal-cerrar" onclick="cerrarModal()">&times;</button>
+			</div>
+
+			<div class="unidades" id="seccionRecientes" style="display:none">
+				<h3>Recientes</h3>
+				<div id="recientes" class="fila-unidades"></div>
+			</div>
+
+			<div class="unidades">
+				<h3>Unidades</h3>
+				<div id="unidades" class="fila-unidades">
+					<p class="cargando">Cargando unidades…</p>
+				</div>
+			</div>
+
+			<div class="campo-ruta">
+				<input type="text" id="rutaModal" placeholder="C:\Mis Fotos" value="C:\" autocomplete="off">
+				<button type="button" class="btn-secundario" onclick="ir(document.getElementById('rutaModal').value)">Ir</button>
+			</div>
+
+			<div id="breadcrumb" class="breadcrumb"></div>
+			<div id="carpetas" class="grid-carpetas">
+				<p class="cargando">Cargando…</p>
+			</div>
+
+			<div class="modal-pie">
+				<span id="rutaActual" class="ruta-actual-texto">C:\</span>
+				<button type="button" class="btn-secundario" onclick="cerrarModal()">Cancelar</button>
+				<button type="button" class="btn-primario" onclick="seleccionarActual()">Seleccionar esta carpeta</button>
+			</div>
+		</div>
+	</div>
+
+	<footer class="pie-nuevo">
+		<div class="pie-nuevo-interno">
+			<div class="pie-nuevo-marca">
+				<div class="pie-nuevo-titulo">LimpiaMedia</div>
+				<p>Simplificá tu almacenamiento local eliminando el desorden y los duplicados con precisión.</p>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Recursos</span>
+				<a th:href="@{/movimientos}">Historial de movimientos</a>
+				<a th:href="@{/scan/personalizado}">Formato específico</a>
+				<a th:href="@{/comparativas}">Comparativas</a>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Privacidad</span>
+				<p>Todo el procesamiento es local. LimpiaMedia no sube tus archivos a la nube.</p>
+				<p class="pie-copy">© 2026 LimpiaMedia. Todos los derechos reservados.</p>
+			</div>
+		</div>
+	</footer>
+
+	<script th:src="@{/js/carpetas.js}"></script>
+	<script th:src="@{/js/comparativas.js}"></script>
+</body>
+</html>
