@@ -2472,6 +2472,17 @@ body {
 	background: #d8dbff;
 }
 
+.ayuda-red {
+	width: 100%;
+	margin: .3rem 0 0;
+	font-size: .8rem;
+	color: var(--md-on-surface-variant, #6b7280);
+	background: #f3f4f6;
+	border: 1px dashed #d1d5db;
+	border-radius: 8px;
+	padding: .4rem .7rem;
+}
+
 .item-carpeta:hover {
 	background: var(--md-primary-container);
 	border-color: #d8dbff;

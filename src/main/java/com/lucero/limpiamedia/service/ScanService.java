@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import com.lucero.limpiamedia.config.FileExtensionsConfig;
 import com.lucero.limpiamedia.model.CarpetaExcluida;
 import com.lucero.limpiamedia.model.DuplicateGroup;
+import com.lucero.limpiamedia.model.RutaReciente;
 import com.lucero.limpiamedia.model.ScanPhase;
 import com.lucero.limpiamedia.model.ScanSession;
 import com.lucero.limpiamedia.model.ScanStatus;
@@ -33,6 +34,7 @@ import com.lucero.limpiamedia.model.ScanType;
 import com.lucero.limpiamedia.model.ScannedFile;
 import com.lucero.limpiamedia.repository.CarpetaExcluidaRepository;
 import com.lucero.limpiamedia.repository.DuplicateGroupRepository;
+import com.lucero.limpiamedia.repository.RutaRecienteRepository;
 import com.lucero.limpiamedia.repository.ScanSessionRepository;
 import com.lucero.limpiamedia.repository.ScannedFileRepository;
 
@@ -47,17 +49,20 @@ public class ScanService {
 	private final DuplicateGroupRepository groupRepo;
 	private final ScannedFileRepository fileRepo;
 	private final CarpetaExcluidaRepository exclRepo;
+	private final RutaRecienteRepository rutaRepo;
 	private final FileExtensionsConfig extConfig;
 	private final HashService hashService;
 	private final ThreadPoolTaskExecutor scanExecutor;
 
 	public ScanService(ScanSessionRepository sessionRepo, DuplicateGroupRepository groupRepo,
-			ScannedFileRepository fileRepo, CarpetaExcluidaRepository exclRepo, FileExtensionsConfig extConfig,
-			HashService hashService, @Qualifier("scanExecutor") ThreadPoolTaskExecutor scanExecutor) {
+			ScannedFileRepository fileRepo, CarpetaExcluidaRepository exclRepo, RutaRecienteRepository rutaRepo,
+			FileExtensionsConfig extConfig, HashService hashService,
+			@Qualifier("scanExecutor") ThreadPoolTaskExecutor scanExecutor) {
 		this.sessionRepo = sessionRepo;
 		this.groupRepo = groupRepo;
 		this.fileRepo = fileRepo;
 		this.exclRepo = exclRepo;
+		this.rutaRepo = rutaRepo;
 		this.extConfig = extConfig;
 		this.hashService = hashService;
 		this.scanExecutor = scanExecutor;
@@ -70,6 +75,30 @@ public class ScanService {
 		sessionRepo.deleteAll();
 		log.info("Historial de escaneos borrado ({} sesiones)", sesiones);
 		return (int) sesiones;
+	}
+
+	public List<RutaReciente> listarRecientes() {
+		return rutaRepo.findTop10ByOrderByUltimaVezDesc();
+	}
+
+	private void registrarRutaReciente(ScanType tipo, Path raiz) {
+		try {
+			String normalizada = raiz.toAbsolutePath().normalize().toString();
+			RutaReciente existente = rutaRepo.findByRuta(normalizada).orElse(null);
+			if (existente == null) {
+				RutaReciente nueva = new RutaReciente();
+				nueva.setRuta(normalizada);
+				nueva.setTipo(tipo);
+				nueva.setUltimaVez(LocalDateTime.now());
+				rutaRepo.save(nueva);
+			} else {
+				existente.setTipo(tipo);
+				existente.setUltimaVez(LocalDateTime.now());
+				rutaRepo.save(existente);
+			}
+		} catch (Exception e) {
+			log.warn("No se pudo registrar la ruta reciente", e);
+		}
 	}
 
 	public ScanSession iniciarEscaneo(ScanType tipo, String ruta) {
@@ -88,6 +117,7 @@ public class ScanService {
 		if (!Files.isDirectory(raiz)) {
 			throw new IllegalArgumentException("La ruta no es una carpeta válida: " + ruta);
 		}
+		registrarRutaReciente(tipo, raiz);
 		ScanSession sesion = new ScanSession();
 		sesion.setTipo(tipo);
 		if (tipo == ScanType.PERSONALIZADO) {

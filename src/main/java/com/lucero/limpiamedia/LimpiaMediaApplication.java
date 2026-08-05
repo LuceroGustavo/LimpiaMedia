@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -40,11 +41,12 @@ public class LimpiaMediaApplication {
 	 * las siguientes salen sin arrancar Spring.
 	 */
 	private static boolean adquirirInstanciaUnica() {
+		FileChannel canal = null;
 		try {
 			Path dir = Path.of(System.getProperty("user.home"), "LimpiaMedia");
 			Files.createDirectories(dir);
 			Path lock = dir.resolve("limpiamedia.lock");
-			FileChannel canal = FileChannel.open(lock, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+			canal = FileChannel.open(lock, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 			FileLock intento = canal.tryLock();
 			if (intento == null) {
 				canal.close();
@@ -52,9 +54,25 @@ public class LimpiaMediaApplication {
 			}
 			bloqueo = intento;
 			return true;
+		} catch (OverlappingFileLockException e) {
+			// DevTools reinicia la app en el mismo JVM y la clase anterior ya
+			// tiene el lock del mismo archivo. Se continúa sin un lock nuevo
+			// (el lock real del proceso sigue activo para otras instancias).
+			cerrarCanal(canal);
+			LOGGER.debug("Reinicio de DevTools en el mismo JVM, se continúa sin nuevo lock");
+			return true;
 		} catch (IOException e) {
 			LOGGER.warn("No se pudo verificar instancia única, se continúa: {}", e.getMessage());
 			return true;
+		}
+	}
+
+	private static void cerrarCanal(FileChannel canal) {
+		if (canal != null) {
+			try {
+				canal.close();
+			} catch (IOException ignorada) {
+			}
 		}
 	}
 

@@ -2,6 +2,22 @@
 
 Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
 
+## 2026-08-05 — Fix arranque con DevTools + soporte de carpetas en red (UNC)
+- **Fix `OverlappingFileLockException` al correr `mvn spring-boot:run`**: con DevTools activo, Maven copia recursos a `target/classes` tras el arranque y DevTools reinicia la app dentro del mismo JVM (`restartedMain`). El reinicio volvía a llamar a `adquirirInstanciaUnica()`, que intentaba `tryLock()` sobre el MISMO archivo `limpiamedia.lock` ya bloqueado por la clase anterior → `OverlappingFileLockException` (un `RuntimeException` que el `catch (IOException)` no agarraba) y reventaba el arranque. Se agrega `catch (OverlappingFileLockException)` que continúa sin adquirir un lock nuevo (el lock real del proceso sigue activo para otras instancias).
+- **Carpetas/disco en red (UNC) en el selector de carpeta**:
+  - `FileSystemService`: el campo de ruta acepta `\\servidor\carpeta` directamente; el listado de subcarpetas de rutas de red corre con **timeout de 3 s** (no se cuelga si la máquina no responde). Agregadas `listarServidores()` y `listarCompartidosDe()` vía `net view` (parseo por columnas, descarta compartidos ocultos `$`).
+  - `FolderController`: nuevo endpoint `GET /api/red` (equipos en red).
+  - `carpetas.js`: botón chip "`\ Red`" en el selector (alterna unidades ↔ equipos), breadcrumb que soporta rutas UNC (clic por segmento) y tip "podés pegar una ruta de red directa". `scan.html`, `scan-personalizado.html` y `resultado.html` lo heredan automáticamente porque comparten `carpetas.js`.
+  - CSS: `.ayuda-red` para el tip.
+- **Aclaración**: el botón "Red" depende del servicio de explorador de Windows (`net view`), que en redes modernas suele dar el error 6118 y no lista equipos; en ese caso lo confiable es **pegar la ruta UNC directa** (siempre funciona) o usar los discos de red **mapeados** (ya aparecen como unidades con letra en `/api/unidades`).
+- **Pruebas**: `mvnw compile` OK, `node --check` sobre `carpetas.js` OK, `mvnw test` verde (6 tests).
+
+## 2026-08-05 — Historial de rutas recientes (mini historial en el selector)
+- Al iniciar un escaneo (cualquier tipo o personalizado), la carpeta raíz se guarda como **ruta reciente** (entidad `RutaReciente`: ruta única normalizada, tipo y fecha de último uso; si ya existía, se actualiza tipo + fecha).
+- El selector de carpetas de los 3 modales (`scan`, `scan-personalizado`, `resultado`) muestra una sección **"Recientes"** arriba de "Unidades" con las últimas **10** rutas usadas (chips). Un clic selecciona la ruta directamente (rellena el campo y cierra el modal), sin volver a navegar.
+- Endpoint `GET /api/recientes` (en `FolderController`). Se registra en `ScanService.registrarRutaReciente()`.
+- **Pruebas**: `mvnw compile` OK, `node --check` OK, `mvnw test` verde (6 tests).
+
 ## 2026-08-01 — Inicio del proyecto
 - Se creó `leeme_primero.md` en la raíz con el contexto completo para IA.
 - Se creó la carpeta `documentacion/` con `PLAN.md`, `AVANCES.md` y `HISTORIAL.md`.

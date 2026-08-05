@@ -5,6 +5,7 @@ var buscarCarpetaConfig = {
 };
 
 document.addEventListener('DOMContentLoaded', function () {
+	cargarRecientes();
 	cargarUnidades();
 	ir('C:\\');
 
@@ -48,24 +49,93 @@ function seleccionarActual() {
 	cerrarModal();
 }
 
+function chip(ruta, nombre, alClic) {
+	var b = document.createElement('button');
+	b.type = 'button';
+	b.className = 'chip-unidad';
+	b.textContent = nombre;
+	b.title = ruta;
+	b.addEventListener('click', alClic);
+	return b;
+}
+
 function cargarUnidades() {
 	var cont = document.getElementById('unidades');
+	cont.innerHTML = '';
 	fetch('/api/unidades')
 		.then(function (r) { return r.json(); })
 		.then(function (unidades) {
-			cont.innerHTML = '';
 			unidades.forEach(function (u) {
-				var b = document.createElement('button');
-				b.type = 'button';
-				b.className = 'chip-unidad';
-				b.textContent = u.nombre;
-				b.addEventListener('click', function () { ir(u.ruta); });
-				cont.appendChild(b);
+				cont.appendChild(chip(u.ruta, u.nombre, function () { ir(u.ruta); }));
 			});
+			cont.appendChild(chip('', '\\ Red', cargarRed));
+			cont.appendChild(ayudaRed());
 		})
 		.catch(function () {
 			cont.innerHTML = '<p class="error">No se pudieron cargar las unidades.</p>';
 		});
+}
+
+function cargarRed() {
+	var cont = document.getElementById('unidades');
+	cont.innerHTML = '<p class="cargando">Buscando equipos en red…</p>';
+	fetch('/api/red')
+		.then(function (r) { return r.json(); })
+		.then(function (servidores) {
+			cont.innerHTML = '';
+			cont.appendChild(chip('', '\\ Unidades', cargarUnidades));
+			if (servidores.length === 0) {
+				var p = document.createElement('p');
+				p.className = 'vacio';
+				p.textContent = 'No se encontraron equipos. Probá pegar la ruta directa en el campo de arriba.';
+				cont.appendChild(p);
+				cont.appendChild(ayudaRed());
+				return;
+			}
+			servidores.forEach(function (s) {
+				cont.appendChild(chip(s.ruta, s.nombre, function () { ir(s.ruta); }));
+			});
+			cont.appendChild(ayudaRed());
+		})
+		.catch(function () {
+			cont.innerHTML = '<p class="error">No se pudo explorar la red.</p>';
+		});
+}
+
+function ayudaRed() {
+	var p = document.createElement('p');
+	p.className = 'ayuda-red';
+	p.textContent = 'Tip: podés pegar una ruta de red directa, ej. \\\\servidor\\carpeta';
+	return p;
+}
+
+function cargarRecientes() {
+	var seccion = document.getElementById('seccionRecientes');
+	var cont = document.getElementById('recientes');
+	if (!seccion || !cont) {
+		return;
+	}
+	fetch('/api/recientes')
+		.then(function (r) { return r.json(); })
+		.then(function (lista) {
+			if (!lista || lista.length === 0) {
+				seccion.style.display = 'none';
+				return;
+			}
+			seccion.style.display = '';
+			cont.innerHTML = '';
+			lista.forEach(function (r) {
+				cont.appendChild(chip(r.ruta, r.ruta, function () { seleccionarReciente(r.ruta); }));
+			});
+		})
+		.catch(function () {
+			seccion.style.display = 'none';
+		});
+}
+
+function seleccionarReciente(ruta) {
+	document.getElementById('rutaModal').value = ruta;
+	seleccionarActual();
 }
 
 function ir(ruta) {
@@ -104,34 +174,60 @@ function cargarCarpetas(ruta) {
 			});
 		})
 		.catch(function () {
-			cont.innerHTML = '<p class="error">No se pudo acceder a la carpeta (sin permisos).</p>';
+			cont.innerHTML = '<p class="error">No se pudo acceder a la carpeta (sin permisos o equipo sin conexión).</p>';
 		});
 }
 
 function cargarBreadcrumb(ruta) {
 	var cont = document.getElementById('breadcrumb');
 	cont.innerHTML = '';
+	if (ruta.indexOf('\\\\') === 0) {
+		var resto = ruta.replace(/^\\\\+/, '');
+		var partes = resto.split('\\').filter(function (p) { return p !== ''; });
+		if (partes.length === 0) {
+			cont.innerHTML = '<span class="crumb">Red</span>';
+			return;
+		}
+		var acum = '\\\\';
+		partes.forEach(function (p, i) {
+			acum += p;
+			var sp = document.createElement('span');
+			sp.className = 'crumb';
+			sp.textContent = p;
+			sp.addEventListener('click', function () { ir(acum + '\\'); });
+			cont.appendChild(sp);
+			if (i < partes.length - 1) {
+				acum += '\\';
+				var sep = document.createElement('span');
+				sep.className = 'sep';
+				sep.textContent = '>';
+				cont.appendChild(sep);
+			}
+		});
+		return;
+	}
+
 	var norm = ruta;
 	if (!norm.endsWith('\\') && !norm.endsWith('/')) {
 		norm += '\\';
 	}
-	var partes = norm.split('\\').filter(function (p) { return p !== ''; });
-	var acum = '';
-	partes.forEach(function (p, i) {
-		acum += p + '\\';
+	var partesLocal = norm.split('\\').filter(function (p) { return p !== ''; });
+	var acumLocal = '';
+	partesLocal.forEach(function (p, i) {
+		acumLocal += p + '\\';
 		var sp = document.createElement('span');
 		sp.className = 'crumb';
 		sp.textContent = p;
-		sp.addEventListener('click', function () { ir(acum); });
+		sp.addEventListener('click', function () { ir(acumLocal); });
 		cont.appendChild(sp);
-		if (i < partes.length - 1) {
+		if (i < partesLocal.length - 1) {
 			var sep = document.createElement('span');
 			sep.className = 'sep';
 			sep.textContent = '>';
 			cont.appendChild(sep);
 		}
 	});
-	if (partes.length === 0) {
+	if (partesLocal.length === 0) {
 		cont.innerHTML = '<span class="crumb">\\</span>';
 	}
 }
