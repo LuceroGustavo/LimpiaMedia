@@ -9,7 +9,7 @@
 <body>
 	<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
 
-	<main class="contenedor-nuevo pagina-interna">
+	<main class="contenedor-nuevo pagina-interna contenedor-ancho">
 		<header class="pagina-cabecera">
 			<div class="pagina-eyebrow">
 				<span class="icono-ms">tune</span> Análisis a medida
@@ -38,11 +38,12 @@
 						<span class="icono-ms">folder_open</span> Seleccionar carpeta
 					</button>
 					<div class="carpeta-seleccionada" id="carpetaSeleccionada">
-						<span class="sin-seleccion">Ninguna carpeta seleccionada todavía.</span>
+						<span th:if="${ruta == null}" class="sin-seleccion">Ninguna carpeta seleccionada todavía.</span>
+						<span th:if="${ruta != null}" class="ruta-elegida" th:text="${ruta}"></span>
 					</div>
 				</div>
 
-				<input type="hidden" name="ruta" id="ruta" value="">
+				<input type="hidden" name="ruta" id="ruta" th:value="${ruta}">
 			</section>
 
 			<section class="seleccion-card">
@@ -126,24 +127,7 @@
 		</div>
 	</div>
 
-	<footer class="pie-nuevo">
-		<div class="pie-nuevo-interno">
-			<div class="pie-nuevo-marca">
-				<div class="pie-nuevo-titulo">LimpiaMedia</div>
-				<p>Simplificá tu almacenamiento local eliminando el desorden y los duplicados con precisión.</p>
-			</div>
-			<div class="pie-nuevo-col">
-				<span class="pie-nuevo-label">Recursos</span>
-				<a th:href="@{/movimientos}">Historial de movimientos</a>
-				<a th:href="@{/scan/personalizado}">Formato específico</a>
-			</div>
-			<div class="pie-nuevo-col">
-				<span class="pie-nuevo-label">Privacidad</span>
-				<p>Todo el procesamiento es local. LimpiaMedia no sube tus archivos a la nube.</p>
-				<p class="pie-copy">© 2026 LimpiaMedia. Todos los derechos reservados.</p>
-			</div>
-		</div>
-	</footer>
+	<th:block th:replace="~{fragments/footer :: footer}"></th:block>
 
 	<script th:src="@{/js/carpetas.js}"></script>
 	<script th:src="@{/js/scan-personalizado.js}"></script>

@@ -2,6 +2,57 @@
 
 Bitácora del proyecto. Formato: fecha · qué se hizo · estado.
 
+## 2026-08-06 — Marca LuceeroSI en navbar y footer
+- **Navbar**: logo `img/logo_lucero_navbar.png` + texto **"LuceeroSI"** en el extremo derecho, justo antes del botón "Cerrar" (`.navbar-lucero`, con `margin-left: auto` para agruparlo con el botón). Es un enlace al inicio; tooltip "LuceeroSI — Lucero Soluciones Informáticas". En pantallas ≤900px se oculta solo el texto y queda el logo.
+- **Footer**: se creó el fragmento `fragments/footer.html` (antes el footer estaba duplicado en las 7 plantillas) y se reemplazó en todas con `th:replace`. El footer ahora tiene una **barra inferior** (`.pie-nuevo-barra`) con el logo `img/Logo footer3.png` + **"LuceeroSI / Lucero Soluciones Informáticas"** a la izquierda y el copyright a la derecha. También quedó el link "Comparativas" en Recursos de todas las páginas (antes solo en comparativas).
+- **CSS**: `.navbar-lucero*`, `.pie-nuevo-barra`, `.pie-lucero*` + ajustes responsive (ocultar texto del navbar y centrar la barra del footer en ≤900px).
+- **Pruebas**: `mvnw compile` OK, `mvnw test` verde (**12 tests**).
+
+## 2026-08-06 — Fix miniaturas en Comparativas (bug de hoisting en JS)
+- **Bug reportado**: en `/comparativas` no aparecían las miniaturas, aunque en el resultado de escaneo (fotos/videos) sí.
+- **Causa**: en `comparativas.js`, `agregarMiniaturas()` se llamaba **antes** de la asignación de `var EXTENSIONES_IMAGEN`. Por el hoisting de `var`, la variable estaba `undefined` al ejecutarse → `EXTENSIONES_IMAGEN.indexOf(ext)` lanzaba `TypeError` en la primera fila y abortaba todo el handler de `DOMContentLoaded` (miniaturas, contador y resaltado inicial no corrían).
+- **Fix**: se movió la declaración `var EXTENSIONES_IMAGEN` arriba de la llamada `agregarMiniaturas()`.
+- **Pruebas**: `node --check` OK.
+
+## 2026-08-06 — "Abrir carpeta" sin recargar (se mantiene el scroll)
+- **Bug reportado**: al hacer clic en el botón carpeta de una fila, la página se recargaba y se perdía la posición del scroll (el endpoint hacía un redirect server-side a `/comparativas/resultado`).
+- **Fix**: `GET /comparativas/abrir-carpeta` ahora devuelve **JSON** (`{ok, mensaje}`) en vez de un redirect; el botón pasó de `<a>` a `<button>` y se llama por **fetch** (AJAX) desde `comparativas.js`. La página no se refresca y el scroll se mantiene.
+- **Feedback**: nuevo **toast** (`.toast`, fijo abajo centrado, verde/rojo) que avisa "Se abrió la carpeta en el Explorador" o el error (ej: archivo ya no existe). Auto desaparece a los ~3s.
+- Se eliminaron los params `volver`/`patron` que solo servían para el redirect (se dejó `codificar()` por el redirect de `/comparativas/buscar`).
+- **Pruebas**: `node --check` OK, `mvnw compile` OK, `mvnw test` verde (**12 tests**).
+
+## 2026-08-06 — Comparativas: columna de vista previa en miniatura
+- **Columna "Vista"** como primera columna de la tabla de resultados de `/comparativas`, igual que las miniaturas de `resultado.html`.
+- **Endpoint nuevo** `GET /comparativas/miniatura?ruta=...` en `ComparativaController`: sirve la imagen solo si la extensión es de imagen (`jpg/jpeg/png/gif/bmp/webp/svg/ico/jfif`) y el archivo existe; devuelve el `MediaType` correcto o `404/400`.
+- **Frontend**: `comparativas.js` inyecta la miniatura (`<img class="miniatura">`) en las filas con extensión de imagen (vía `data-extension` + `data-ruta` que se agregó a la fila) y un icono de archivo genérico para el resto. Clic en la miniatura abre el **modal de vista previa** (mismo `modal-imagen` que `resultado.html`, cierre con X / clic afuera / Escape). Se agregó el modal `#modalImagen` a la plantilla.
+- **CSS**: `.celda-miniatura` (56px, centrada) y `.celda-miniatura .icono-ms`.
+- **Pruebas**: `node --check` OK, `mvnw compile` OK, `mvnw test` verde (**12 tests**).
+
+## 2026-08-06 — Vista: ancho amplio en todas las páginas + consistencia del cuadro de búsqueda + truncado de columnas
+- **Cuadro de patrón más visible**: en Comparativas el campo de patrón usaba `.mover-input` (fondo blanco `#ffffff` sin borde) sobre una card también blanca → no se notaba. Ahora `.comparativas-ancho .patron-campo .mover-input` tiene fondo `--md-surface-container` (#f0f1f5) y borde `#cfd3da`, consistente con el resto de los inputs de la app.
+- **Columna Usuario con truncado**: el propietario puede ser muy largo (`DOMINIO\usuario`). Ahora la celda usa `celda-truncada` + `title`, así el texto se corta con "…" y se ve completo al pasar el mouse (igual que Nombre y Carpeta). Así ninguna fila obliga a scroll horizontal.
+- **Ancho amplio en todas las páginas**: nuevo `.contenedor-ancho { max-width: 1600px }` (igual que Comparativas) aplicado a `scan.html` (fotos/videos/documentos/sonido), `scan-personalizado.html`, `resultado.html` y `movimientos.html`. Se deja `index.html` y `progreso.html` con su ancho actual (página de inicio y pantalla de carga).
+- **Pruebas**: `mvnw compile` OK. Sin cambios de backend ni JS.
+
+## 2026-08-06 — Re-ejecutar búsquedas desde el resultado (sin reseleccionar carpeta) + verificación ordenar/limpiar
+- **Comparativas (re-buscar sin salir)**: el form de `/comparativas` ya estaba en la misma vista del resultado, pero el campo oculto `#ruta` era `value=""` → al cambiar el patrón y volver a "Buscar archivos" perdía la carpeta. Fix: `th:value="${ruta}"`. Ahora desde el resultado podés cambiar el patrón y ejecutar de nuevo con la misma carpeta (y el modal sigue permitiendo cambiar de carpeta si querés).
+- **Resultado de escaneo (`resultado.html`)**: nueva sección **"Volver a escanear esta carpeta"** con selector de tipo (FOTOS/VIDEOS/DOCUMENTOS/SONIDO/PERSONALIZADO) y la carpeta de la sesión ya cargada (`sesion.rutaRaiz` en un hidden). Preset → POST a `/scan/{tipo}/iniciar`; PERSONALIZADO → salta a `/scan/personalizado?ruta=...` con la carpeta ya elegida. Así se re-ejecuta un análisis cambiando el parámetro sin volver a navegar la carpeta.
+- **Prefill de ruta en personalizado**: `ScanController.scanPersonalizado` acepta `?ruta=`; `scan-personalizado.html` muestra la ruta elegida y `scan-personalizado.js` habilita "Escanear esta carpeta" cuando viene precargada.
+- **Verificación (no requería cambio)**: el orden por **fecha de creación** ya funcionaba (clic en "Creado": primero más nuevo → más viejo, otro clic invierte). Se agregó un hint "Clic en cada encabezado para ordenar…" bajo el título de Resultados para que sea más evidente. El botón **"Limpiar"** ya reseteaba extensión + fechas + texto (verificado el handler); si en navegación parecía no hacer nada, suele ser caché del navegador (Ctrl+F5).
+- **Pruebas**: `mvnw compile` OK, `node --check` sobre `comparativas.js`, `resultado.js` y `scan-personalizado.js` OK, `mvnw test` verde (**12 tests**).
+
+## 2026-08-06 — Mejoras de vista en "Buscar comparativas" (ancho, tipografía y filtros selectivos)
+- **Contenedor más ancho**: la página usaba `.pagina-interna` (máx. 860 px) y la tabla no entraba → se agrega `.comparativas-ancho` (máx. 1600 px) al `<main>` de `comparativas.html`. Con eso entran todas las columnas sin scroll horizontal en pantallas normales.
+- **Tipografía del resumen más acorde**: `.resumen-comp .stat-valor` pasa de 1.9rem a **1.05rem** (y 1.3rem el contador de "Archivos encontrados"). Las celdas de patrón y carpeta ahora muestran el texto completo como tooltip (`title`) al truncarse.
+- **Celda de nombre truncada**: el nombre de archivo ahora usa `celda-truncada` (con `title`), igual que la carpeta, para que las filas largas no ensanchen la tabla.
+- **Filtros selectivos nuevos** (todo en cliente, sobre los resultados ya cargados):
+  - Columna **Ext.** (extensión, ordenable) con `data-extension` por fila.
+  - Select **"Extensión"** con todas las extensiones presentes en el resultado (se autocompleta con JS).
+  - Inputs de fecha **"Modificado desde" / "hasta"** que filtran por fecha de última modificación (rango inclusivo por día).
+  - Botón **"Limpiar"** que resetea extensión + fechas + texto.
+  - El filtro por fecha se compara contra `data-modificacion` (epoch ms en hora local), y "Resaltar el más actualizado" y el contador siguen operando sobre las filas ya filtradas.
+- **Pruebas**: `mvnw compile` OK, `node --check` sobre `comparativas.js` OK, `mvnw test` verde (**12 tests**). Sin cambios de backend.
+
 ## 2026-08-05 — Fix arranque con DevTools + soporte de carpetas en red (UNC)
 - **Fix `OverlappingFileLockException` al correr `mvn spring-boot:run`**: con DevTools activo, Maven copia recursos a `target/classes` tras el arranque y DevTools reinicia la app dentro del mismo JVM (`restartedMain`). El reinicio volvía a llamar a `adquirirInstanciaUnica()`, que intentaba `tryLock()` sobre el MISMO archivo `limpiamedia.lock` ya bloqueado por la clase anterior → `OverlappingFileLockException` (un `RuntimeException` que el `catch (IOException)` no agarraba) y reventaba el arranque. Se agrega `catch (OverlappingFileLockException)` que continúa sin adquirir un lock nuevo (el lock real del proceso sigue activo para otras instancias).
 - **Carpetas/disco en red (UNC) en el selector de carpeta**:

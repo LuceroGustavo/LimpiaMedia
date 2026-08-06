@@ -9,7 +9,7 @@
 <body>
 	<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
 
-	<main class="contenedor-nuevo resultado-main">
+	<main class="contenedor-nuevo resultado-main contenedor-ancho">
 		<!-- Overlay de procesamiento al mover -->
 		<div class="procesando-overlay" id="procesando-overlay">
 			<div class="procesando-card">
@@ -76,6 +76,33 @@
 				</div>
 			</div>
 			<p class="resultado-ruta">Carpeta escaneada: <strong th:text="${sesion.rutaRaiz}"></strong></p>
+		</section>
+
+		<!-- Volver a escanear la misma carpeta -->
+		<section class="panel rescan-card" th:if="${!grupos.isEmpty()}">
+			<div class="rescan-titulo">
+				<div class="rescan-icono"><span class="icono-ms">autorenew</span></div>
+				<div>
+					<h2>Volver a escanear esta carpeta</h2>
+					<p>Cambiá el tipo de análisis y ejecutá de nuevo sobre la misma carpeta, sin volver a elegirla.</p>
+				</div>
+			</div>
+			<form class="rescan-form" id="rescanForm" method="post">
+				<input type="hidden" name="ruta" id="rescanRuta" th:value="${sesion.rutaRaiz}">
+				<div class="filtro-campo">
+					<label for="rescanTipo">Tipo de análisis</label>
+					<select id="rescanTipo">
+						<option value="FOTOS" th:selected="${sesion.tipo.name() == 'FOTOS'}">Fotos</option>
+						<option value="VIDEOS" th:selected="${sesion.tipo.name() == 'VIDEOS'}">Videos</option>
+						<option value="DOCUMENTOS" th:selected="${sesion.tipo.name() == 'DOCUMENTOS'}">Documentos</option>
+						<option value="SONIDO" th:selected="${sesion.tipo.name() == 'SONIDO'}">Sonido</option>
+						<option value="PERSONALIZADO" th:selected="${sesion.tipo.name() == 'PERSONALIZADO'}">Formatos específicos…</option>
+					</select>
+				</div>
+				<button type="submit" class="btn-primario btn-grande">
+					<span class="icono-ms">rocket_launch</span> Escanear de nuevo
+				</button>
+			</form>
 		</section>
 
 		<!-- Mover duplicados -->
@@ -234,24 +261,7 @@
 		</div>
 	</div>
 
-	<footer class="pie-nuevo">
-		<div class="pie-nuevo-interno">
-			<div class="pie-nuevo-marca">
-				<div class="pie-nuevo-titulo">LimpiaMedia</div>
-				<p>Simplificá tu almacenamiento local eliminando el desorden y los duplicados con precisión.</p>
-			</div>
-			<div class="pie-nuevo-col">
-				<span class="pie-nuevo-label">Recursos</span>
-				<a th:href="@{/movimientos}">Historial de movimientos</a>
-				<a th:href="@{/scan/personalizado}">Formato específico</a>
-			</div>
-			<div class="pie-nuevo-col">
-				<span class="pie-nuevo-label">Privacidad</span>
-				<p>Todo el procesamiento es local. LimpiaMedia no sube tus archivos a la nube.</p>
-				<p class="pie-copy">© 2026 LimpiaMedia. Todos los derechos reservados.</p>
-			</div>
-		</div>
-	</footer>
+	<th:block th:replace="~{fragments/footer :: footer}"></th:block>
 
 	<script th:src="@{/js/carpetas.js}"></script>
 	<script th:src="@{/js/resultado.js}"></script>

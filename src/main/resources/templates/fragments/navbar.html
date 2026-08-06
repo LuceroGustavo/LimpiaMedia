@@ -13,6 +13,10 @@
 			<a class="nav-link" th:classappend="${rutaActual.startsWith('/movimientos')} ? 'activo'"
 			   th:href="@{/movimientos}">Historial de movimientos</a>
 		</div>
+		<a class="navbar-lucero" th:href="@{/}" title="LuceeroSI — Lucero Soluciones Informáticas">
+			<img class="navbar-lucero-img" th:src="@{/img/logo_lucero_navbar.png}" alt="LuceeroSI">
+			<span class="navbar-lucero-texto">LuceeroSI</span>
+		</a>
 		<form method="post" th:action="@{/apagar}" class="navbar-cerrar" id="formCerrar"
 			  onsubmit="return abrirConfirmacion(event, this, 'Cerrar LimpiaMedia', '¿Seguro que querés cerrar la aplicación? Se guardará todo tu trabajo y podrás volver a abrirla cuando quieras.', 'Sí, cerrar');">
 			<button type="submit" class="btn-cerrar" title="Cerrar la aplicación">

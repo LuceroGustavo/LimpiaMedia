@@ -240,23 +240,6 @@
 		</section>
 	</main>
 
-	<footer class="pie-nuevo">
-		<div class="pie-nuevo-interno">
-			<div class="pie-nuevo-marca">
-				<div class="pie-nuevo-titulo">LimpiaMedia</div>
-				<p>Simplificá tu almacenamiento local eliminando el desorden y los duplicados con precisión.</p>
-			</div>
-			<div class="pie-nuevo-col">
-				<span class="pie-nuevo-label">Recursos</span>
-				<a th:href="@{/movimientos}">Historial de movimientos</a>
-				<a th:href="@{/scan/personalizado}">Formato específico</a>
-			</div>
-			<div class="pie-nuevo-col">
-				<span class="pie-nuevo-label">Privacidad</span>
-				<p>Todo el procesamiento es local. LimpiaMedia no sube tus archivos a la nube.</p>
-				<p class="pie-copy">© 2026 LimpiaMedia. Todos los derechos reservados.</p>
-			</div>
-		</div>
-	</footer>
+	<th:block th:replace="~{fragments/footer :: footer}"></th:block>
 </body>
 </html>

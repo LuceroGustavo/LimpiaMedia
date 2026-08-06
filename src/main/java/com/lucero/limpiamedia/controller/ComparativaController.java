@@ -1,12 +1,18 @@
 package com.lucero.limpiamedia.controller;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.lucero.limpiamedia.config.FileExtensionsConfig;
 import com.lucero.limpiamedia.dto.FileComparativaDTO;
 import com.lucero.limpiamedia.service.ComparativaService;
 
@@ -62,21 +69,59 @@ public class ComparativaController {
 	}
 
 	@GetMapping("/comparativas/abrir-carpeta")
-	public String abrirCarpeta(@RequestParam String ruta, @RequestParam String volver, @RequestParam String patron,
-			RedirectAttributes ra) {
+	public ResponseEntity<Map<String, String>> abrirCarpeta(@RequestParam String ruta) {
 		Path archivo = Paths.get(ruta);
 		if (!Files.exists(archivo)) {
-			ra.addFlashAttribute("error", "El archivo ya no existe: " + ruta);
-		} else {
-			Path carpeta = Files.isDirectory(archivo) ? archivo : archivo.getParent();
-			try {
-				new ProcessBuilder("explorer.exe", carpeta.toString()).start();
-				ra.addFlashAttribute("ok", "Se abrió la carpeta en el Explorador");
-			} catch (Exception e) {
-				ra.addFlashAttribute("error", "No se pudo abrir la carpeta: " + e.getMessage());
-			}
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(Map.of("ok", "false", "mensaje", "El archivo ya no existe: " + ruta));
 		}
-		return "redirect:/comparativas/resultado?ruta=" + codificar(volver) + "&patron=" + codificar(patron);
+		Path carpeta = Files.isDirectory(archivo) ? archivo : archivo.getParent();
+		try {
+			new ProcessBuilder("explorer.exe", carpeta.toString()).start();
+			return ResponseEntity.ok(Map.of("ok", "true", "mensaje", "Se abrió la carpeta en el Explorador"));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Map.of("ok", "false", "mensaje", "No se pudo abrir la carpeta: " + e.getMessage()));
+		}
+	}
+
+	@GetMapping("/comparativas/miniatura")
+	public ResponseEntity<byte[]> miniatura(@RequestParam String ruta) {
+		Path archivo = Paths.get(ruta);
+		if (!Files.isRegularFile(archivo)) {
+			return ResponseEntity.notFound().build();
+		}
+		String ext = FileExtensionsConfig.extension(archivo.getFileName().toString());
+		if (!IMAGENES_PREVISIBLES.contains(ext)) {
+			return ResponseEntity.badRequest().build();
+		}
+		MediaType tipo = mediaTypeImagen(ext);
+		if (tipo == null) {
+			return ResponseEntity.badRequest().build();
+		}
+		try {
+			return ResponseEntity.ok()
+					.contentType(tipo)
+					.body(Files.readAllBytes(archivo));
+		} catch (IOException e) {
+			return ResponseEntity.notFound().build();
+		}
+	}
+
+	private static final Set<String> IMAGENES_PREVISIBLES = Set.of(
+			"jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "ico", "jfif");
+
+	private MediaType mediaTypeImagen(String ext) {
+		return switch (ext) {
+			case "jpg", "jpeg", "jfif" -> MediaType.IMAGE_JPEG;
+			case "png" -> MediaType.IMAGE_PNG;
+			case "gif" -> MediaType.IMAGE_GIF;
+			case "bmp" -> MediaType.parseMediaType("image/bmp");
+			case "webp" -> MediaType.parseMediaType("image/webp");
+			case "svg" -> MediaType.parseMediaType("image/svg+xml");
+			case "ico" -> MediaType.parseMediaType("image/x-icon");
+			default -> null;
+		};
 	}
 
 	private String codificar(String valor) {

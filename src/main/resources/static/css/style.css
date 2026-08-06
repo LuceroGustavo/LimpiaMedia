@@ -96,6 +96,36 @@
 	margin: 0;
 }
 
+.navbar-lucero {
+	display: flex;
+	align-items: center;
+	gap: .5rem;
+	text-decoration: none;
+	margin-left: auto;
+	padding: .3rem .6rem;
+	border-radius: 10px;
+	transition: background .12s ease;
+}
+
+.navbar-lucero:hover {
+	background: #f3f4f6;
+}
+
+.navbar-lucero-img {
+	height: 32px;
+	width: auto;
+	border-radius: 6px;
+	display: block;
+}
+
+.navbar-lucero-texto {
+	font-size: .95rem;
+	font-weight: 800;
+	letter-spacing: .01em;
+	color: #1f2937;
+	white-space: nowrap;
+}
+
 .btn-cerrar {
 	display: inline-flex;
 	align-items: center;
@@ -1757,6 +1787,50 @@ body {
 	font-size: .8rem;
 }
 
+.pie-nuevo-barra {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 1.2rem 1.5rem 1.4rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+	border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+.pie-lucero {
+	display: flex;
+	align-items: center;
+	gap: .75rem;
+	text-decoration: none;
+}
+
+.pie-lucero-img {
+	height: 46px;
+	width: auto;
+	border-radius: 8px;
+	display: block;
+}
+
+.pie-lucero-texto {
+	display: flex;
+	flex-direction: column;
+	line-height: 1.25;
+}
+
+.pie-lucero-texto strong {
+	font-size: 1.05rem;
+	font-weight: 800;
+	letter-spacing: .02em;
+	color: #fff;
+}
+
+.pie-lucero-texto span {
+	font-size: .8rem;
+	color: #9aa0ab;
+}
+
 /* ============================================================
    Diseño resultado (material design)
    ============================================================ */
@@ -2271,6 +2345,15 @@ body {
 		gap: 1.8rem;
 	}
 
+	.pie-nuevo-barra {
+		justify-content: center;
+		text-align: center;
+	}
+
+	.navbar-lucero-texto {
+		display: none;
+	}
+
 	.resultado-cabecera {
 		align-items: flex-start;
 		flex-direction: column;
@@ -2610,8 +2693,23 @@ body {
 
 /* ---------- Buscar comparativas ---------- */
 
+.comparativas-ancho {
+	max-width: 1600px;
+}
+
 .patron-campo {
 	margin-top: 1.2rem;
+}
+
+.resumen-comp .stat-valor {
+	font-size: 1.05rem;
+	font-weight: 700;
+	letter-spacing: 0;
+	line-height: 1.3;
+}
+
+.resumen-comp .stat-valor.primario {
+	font-size: 1.3rem;
 }
 
 .escanear-final {
@@ -2641,9 +2739,55 @@ body {
 
 .filtros-comparativa {
 	display: flex;
-	align-items: center;
-	gap: 1rem;
+	align-items: flex-end;
+	gap: .9rem;
 	flex-wrap: wrap;
+	margin-bottom: 1.2rem;
+}
+
+.filtro-campo {
+	display: flex;
+	flex-direction: column;
+	gap: .25rem;
+	font-size: .78rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	color: var(--md-on-surface-variant);
+}
+
+.filtro-campo select,
+.filtro-campo input[type="date"] {
+	font-family: inherit;
+	font-size: .85rem;
+	font-weight: 500;
+	text-transform: none;
+	letter-spacing: normal;
+	padding: .5rem .6rem;
+	border: 1px solid #dde0e7;
+	border-radius: 8px;
+	background: var(--md-surface-container-lowest);
+	color: var(--md-on-surface);
+	cursor: pointer;
+}
+
+.filtro-campo input[type="date"] {
+	cursor: text;
+}
+
+.btn-chico {
+	padding: .5rem .9rem;
+	font-size: .85rem;
+	border-radius: 8px;
+}
+
+.comparativas-ancho .tabla-nueva td {
+	white-space: nowrap;
+}
+
+.comparativas-ancho .celda-truncada,
+.comparativas-ancho .nombre-archivo {
+	max-width: 340px;
 }
 
 .resaltar-check {
@@ -2695,4 +2839,133 @@ body {
 
 .fila-mas-reciente .nombre-archivo {
 	color: #854d0e;
+}
+
+.tabla-ayuda {
+	font-size: .8rem;
+	font-weight: 400;
+	color: var(--md-on-surface-variant);
+	margin-top: .25rem;
+}
+
+/* ---------- Volver a escanear (resultado) ---------- */
+
+.rescan-card {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+.rescan-titulo {
+	display: flex;
+	align-items: center;
+	gap: .9rem;
+}
+
+.rescan-icono {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 12px;
+	background: #e3e5ff;
+	color: var(--md-primary);
+	flex-shrink: 0;
+}
+
+.rescan-icono .icono-ms {
+	font-size: 1.4rem;
+}
+
+.rescan-titulo h2 {
+	font-size: 1.15rem;
+	font-weight: 750;
+	color: var(--md-on-surface);
+	margin-bottom: .15rem;
+}
+
+.rescan-titulo p {
+	font-size: .9rem;
+	color: var(--md-on-surface-variant);
+}
+
+.rescan-form {
+	display: flex;
+	align-items: flex-end;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.rescan-form .filtro-campo {
+	min-width: 220px;
+}
+
+/* Ancho amplio para páginas internas (igual que Comparativas) */
+
+.contenedor-ancho {
+	max-width: 1600px;
+}
+
+/* Cuadro de patrón en Comparativas: más oscuro y con borde para que se note */
+
+.comparativas-ancho .patron-campo .mover-input {
+	background: var(--md-surface-container);
+	border: 1px solid #cfd3da;
+}
+
+.comparativas-ancho .patron-campo .mover-input input::placeholder {
+	color: var(--md-on-surface-variant);
+}
+
+/* Columna de vista previa (miniaturas) */
+
+.comparativas-ancho .celda-miniatura {
+	width: 56px;
+	text-align: center;
+	padding: .4rem .3rem;
+}
+
+.celda-miniatura .icono-ms {
+	font-size: 1.35rem;
+	color: var(--md-on-surface-variant);
+	line-height: 1;
+	vertical-align: middle;
+}
+
+button.btn-icono {
+	border: none;
+	cursor: pointer;
+}
+
+/* Toast de avisos */
+
+.toast {
+	position: fixed;
+	bottom: 24px;
+	left: 50%;
+	transform: translateX(-50%) translateY(16px);
+	background: var(--md-on-surface);
+	color: #fff;
+	padding: .7rem 1.2rem;
+	border-radius: 12px;
+	font-size: .9rem;
+	font-weight: 600;
+	box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity .2s ease, transform .2s ease;
+	z-index: 90;
+	max-width: 90vw;
+}
+
+.toast.visible {
+	opacity: 1;
+	transform: translateX(-50%) translateY(0);
+}
+
+.toast.error {
+	background: var(--md-error);
+	color: #fff;
 }

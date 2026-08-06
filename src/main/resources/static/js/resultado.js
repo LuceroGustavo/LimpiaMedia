@@ -110,6 +110,20 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 	}
 
+	var rescanForm = document.getElementById('rescanForm');
+	if (rescanForm) {
+		rescanForm.addEventListener('submit', function (e) {
+			var tipo = document.getElementById('rescanTipo').value;
+			var ruta = document.getElementById('rescanRuta').value;
+			if (tipo === 'PERSONALIZADO') {
+				e.preventDefault();
+				window.location.href = '/scan/personalizado?ruta=' + encodeURIComponent(ruta);
+			} else {
+				rescanForm.action = '/scan/' + tipo + '/iniciar';
+			}
+		});
+	}
+
 	function mostrarProcesando() {
 		var overlay = document.getElementById('procesando-overlay');
 		var texto = document.getElementById('procesando-texto');

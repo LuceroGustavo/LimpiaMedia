@@ -62,8 +62,9 @@ public class ScanController {
 	}
 
 	@GetMapping("/scan/personalizado")
-	public String scanPersonalizado(Model model) {
+	public String scanPersonalizado(@RequestParam(required = false) String ruta, Model model) {
 		model.addAttribute("categorias", extConfig.categorias());
+		model.addAttribute("ruta", ruta);
 		return "scan-personalizado";
 	}
 

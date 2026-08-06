@@ -38,4 +38,15 @@ document.addEventListener('DOMContentLoaded', function () {
 		cont.appendChild(span);
 		document.getElementById('btnEscanear').disabled = false;
 	};
+
+	var rutaInicial = document.getElementById('ruta').value;
+	if (rutaInicial) {
+		var cont = document.getElementById('carpetaSeleccionada');
+		cont.innerHTML = '';
+		var span = document.createElement('span');
+		span.className = 'ruta-elegida';
+		span.textContent = rutaInicial;
+		cont.appendChild(span);
+		document.getElementById('btnEscanear').disabled = false;
+	}
 });

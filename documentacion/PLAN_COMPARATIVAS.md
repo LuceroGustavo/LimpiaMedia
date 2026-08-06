@@ -79,8 +79,9 @@ Reglas:
 - [x] Navbar + CSS
 - [x] Compilar + `node --check` + `mvnw test`
 - [x] Tests unitarios de patrones (`ComparativaServicePatronTest`, 6 casos)
-- [ ] Probar end-to-end con `*.xlsx`, `*avances*`, `avab*.xlsx` (local y red)
+- [x] Probar end-to-end con `*.xlsx`, `*avances*`, `avab*.xlsx` (local y red)
 - [x] Documentar en `AVANCES.md`
+- [x] Mejoras de vista + filtros selectivos (ancho 1600px, fuente resumen, columna Ext., filtro por extensión y rango de fechas) — 2026-08-06
 
 ## Pendientes / ideas futuras
 

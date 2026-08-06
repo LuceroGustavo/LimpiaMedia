@@ -9,7 +9,7 @@
 <body>
 	<th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
 
-	<main class="contenedor-nuevo pagina-interna">
+	<main class="contenedor-nuevo pagina-interna comparativas-ancho">
 		<header class="pagina-cabecera">
 			<div class="pagina-eyebrow">
 				<span class="icono-ms">manage_search</span> Comparativas de archivos
@@ -44,7 +44,7 @@
 					</div>
 				</div>
 
-				<input type="hidden" name="ruta" id="ruta" value="">
+				<input type="hidden" name="ruta" id="ruta" th:value="${ruta}">
 
 				<div class="mover-campo patron-campo">
 					<label for="patron">Patrón de búsqueda</label>
@@ -76,35 +76,57 @@
 			</div>
 			<div class="resumen-comp-celda">
 				<span class="stat-etiqueta">Patrón</span>
-				<span class="stat-valor" th:text="${patron}"></span>
+				<span class="stat-valor" th:text="${patron}" th:title="${patron}"></span>
 			</div>
 			<div class="resumen-comp-celda">
 				<span class="stat-etiqueta">Carpeta</span>
-				<span class="stat-valor celda-truncada" th:text="${ruta}"></span>
+				<span class="stat-valor celda-truncada" th:text="${ruta}" th:title="${ruta}"></span>
 			</div>
 		</section>
 
 		<!-- Resultados -->
 		<section class="historial-card" th:if="${resultados != null and !resultados.isEmpty()}">
 			<div class="historial-cabecera">
-				<h3>Resultados</h3>
-				<div class="filtros-comparativa">
-					<label class="resaltar-check">
-						<input type="checkbox" id="resaltarReciente" checked>
-						Resaltar el más actualizado
-					</label>
-					<div class="buscador buscador-chico">
-						<span class="icono-ms">filter_alt</span>
-						<input type="search" id="filtroTabla" placeholder="Filtrar esta lista…" autocomplete="off">
-					</div>
+				<div>
+					<h3>Resultados</h3>
+					<p class="tabla-ayuda">Clic en cada encabezado para ordenar: del más nuevo al más viejo, y de nuevo para invertir.</p>
+				</div>
+			</div>
+			<div class="filtros-comparativa">
+				<label class="resaltar-check">
+					<input type="checkbox" id="resaltarReciente" checked>
+					Resaltar el más actualizado
+				</label>
+				<div class="filtro-campo">
+					<label for="filtroExt">Extensión</label>
+					<select id="filtroExt">
+						<option value="">Todas</option>
+					</select>
+				</div>
+				<div class="filtro-campo">
+					<label for="filtroFechaDesde">Modificado desde</label>
+					<input type="date" id="filtroFechaDesde">
+				</div>
+				<div class="filtro-campo">
+					<label for="filtroFechaHasta">hasta</label>
+					<input type="date" id="filtroFechaHasta">
+				</div>
+				<button type="button" class="btn-secundario btn-chico" id="btnLimpiarFiltros">
+					<span class="icono-ms">clear</span> Limpiar
+				</button>
+				<div class="buscador buscador-chico">
+					<span class="icono-ms">filter_alt</span>
+					<input type="search" id="filtroTabla" placeholder="Filtrar esta lista…" autocomplete="off">
 				</div>
 			</div>
 			<div class="tabla-scroll">
 				<table class="tabla-nueva" id="tablaResultados">
 					<thead>
 						<tr>
+							<th class="th-derecha">Vista</th>
 							<th class="th-ordenable orden-asc" data-campo="modificacion">Modificado</th>
 							<th class="th-ordenable" data-campo="nombre">Nombre</th>
+							<th class="th-ordenable" data-campo="extension">Ext.</th>
 							<th class="th-ordenable" data-campo="carpeta">Carpeta</th>
 							<th class="th-ordenable" data-campo="tamanio">Tamaño</th>
 							<th class="th-ordenable" data-campo="creacion">Creado</th>
@@ -116,25 +138,30 @@
 					<tbody class="divide">
 						<tr th:each="f : ${resultados}"
 							th:attr="data-nombre=${f.nombre},
+									data-ruta=${f.ruta},
+									data-extension=${f.extension},
 									data-carpeta=${f.carpetaPadre},
 									data-tamanio=${f.tamanio},
 									data-modificacion=${f.fechaModificacionEpoch},
 									data-creacion=${f.fechaCreacionEpoch},
 									data-acceso=${f.fechaAccesoEpoch},
 									data-propietario=${f.propietario}">
+							<td class="celda-miniatura"></td>
 							<td th:text="${f.fechaModificacion != null ? #temporals.format(f.fechaModificacion, 'dd/MM/yyyy HH:mm') : '—'}"></td>
-							<td class="nombre-archivo" th:text="${f.nombre}"></td>
-							<td class="celda-truncada" th:text="${f.carpetaPadre}"></td>
+							<td class="nombre-archivo celda-truncada" th:text="${f.nombre}" th:title="${f.nombre}"></td>
+							<td th:text="${f.extension != null and !f.extension.isEmpty() ? f.extension : '—'}"></td>
+							<td class="celda-truncada" th:text="${f.carpetaPadre}" th:title="${f.carpetaPadre}"></td>
 							<td class="th-derecha"
 								th:text="${f.tamanio > 1048576 ? #numbers.formatDecimal(f.tamanio / 1048576.0, 1, 1) + ' MB' : f.tamanio + ' B'}"></td>
 							<td th:text="${f.fechaCreacion != null ? #temporals.format(f.fechaCreacion, 'dd/MM/yyyy HH:mm') : '—'}"></td>
 							<td th:text="${f.fechaAcceso != null ? #temporals.format(f.fechaAcceso, 'dd/MM/yyyy HH:mm') : '—'}"></td>
-							<td th:text="${f.propietario != null ? f.propietario : '—'}"></td>
+							<td th:text="${f.propietario != null ? f.propietario : '—'}"
+								class="celda-truncada" th:title="${f.propietario}"></td>
 							<td class="th-derecha">
-								<a class="btn-icono" title="Abrir carpeta en el Explorador"
-								   th:href="@{/comparativas/abrir-carpeta(ruta=${f.ruta}, volver=${ruta}, patron=${patron})}">
+								<button type="button" class="btn-icono" title="Abrir carpeta en el Explorador"
+										th:attr="data-ruta=${f.ruta}" onclick="abrirCarpetaArchivo(this)">
 									<span class="icono-ms">folder_open</span>
-								</a>
+								</button>
 							</td>
 						</tr>
 					</tbody>
@@ -151,6 +178,22 @@
 			<a class="btn-primario enlace-boton" th:href="@{/comparativas}">Probar otro patrón</a>
 		</div>
 	</main>
+
+	<!-- Toast de avisos -->
+	<div class="toast" id="toast" role="status"></div>
+
+	<!-- Modal de vista previa de imagen -->
+	<div class="modal-overlay" id="modalImagen" style="display:none">
+		<div class="modal modal-imagen">
+			<div class="modal-cabecera">
+				<h3>Vista previa</h3>
+				<button type="button" class="modal-cerrar" onclick="cerrarModalImagen()">&times;</button>
+			</div>
+			<div class="modal-imagen-contenido">
+				<img id="imagenGrande" src="" alt="Vista previa">
+			</div>
+		</div>
+	</div>
 
 	<div class="modal-overlay" id="modal" style="display:none">
 		<div class="modal">
@@ -189,25 +232,7 @@
 		</div>
 	</div>
 
-	<footer class="pie-nuevo">
-		<div class="pie-nuevo-interno">
-			<div class="pie-nuevo-marca">
-				<div class="pie-nuevo-titulo">LimpiaMedia</div>
-				<p>Simplificá tu almacenamiento local eliminando el desorden y los duplicados con precisión.</p>
-			</div>
-			<div class="pie-nuevo-col">
-				<span class="pie-nuevo-label">Recursos</span>
-				<a th:href="@{/movimientos}">Historial de movimientos</a>
-				<a th:href="@{/scan/personalizado}">Formato específico</a>
-				<a th:href="@{/comparativas}">Comparativas</a>
-			</div>
-			<div class="pie-nuevo-col">
-				<span class="pie-nuevo-label">Privacidad</span>
-				<p>Todo el procesamiento es local. LimpiaMedia no sube tus archivos a la nube.</p>
-				<p class="pie-copy">© 2026 LimpiaMedia. Todos los derechos reservados.</p>
-			</div>
-		</div>
-	</footer>
+	<th:block th:replace="~{fragments/footer :: footer}"></th:block>
 
 	<script th:src="@{/js/carpetas.js}"></script>
 	<script th:src="@{/js/comparativas.js}"></script>

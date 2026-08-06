@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body th:fragment="footer">
+	<footer class="pie-nuevo">
+		<div class="pie-nuevo-interno">
+			<div class="pie-nuevo-marca">
+				<div class="pie-nuevo-titulo">LimpiaMedia</div>
+				<p>Simplificá tu almacenamiento local eliminando el desorden y los duplicados con precisión.</p>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Recursos</span>
+				<a th:href="@{/movimientos}">Historial de movimientos</a>
+				<a th:href="@{/scan/personalizado}">Formato específico</a>
+				<a th:href="@{/comparativas}">Comparativas</a>
+			</div>
+			<div class="pie-nuevo-col">
+				<span class="pie-nuevo-label">Privacidad</span>
+				<p>Todo el procesamiento es local. LimpiaMedia no sube tus archivos a la nube.</p>
+			</div>
+		</div>
+		<div class="pie-nuevo-barra">
+			<a class="pie-lucero" th:href="@{/}" title="LuceeroSI — Lucero Soluciones Informáticas">
+				<img class="pie-lucero-img" th:src="@{'/img/Logo footer3.png'}" alt="LuceeroSI">
+				<span class="pie-lucero-texto">
+					<strong>LuceeroSI</strong>
+					<span>Lucero Soluciones Informáticas</span>
+				</span>
+			</a>
+			<span class="pie-copy">© 2026 LimpiaMedia · LuceeroSI. Todos los derechos reservados.</span>
+		</div>
+	</footer>
+</body>
+</html>
